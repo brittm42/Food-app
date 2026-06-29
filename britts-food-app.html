@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Britt's Food System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #F5F2ED;
+  --surface: #FFFFFF;
+  --surface-warm: #EDE9E2;
+  --ink: #1E1B17;
+  --ink-mid: #4A4540;
+  --ink-light: #8A837A;
+  --border: #DDD8D0;
+  --teal: #1F7A6E;
+  --teal-light: #E3F2F0;
+  --teal-mid: #A8D5CF;
+  --coral: #C94F30;
+  --coral-light: #FAEAE5;
+  --gold: #B8842A;
+  --gold-light: #FBF3E3;
+  --plum: #6B3F7A;
+  --plum-light: #F0EAF5;
+  --sage: #4A7A5A;
+  --sage-light: #E8F2EB;
+  --red: #C0392B;
+  --red-light: #FDECEA;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+/* HEADER */
+.header { background: var(--ink); padding: 28px 20px 22px; text-align: center; }
+.header-eye { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal-mid); margin-bottom: 8px; }
+.header h1 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; color: white; line-height: 1.2; margin-bottom: 4px; }
+.header h1 em { font-style: italic; color: var(--teal-mid); }
+.header-sub { font-size: 12px; color: #706860; }
+
+/* TOP NAV */
+.top-nav { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; scrollbar-width: none; position: sticky; top: 0; z-index: 200; }
+.top-nav::-webkit-scrollbar { display: none; }
+.nav-item { padding: 0 16px; height: 48px; display: flex; align-items: center; font-size: 13px; font-weight: 500; color: var(--ink-light); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; }
+.nav-item.active { color: var(--teal); border-bottom-color: var(--teal); }
+.nav-item:hover { color: var(--ink-mid); }
+
+/* PAGES */
+.page { display: none; padding: 20px 16px 60px; }
+.page.visible { display: block; }
+
+/* SUB NAV */
+.sub-nav { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+.sub-nav::-webkit-scrollbar { display: none; }
+.sub-pill { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 13px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-light); cursor: pointer; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; }
+.sub-pill.active, .sub-pill:hover { background: var(--ink); color: white; border-color: var(--ink); }
+
+/* SUB SECTIONS */
+.sub-sec { display: none; }
+.sub-sec.visible { display: block; }
+
+/* SECTION HEADER */
+.sec-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; margin-bottom: 4px; }
+.sec-desc { font-size: 13px; color: var(--ink-light); margin-bottom: 18px; line-height: 1.5; }
+.sec-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-light); margin-bottom: 4px; }
+
+/* FILTER BAR */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.filter-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-light); cursor: pointer; transition: all 0.15s; }
+.filter-btn.active { background: var(--gold); color: white; border-color: var(--gold); }
+.filter-count { font-size: 11px; color: var(--ink-light); margin-left: auto; }
+
+/* RECIPE CARDS */
+.card-stack { display: flex; flex-direction: column; gap: 10px; }
+.rcard { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; transition: border-color 0.15s; }
+.rcard.fav { border-color: var(--gold); }
+.rcard.disliked { opacity: 0.45; }
+.rcard-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 14px 14px; cursor: pointer; }
+.rcard-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.rcard-meta { flex: 1; min-width: 0; }
+.rcard-name { font-weight: 600; font-size: 14px; line-height: 1.3; margin-bottom: 2px; }
+.rcard-hint { font-size: 12px; color: var(--ink-light); }
+.rcard-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.tag { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 100px; }
+.t-teal { background: var(--teal-light); color: var(--teal); }
+.t-coral { background: var(--coral-light); color: var(--coral); }
+.t-gold { background: var(--gold-light); color: var(--gold); }
+.t-plum { background: var(--plum-light); color: var(--plum); }
+.t-sage { background: var(--sage-light); color: var(--sage); }
+.rcard-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+.chev { font-size: 11px; color: var(--ink-light); transition: transform 0.2s; }
+.rcard.open .chev { transform: rotate(180deg); }
+.action-row { display: flex; gap: 5px; }
+.btn-icon { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-warm); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.15s; }
+.btn-icon:hover { transform: scale(1.1); }
+.btn-icon.active-thumb-up { background: var(--gold); border-color: var(--gold); }
+.btn-icon.active-thumb-down { background: var(--red-light); border-color: var(--red); }
+.btn-icon.active-week { background: var(--teal-light); border-color: var(--teal); }
+
+.rcard-body { display: none; border-top: 1px solid var(--border); padding: 14px 14px 16px; }
+.rcard.open .rcard-body { display: block; }
+.recipe-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px; }
+.recipe-text { font-size: 13.5px; line-height: 1.65; }
+.recipe-text strong { font-weight: 600; }
+.macros { display: flex; gap: 8px; margin-top: 14px; }
+.macro { flex: 1; background: var(--surface-warm); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.macro-val { font-family: 'Fraunces', serif; font-size: 16px; color: var(--teal); line-height: 1; }
+.macro-lbl { font-size: 10px; color: var(--ink-light); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+/* CALLOUTS */
+.callout { border-radius: 10px; padding: 13px 15px; margin-bottom: 16px; font-size: 13.5px; line-height: 1.55; }
+.callout strong { font-weight: 600; }
+.callout-teal { background: var(--teal-light); color: var(--teal); border: 1px solid var(--teal-mid); }
+.callout-gold { background: var(--gold-light); color: var(--gold); border: 1px solid #DDB86A; }
+.callout-ink { background: var(--ink); color: rgba(255,255,255,0.85); }
+.callout-ink strong { color: var(--teal-mid); }
+
+/* THIS WEEK */
+.week-empty { text-align: center; padding: 40px 20px; color: var(--ink-light); }
+.week-empty-icon { font-size: 36px; margin-bottom: 12px; }
+.week-empty-text { font-size: 14px; }
+.week-item { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.week-item-icon { font-size: 22px; flex-shrink: 0; }
+.week-item-info { flex: 1; min-width: 0; }
+.week-item-name { font-weight: 600; font-size: 14px; }
+.week-item-meta { font-size: 12px; color: var(--ink-light); }
+.week-item-remove { font-size: 18px; color: var(--ink-light); cursor: pointer; flex-shrink: 0; padding: 4px; }
+.week-item-remove:hover { color: var(--red); }
+
+/* SHOPPING LIST */
+.shop-section { margin-bottom: 20px; }
+.shop-section-head { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-light); padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.shop-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: var(--surface); border-radius: 8px; font-size: 13.5px; cursor: pointer; border: 1px solid transparent; margin-bottom: 3px; transition: all 0.12s; }
+.shop-item:hover { background: var(--surface-warm); }
+.shop-item.checked { opacity: 0.4; text-decoration: line-through; color: var(--ink-light); }
+.shop-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+.shop-item.checked .shop-check { background: var(--teal); border-color: var(--teal); }
+.shop-item.checked .shop-check::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+.shop-note { font-size: 11px; color: var(--ink-light); margin-left: auto; font-style: italic; white-space: nowrap; }
+
+/* PANTRY */
+.pantry-block { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 14px; }
+.pantry-block-head { padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.pantry-block-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.pantry-block-title { font-weight: 600; font-size: 15px; }
+.pantry-block-sub { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+.pantry-items { border-top: 1px solid var(--border); padding: 10px 14px; }
+.pantry-cat { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); padding: 10px 8px 6px; }
+.pantry-cat:first-child { padding-top: 4px; }
+.p-item { display: flex; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 8px; font-size: 13.5px; cursor: pointer; transition: background 0.12s; }
+.p-item:hover { background: var(--surface-warm); }
+.p-item.checked { opacity: 0.38; text-decoration: line-through; color: var(--ink-light); }
+.p-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+.p-item.checked .p-check { background: var(--teal); border-color: var(--teal); }
+.p-item.checked .p-check::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; }
+.p-note { font-size: 11px; color: var(--ink-light); margin-left: auto; font-style: italic; white-space: nowrap; }
+
+/* ADD RECIPE FORM */
+.form-block { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); padding: 18px; margin-bottom: 16px; }
+.form-block h3 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; margin-bottom: 14px; }
+.form-row { margin-bottom: 14px; }
+.form-label { font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-light); margin-bottom: 6px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg); color: var(--ink); outline: none; transition: border-color 0.15s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--teal); }
+.form-textarea { min-height: 90px; resize: vertical; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-submit { background: var(--ink); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; transition: background 0.15s; }
+.btn-submit:hover { background: var(--teal); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 1000; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* OAT PICKER */
+.oat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.oat-card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); padding: 14px; cursor: pointer; transition: all 0.15s; position: relative; }
+.oat-card.picked { border-color: var(--gold); background: var(--gold-light); }
+.oat-card.picked::after { content: '✓'; position: absolute; top: 10px; right: 12px; font-size: 13px; color: var(--gold); font-weight: 700; }
+.oat-emoji { font-size: 22px; margin-bottom: 6px; }
+.oat-name { font-weight: 600; font-size: 13px; line-height: 1.3; margin-bottom: 3px; }
+.oat-desc { font-size: 11px; color: var(--ink-light); line-height: 1.4; }
+.oat-recipe { display: none; margin-top: 10px; background: white; border-radius: 8px; padding: 12px; font-size: 12.5px; line-height: 1.6; border: 1px solid var(--border); }
+.oat-recipe.visible { display: block; }
+.pick2-counter { text-align: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-light); margin-top: 10px; padding: 10px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); }
+.pick2-counter.ready { color: var(--teal); border-color: var(--teal); }
+
+/* CUISINE BADGES */
+.cb { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 100px; margin-right: 3px; }
+.cb-med { background: #E8F4E8; color: #2E6B3E; }
+.cb-mex { background: #FEF0E0; color: #B06020; }
+.cb-asi { background: #E8EEF8; color: #2A4A8A; }
+.cb-ind { background: #FBE8E8; color: #8A2A2A; }
+
+/* WEEK GENERATE BTN */
+.gen-btn { background: var(--teal); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; width: 100%; margin-bottom: 16px; transition: background 0.15s; }
+.gen-btn:hover { background: var(--ink); }
+.clear-btn { background: transparent; color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 10px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; width: 100%; margin-bottom: 16px; transition: all 0.15s; }
+.clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* SALMON BANNER */
+.salmon-banner { background: linear-gradient(135deg, #1F7A6E 0%, #154F47 100%); border-radius: 12px; padding: 16px 18px; margin-bottom: 16px; color: white; }
+.salmon-banner h3 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 300; margin-bottom: 6px; color: var(--teal-mid); }
+.salmon-banner p { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eye">Britt's Food System</div>
+  <h1>Eat what you <em>actually</em> want.</h1>
+  <p class="header-sub">Mediterranean · Mexican · Asian · Indian · Your salmon · Real food</p>
+</div>
+
+<nav class="top-nav">
+  <div class="nav-item active" onclick="showPage('recipes',this)">Recipes</div>
+  <div class="nav-item" onclick="showPage('thisweek',this)">This Week</div>
+  <div class="nav-item" onclick="showPage('shopping',this)">Shopping</div>
+  <div class="nav-item" onclick="showPage('pantry',this)">Pantry</div>
+  <div class="nav-item" onclick="showPage('add',this)">+ Add Recipe</div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════ RECIPES ══════════ -->
+<div id="recipes" class="page visible">
+  <div class="sub-nav" id="recipe-sub-nav">
+    <div class="sub-pill active" onclick="showRecipeSub('breakfast',this)">Breakfast</div>
+    <div class="sub-pill" onclick="showRecipeSub('lunch',this)">Lunch</div>
+    <div class="sub-pill" onclick="showRecipeSub('snacks',this)">Snacks</div>
+    <div class="sub-pill" onclick="showRecipeSub('dinner',this)">Dinner</div>
+    <div class="sub-pill" onclick="showRecipeSub('salmon',this)">Your Salmon</div>
+  </div>
+
+  <!-- BREAKFAST -->
+  <div id="sub-breakfast" class="sub-sec visible">
+    <div class="sub-nav">
+      <div class="sub-pill active" onclick="showSubSub('breakfast','bs-oats',this)">Overnight Oats</div>
+      <div class="sub-pill" onclick="showSubSub('breakfast','bs-smoothies',this)">Smoothies</div>
+      <div class="sub-pill" onclick="showSubSub('breakfast','bs-hot',this)">Hot Breakfasts</div>
+      <div class="sub-pill" onclick="showSubSub('breakfast','bs-quick',this)">Quick Grabs</div>
+      <div class="sub-pill" onclick="showSubSub('breakfast','bs-guilty',this)">Guilty Pleasures</div>
+    </div>
+
+    <div id="bs-oats" class="sub-sec visible">
+      <div class="sec-label">Overnight Oats</div>
+      <div class="sec-title">Pick 2 for the week.</div>
+      <div class="sec-desc">Make Sunday night. Grab all week. Tap a flavor to see the recipe, pick your 2.</div>
+      <div class="callout callout-ink"><strong>Base (always the same):</strong> ½ cup rolled oats + ¾ cup milk + 2 tbsp chia seeds + pinch salt. The flavor layer is what changes. Make 3–4 jars of each pick.</div>
+      <div class="oat-grid" id="oat-grid"></div>
+      <div class="pick2-counter" id="oat-counter">Tap a flavor to pick it — choose 2 for the week</div>
+    </div>
+
+    <div id="bs-smoothies" class="sub-sec">
+      <div id="smoothie-filter" class="filter-bar">
+        <button class="filter-btn active" onclick="filterRecipes('smoothie','all',this)">All</button>
+        <button class="filter-btn" onclick="filterRecipes('smoothie','fav',this)">⭐ Favorites</button>
+      </div>
+      <div class="card-stack" id="smoothie-list"></div>
+    </div>
+
+    <div id="bs-hot" class="sub-sec">
+      <div id="hot-filter" class="filter-bar">
+        <button class="filter-btn active" onclick="filterRecipes('hot','all',this)">All</button>
+        <button class="filter-btn" onclick="filterRecipes('hot','fav',this)">⭐ Favorites</button>
+      </div>
+      <div class="card-stack" id="hot-list"></div>
+    </div>
+
+    <div id="bs-quick" class="sub-sec">
+      <div class="card-stack" id="quick-list"></div>
+    </div>
+
+    <div id="bs-guilty" class="sub-sec">
+      <div class="callout callout-gold"><strong>The reframe:</strong> Bacon isn't the problem. Bacon + nothing else is. These are not problems to solve — they're rituals. The system works because it's mostly good, not because it's perfect every day.</div>
+      <div class="card-stack" id="guilty-list"></div>
+    </div>
+  </div>
+
+  <!-- LUNCH -->
+  <div id="sub-lunch" class="sub-sec">
+    <div class="sub-nav">
+      <div class="sub-pill active" onclick="showSubSub('lunch','l-bowls',this)">Bowls</div>
+      <div class="sub-pill" onclick="showSubSub('lunch','l-wraps',this)">Wraps</div>
+      <div class="sub-pill" onclick="showSubSub('lunch','l-soups',this)">Soups</div>
+      <div class="sub-pill" onclick="showSubSub('lunch','l-quick',this)">Quick Plates</div>
+    </div>
+    <div id="l-bowls" class="sub-sec visible">
+      <div id="bowls-filter" class="filter-bar">
+        <button class="filter-btn active" onclick="filterRecipes('bowls','all',this)">All</button>
+        <button class="filter-btn" onclick="filterRecipes('bowls','fav',this)">⭐ Favorites</button>
+      </div>
+      <div class="card-stack" id="bowls-list"></div>
+    </div>
+    <div id="l-wraps" class="sub-sec">
+      <div class="card-stack" id="wraps-list"></div>
+    </div>
+    <div id="l-soups" class="sub-sec">
+      <div class="card-stack" id="soups-list"></div>
+    </div>
+    <div id="l-quick" class="sub-sec">
+      <div class="card-stack" id="lquick-list"></div>
+    </div>
+  </div>
+
+  <!-- SNACKS -->
+  <div id="sub-snacks" class="sub-sec">
+    <div id="snacks-filter" class="filter-bar">
+      <button class="filter-btn active" onclick="filterRecipes('snacks','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('snacks','fav',this)">⭐ Favorites</button>
+    </div>
+    <div class="card-stack" id="snacks-list"></div>
+  </div>
+
+  <!-- DINNER -->
+  <div id="sub-dinner" class="sub-sec">
+    <div class="sub-nav">
+      <div class="sub-pill active" onclick="showSubSub('dinner','d-family',this)">Family Mains</div>
+      <div class="sub-pill" onclick="showSubSub('dinner','d-sides',this)">Better Sides</div>
+    </div>
+    <div id="d-family" class="sub-sec visible">
+      <div id="family-filter" class="filter-bar">
+        <button class="filter-btn active" onclick="filterRecipes('family','all',this)">All</button>
+        <button class="filter-btn" onclick="filterRecipes('family','fav',this)">⭐ Favorites</button>
+      </div>
+      <div class="card-stack" id="family-list"></div>
+    </div>
+    <div id="d-sides" class="sub-sec">
+      <div class="card-stack" id="sides-list"></div>
+    </div>
+  </div>
+
+  <!-- SALMON -->
+  <div id="sub-salmon" class="sub-sec">
+    <div class="salmon-banner">
+      <h3>The cook-alongside system</h3>
+      <p>Family eats their thing. You put a salmon fillet on the same pan or a small separate one. 400° for 12–15 min. You're not cooking two dinners — just adding one piece of fish to whatever's already happening.</p>
+    </div>
+    <div id="salmon-filter" class="filter-bar">
+      <button class="filter-btn active" onclick="filterRecipes('salmon','all',this)">All</button>
+      <button class="filter-btn" onclick="filterRecipes('salmon','fav',this)">⭐ Favorites</button>
+    </div>
+    <div class="card-stack" id="salmon-list"></div>
+  </div>
+</div>
+
+<!-- ══════════ THIS WEEK ══════════ -->
+<div id="thisweek" class="page">
+  <div class="sec-title">This Week</div>
+  <div class="sec-desc">Add meals from the recipe library. When you're ready, generate your shopping list from what's here.</div>
+  <div id="week-list"></div>
+  <button class="gen-btn" onclick="generateShoppingList()">Generate Shopping List from This Week →</button>
+  <button class="clear-btn" onclick="clearWeek()">Clear this week</button>
+</div>
+
+<!-- ══════════ SHOPPING ══════════ -->
+<div id="shopping" class="page">
+  <div class="sec-title">Shopping List</div>
+  <div class="sec-desc">Generated from This Week, plus your pantry restock reminders. Tap to check off as you shop.</div>
+  <div id="shopping-content">
+    <div class="callout callout-gold">Add meals to <strong>This Week</strong> first, then generate your list from there. Or use this as a manual checklist below.</div>
+    <div id="generated-list"></div>
+    <div class="shop-section">
+      <div class="shop-section-head">Weekly Fresh — Always Buy</div>
+      <div id="fresh-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PANTRY ══════════ -->
+<div id="pantry" class="page">
+  <div class="sec-title">Pantry System</div>
+  <div class="sec-desc">Core Pantry = always stocked, replenish when low. Weekly Fresh = what you buy each week. If Core Pantry is stocked, you can always make something.</div>
+  <div class="callout callout-gold"><strong>Sunday check:</strong> Scan this list before you shop. If something's low, add it. That's the whole system.</div>
+  <div id="pantry-content"></div>
+</div>
+
+<!-- ══════════ ADD RECIPE ══════════ -->
+<div id="add" class="page">
+  <div class="sec-title">Add a Recipe</div>
+  <div class="sec-desc">Add your own meals to the library. They'll show up in the right section with all the same features.</div>
+  <div class="form-block">
+    <div class="form-row">
+      <label class="form-label">Recipe Name</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Lemon Herb Salmon">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row" style="margin-bottom:0">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="f-cat">
+          <option value="smoothie">Smoothie</option>
+          <option value="hot">Hot Breakfast</option>
+          <option value="quick">Quick Grab</option>
+          <option value="guilty">Guilty Pleasure</option>
+          <option value="bowls">Bowl</option>
+          <option value="wraps">Wrap / Sandwich</option>
+          <option value="soups">Soup</option>
+          <option value="lquick">Quick Plate</option>
+          <option value="snacks">Snack</option>
+          <option value="family">Family Dinner</option>
+          <option value="sides">Side</option>
+          <option value="salmon">Salmon</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin-bottom:0">
+        <label class="form-label">Cuisine</label>
+        <select class="form-select" id="f-cuisine">
+          <option value="">Any</option>
+          <option value="med">Mediterranean</option>
+          <option value="mex">Mexican</option>
+          <option value="asi">Asian</option>
+          <option value="ind">Indian</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:14px">
+      <label class="form-label">Emoji</label>
+      <input class="form-input" id="f-emoji" placeholder="🍽️" maxlength="2" style="width:70px">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Hint (short description)</label>
+      <input class="form-input" id="f-hint" placeholder="e.g. 20 min · sheet pan · weeknight easy">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Recipe / Instructions</label>
+      <textarea class="form-textarea" id="f-recipe" placeholder="How to make it..."></textarea>
+    </div>
+    <div class="form-row-2">
+      <div>
+        <label class="form-label">Protein (g)</label>
+        <input class="form-input" id="f-protein" type="number" placeholder="0">
+      </div>
+      <div>
+        <label class="form-label">Fiber (g)</label>
+        <input class="form-input" id="f-fiber" type="number" placeholder="0">
+      </div>
+    </div>
+    <div style="margin-top:6px">
+      <label class="form-label">Tags</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="tag-picker">
+        <span class="tag t-teal" style="cursor:pointer;padding:5px 10px" onclick="toggleFormTag(this,'High protein')">High protein</span>
+        <span class="tag t-teal" style="cursor:pointer;padding:5px 10px" onclick="toggleFormTag(this,'High fiber')">High fiber</span>
+        <span class="tag t-gold" style="cursor:pointer;padding:5px 10px" onclick="toggleFormTag(this,'No-cook')">No-cook</span>
+        <span class="tag t-plum" style="cursor:pointer;padding:5px 10px" onclick="toggleFormTag(this,'Batch cook')">Batch cook</span>
+        <span class="tag t-coral" style="cursor:pointer;padding:5px 10px" onclick="toggleFormTag(this,'Britt only')">Britt only</span>
+      </div>
+    </div>
+    <div style="margin-top:18px">
+      <button class="btn-submit" onclick="addCustomRecipe()">Save Recipe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════════
+const S = {
+  get(k) { try { return JSON.parse(localStorage.getItem('bfs_'+k)); } catch(e) { return null; } },
+  set(k,v) { try { localStorage.setItem('bfs_'+k, JSON.stringify(v)); } catch(e) {} }
+};
+
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const OAT_FLAVORS = [
+  { id:'pbj', emoji:'🍇', name:'PB&J', desc:'Peanut butter, strawberry jam, banana slices', vibe:'Sweet & nostalgic', recipe:'<strong>Add to base:</strong> 1 tbsp peanut butter, 1 tbsp strawberry jam, stir well. Top in the morning with sliced banana and a drizzle of extra PB. The jam melts in overnight — tastes like dessert.' },
+  { id:'choco', emoji:'🍫', name:'Dark Chocolate Raspberry', desc:'Cocoa powder, frozen raspberries, honey', vibe:'Rich & dessert-y', recipe:'<strong>Add to base:</strong> 1 tbsp cocoa powder, 1 tsp honey, handful of frozen raspberries (they thaw overnight). Top with a few dark chocolate chips. Feels indulgent, isn\'t.' },
+  { id:'peach', emoji:'🍑', name:'Peach Cobbler', desc:'Canned peaches, brown sugar, cinnamon, vanilla', vibe:'Warm & cozy', recipe:'<strong>Add to base:</strong> ¼ tsp cinnamon, ¼ tsp vanilla extract, 1 tsp brown sugar. Stir in a few spoonfuls of canned diced peaches (in juice, not syrup). Top with granola in the morning for the "cobbler crunch."' },
+  { id:'tropical', emoji:'🥭', name:'Tropical', desc:'Coconut milk, mango, lime zest', vibe:'Bright & fresh', recipe:'<strong>Swap base milk for:</strong> ½ coconut milk + ¼ regular milk. Add frozen mango chunks, squeeze of lime. Tastes nothing like "health food."' },
+  { id:'apple', emoji:'🍎', name:'Apple Pie', desc:'Grated apple, cinnamon, maple syrup, walnuts', vibe:'Warm & sweet', recipe:'<strong>Add to base:</strong> ½ grated apple (softens overnight), ½ tsp cinnamon, 1 tsp maple syrup. Top with crushed walnuts. Add a pinch of nutmeg if you have it.' },
+  { id:'matcha', emoji:'🍵', name:'Matcha Honey', desc:'Matcha powder, honey, vanilla, white chocolate chips', vibe:'Earthy & interesting', recipe:'<strong>Add to base:</strong> 1 tsp matcha powder, 1 tsp honey, ¼ tsp vanilla. Whisk the matcha into a little warm milk first so it dissolves, then stir into the jar. Top with a few white chocolate chips.' },
+];
+
+const RECIPES = [
+  // SMOOTHIES
+  { id:'s1', cat:'smoothie', emoji:'🫐', name:'Wild Blueberry + Almond Butter', hint:'Antioxidant-heavy · rich + satisfying', cuisine:'', tags:['High protein','High fiber'], recipe:'Blend: 1 cup frozen wild blueberries · 1 frozen banana · 1 tbsp almond butter · 1 cup oat milk · 1 tbsp hemp seeds · big handful frozen spinach (you won\'t taste it). Optional: scoop vanilla protein powder. Blend until smooth.', protein:22, fiber:9, cal:380 },
+  { id:'s2', cat:'smoothie', emoji:'🍫', name:'Chocolate PB Protein Shake', hint:'Dessert disguised as breakfast', cuisine:'', tags:['High protein'], recipe:'Blend: 1 frozen banana · 1 tbsp peanut butter · 1 tbsp cocoa powder · 1 cup oat milk · 1 scoop chocolate protein powder · handful of ice. Tastes like a Frosty. Has 30g of protein.', protein:30, fiber:5, cal:400 },
+  { id:'s3', cat:'smoothie', emoji:'🍓', name:'Strawberry Coconut Smoothie Bowl', hint:'Thicker · use a spoon · more satisfying', cuisine:'', tags:['High fiber'], recipe:'<strong>Blend thick:</strong> 1.5 cups frozen strawberries · ½ frozen banana · ½ cup coconut milk only (keep it thick). Pour into bowl. <strong>Top with:</strong> granola, sliced fresh strawberries, drizzle of honey. The toppings are the whole point.', protein:6, fiber:10, cal:360 },
+  { id:'s4', cat:'smoothie', emoji:'🥬', name:'Green Goddess Bowl', hint:'Doesn\'t taste like grass, promise', cuisine:'', tags:['High fiber'], recipe:'<strong>Blend thick:</strong> 1 cup frozen mango · 1 frozen banana · 2 big handfuls frozen spinach · ½ cup coconut milk. <strong>Top with:</strong> kiwi, hemp seeds, chia seeds, drizzle of almond butter, granola. The mango and banana completely mask the spinach.', protein:10, fiber:12, cal:390 },
+  { id:'s5', cat:'smoothie', emoji:'🍌', name:'Peanut Butter Banana', hint:'Classic · filling · 3 min', cuisine:'', tags:['High protein'], recipe:'Blend: 1 frozen banana · 2 tbsp peanut butter · 1 cup oat milk · 1 tbsp honey · handful of ice. Simple and always works. Add protein powder if you want more staying power.', protein:18, fiber:5, cal:350 },
+  // HOT BREAKFASTS
+  { id:'h1', cat:'hot', emoji:'🥚', name:'Mediterranean Scramble', hint:'10 min · spinach, feta, sun-dried tomato · Britt only', cuisine:'med', tags:['High protein','Britt only'], recipe:'Scramble <strong>3 eggs</strong> in olive oil with a handful of baby spinach, 2 tbsp crumbled feta, and a few sliced sun-dried tomatoes (oil-packed jar). Season with oregano, salt, pepper. Serve with toasted whole grain bread. Tastes like brunch at a café.', protein:26, fiber:3, cal:380 },
+  { id:'h2', cat:'hot', emoji:'🌶️', name:'Huevos-Style Skillet', hint:'12 min · eggs in spiced tomato sauce · Britt only', cuisine:'mex', tags:['High protein','High fiber','Britt only'], recipe:'Heat ½ cup salsa in a small pan until bubbling. Add ½ cup black beans, stir. Make 2 small wells, crack an <strong>egg into each</strong>. Cover, cook 4–5 min until whites are set. Top with avocado, hot sauce. Eat with tortillas.', protein:24, fiber:10, cal:380 },
+  // QUICK GRABS
+  { id:'q1', cat:'quick', emoji:'🥑', name:'Avocado Toast (three ways)', hint:'5 min · no-cook · pick a direction', cuisine:'', tags:['High fiber','No-cook'], recipe:'Toast whole grain bread. Smash ½ avocado on top with salt + lemon. Then pick: <strong>Mediterranean</strong> — feta + cherry tomato + oregano. <strong>Mexican</strong> — hot sauce + cilantro + everything bagel. <strong>Rich</strong> — chili crisp + sesame seeds + soy drizzle.' },
+  { id:'q2', cat:'quick', emoji:'🍌', name:'Banana + Nut Butter + Hemp Seeds', hint:'1 min · always there', cuisine:'', tags:['High protein','No-cook'], recipe:'Slice a banana, spread nut butter on each piece, sprinkle hemp seeds. Hemp seeds add 10g protein with zero effort and zero flavor disruption. Eat while figuring out if you\'re actually hungry enough for a real breakfast.' },
+  // GUILTY
+  { id:'g1', cat:'guilty', emoji:'🥓', name:'Bacon + Egg + Avocado Plate', hint:'The complete version · Britt only', cuisine:'', tags:['High protein','Britt only'], recipe:'2–3 strips bacon. 2 fried or scrambled eggs. ½ avocado sliced with salt + lime. Handful of fruit on the side. The bacon is front and center, the eggs and avocado do the nutritional heavy lifting. This is the breakfast that doesn\'t feel like a compromise.' },
+  { id:'g2', cat:'guilty', emoji:'🧇', name:'Protein Waffles', hint:'Same ritual, better macros · family-friendly', cuisine:'', tags:['High protein'], recipe:'Use your normal waffle mix but add <strong>1 scoop vanilla protein powder</strong> to the batter and swap half the liquid for oat milk. Goes from ~5g protein to ~20g. Top with fresh berries + small drizzle of maple syrup. Serve alongside bacon — not a trade-off, an upgrade.' },
+  { id:'g3', cat:'guilty', emoji:'🍥', name:'Cinnamon Rolls', hint:'Just enjoy them · Saturday ritual', cuisine:'', tags:[], recipe:'No optimization needed. Cinnamon rolls on Saturday morning are a ritual, not a nutrition problem. If you want, pair with a protein smoothie or some eggs alongside to balance the sugar spike — but don\'t over-engineer this one.' },
+  // BOWLS
+  { id:'b1', cat:'bowls', emoji:'🫙', name:'Mediterranean Grain Bowl', hint:'Farro, chickpeas, roasted veg, tahini', cuisine:'med', tags:['High fiber','High protein'], recipe:'<strong>Base:</strong> Farro or brown rice. <strong>Protein:</strong> Chickpeas (from can or roasted Sunday). <strong>Veg:</strong> Roasted sweet potato + baby spinach. <strong>Sauce:</strong> Tahini + lemon + water + garlic, thinned to a drizzle. <strong>Extras:</strong> Kalamata olives, cucumber, crumbled feta, red onion.', protein:20, fiber:14, cal:480 },
+  { id:'b2', cat:'bowls', emoji:'🌯', name:'Mexican Rice Bowl', hint:'Black beans, corn, salsa, avocado', cuisine:'mex', tags:['High fiber','High protein'], recipe:'<strong>Base:</strong> Brown rice. <strong>Protein:</strong> Black beans warmed with cumin + garlic powder. <strong>Veg:</strong> Corn (frozen, microwaved), cherry tomatoes. <strong>Sauce:</strong> Salsa + squeeze of lime. <strong>Extras:</strong> Avocado, shredded cheese, cilantro, hot sauce. Add leftover chicken to make it more substantial.', protein:18, fiber:14, cal:460 },
+  { id:'b3', cat:'bowls', emoji:'🥢', name:'Sesame Noodle Bowl', hint:'Soba noodles, edamame, peanut sauce', cuisine:'asi', tags:['High protein','High fiber'], recipe:'Cook soba noodles (8 min), rinse cold. <strong>Sauce:</strong> 2 tbsp peanut butter + 1 tbsp soy sauce + 1 tsp sesame oil + 1 tsp rice vinegar + splash of water. Toss noodles. Top with: edamame, purple cabbage, cucumber, green onion, sesame seeds. Better as leftovers.', protein:22, fiber:10, cal:480 },
+  { id:'b4', cat:'bowls', emoji:'🍛', name:'Spiced Lentil Bowl', hint:'Masala-spiced lentils, rice, cucumber', cuisine:'ind', tags:['High fiber','High protein'], recipe:'Reheat a portion of batch lentil soup. Serve over rice. Top with: diced cucumber + squeeze of lemon + pinch of cumin. Add cilantro and a drizzle of chili oil. Feels like a real restaurant lunch.', protein:18, fiber:16, cal:420 },
+  // WRAPS
+  { id:'w1', cat:'wraps', emoji:'🫘', name:'Smashed Chickpea Wrap', hint:'5 min · no cook · Mediterranean', cuisine:'med', tags:['High fiber','High protein','No-cook'], recipe:'Drain + rinse a can of chickpeas. Smash roughly with a fork. Mix in olive oil, lemon, cumin, salt, pepper. Spread on a large tortilla with baby spinach, sliced cucumber, cherry tomatoes, feta. Roll tight. Shockingly satisfying for 5 minutes of effort.' },
+  { id:'w2', cat:'wraps', emoji:'🥬', name:'Salmon Lettuce Wraps', hint:'Use leftover baked salmon · 5 min', cuisine:'asi', tags:['High protein','Britt only'], recipe:'Flake leftover baked salmon. Toss with soy sauce, sesame oil, lime juice, a little sriracha. Spoon into butter lettuce leaves. Top with: shredded purple cabbage, green onion, sesame seeds, julienned carrot. <strong>This is why you always make extra salmon at dinner.</strong>' },
+  { id:'w3', cat:'wraps', emoji:'🌮', name:'Black Bean + Avocado Quesadilla', hint:'10 min · family-friendly', cuisine:'mex', tags:['High fiber','High protein'], recipe:'Fill a large tortilla with: canned black beans (drained), shredded cheese, sliced avocado, spoonful of salsa. Fold in half, cook in a dry pan 3 min per side until crispy. Cut into wedges. Add spinach for yourself.' },
+  // SOUPS
+  { id:'so1', cat:'soups', emoji:'🫙', name:'Red Lentil Soup', hint:'Sunday batch · 4 lunches · 30 min', cuisine:'ind', tags:['High fiber','High protein','Batch cook'], recipe:'Sauté 1 diced onion + 3 garlic cloves in olive oil. Add 1 cup red lentils, 1 can diced tomatoes, 4 cups veggie broth, 1 tsp cumin + 1 tsp smoked paprika + ½ tsp turmeric + salt. Simmer 25 min. Squeeze of lemon before serving. Portion into 4 containers. Reheats perfectly.' },
+  { id:'so2', cat:'soups', emoji:'🍜', name:'Miso Broth with Noodles', hint:'15 min · light but warming', cuisine:'asi', tags:['High protein'], recipe:'Bring 2 cups broth to a simmer. Stir in 1 tbsp white miso (don\'t boil after). Add rice noodles, sliced mushrooms, baby spinach, 1 tsp soy sauce. Top with: soft-boiled egg (Britt only), green onion, sesame oil drizzle, chili crisp.' },
+  // QUICK PLATES
+  { id:'lq1', cat:'lquick', emoji:'🥫', name:'Mezze Plate', hint:'2 min · pantry only · no cook', cuisine:'med', tags:['No-cook'], recipe:'Hummus · olives · pita or crackers · sliced cucumber + cherry tomatoes · handful of nuts · feta if you have it. This is a real lunch, not a snack plate. The hummus (protein) + nuts (fat) + veg (fiber) combo keeps you full. <strong>Your "nothing in the fridge" emergency lunch.</strong>' },
+  { id:'lq2', cat:'lquick', emoji:'🐟', name:'Salmon + Rice + Avocado', hint:'Leftover salmon · 5 min assembly', cuisine:'', tags:['High protein','Britt only'], recipe:'Reheat rice. Flake salmon on top cold or warm — both work. Add sliced avocado, drizzle of soy sauce or lemon, sesame seeds. Done. This is why the cook-alongside system works: make extra so you always have this for the next day.' },
+  // SNACKS
+  { id:'sn1', cat:'snacks', emoji:'🫘', name:'Edamame with Sea Salt', hint:'3 min microwave · always ready', cuisine:'', tags:['High protein','High fiber'], recipe:'Keep shelled frozen edamame in the freezer always. Microwave 1 cup for 3 minutes. Toss with sea salt. Also good with: everything bagel seasoning, chili lime salt, or soy sauce + sesame oil drizzle. 17g protein from a snack.' },
+  { id:'sn2', cat:'snacks', emoji:'🥜', name:'Nut Butter + Apple or Banana', hint:'1 min · stabilizes blood sugar', cuisine:'', tags:['High fiber','No-cook'], recipe:'Almond or peanut butter. Apple or banana. The fat + fiber + natural sugar combo is the most stabilizing snack combo there is. Keep a jar accessible — not buried in the pantry.' },
+  { id:'sn3', cat:'snacks', emoji:'🥕', name:'Veggies + Hummus', hint:'Cut Sunday · eat all week', cuisine:'', tags:['High fiber'], recipe:'Cut carrots, celery, cucumber, and bell pepper on Sunday. Store in water in containers. This snack only happens when the veg is already cut. It never happens when you have to cut it first. Cut the veg.' },
+  { id:'sn4', cat:'snacks', emoji:'🧀', name:'Cheese + Crackers + Fruit', hint:'2 min · pantry staple', cuisine:'', tags:['High protein','No-cook'], recipe:'Block of cheddar or pepper jack, whole grain crackers, handful of grapes or apple slices. The adult snack plate that feels indulgent and isn\'t. Keep a block of cheese in the fridge at all times.' },
+  { id:'sn5', cat:'snacks', emoji:'🍙', name:'Seaweed Snacks + Nuts', hint:'No prep · satisfying umami crunch', cuisine:'asi', tags:['No-cook'], recipe:'Roasted seaweed snack packs + a small handful of almonds or cashews. Covers the salty crunch craving without chips. Good pantry staple for when you want something savory mid-afternoon.' },
+  // FAMILY DINNERS
+  { id:'f1', cat:'family', emoji:'🫒', name:'Greek Chicken Thighs', hint:'30 min · lemon-oregano · sheet pan', cuisine:'med', tags:['High protein'], recipe:'Marinate chicken thighs in: olive oil, lemon juice + zest, garlic, dried oregano, salt, pepper (even 30 min works). Roast at 425° for 25–30 min skin-side up. Serve with roasted potatoes or pita, cucumber, olives. <strong>Your salmon:</strong> same seasoning on a fillet, same pan, pull it out 10 min earlier.', protein:38, fiber:0, cal:420 },
+  { id:'f2', cat:'family', emoji:'🌮', name:'Taco Night (with your upgrade)', hint:'Your existing go-to · personal fiber boost', cuisine:'mex', tags:['High protein'], recipe:'Keep making these exactly how you do. For yourself: add a side of spiced black beans + rice to bump fiber significantly, pile on extra avocado, add pickled red onion. Family gets the tacos they love, you get a more complete meal. No extra cooking required.' },
+  { id:'f3', cat:'family', emoji:'🍜', name:'Teriyaki Chicken + Rice', hint:'25 min · kid-friendly · weeknight easy', cuisine:'asi', tags:['High protein'], recipe:'Pan-sear chicken thighs or breast. Make quick teriyaki: 3 tbsp soy sauce + 1 tbsp honey + 1 tsp sesame oil + 1 tsp cornstarch. Pour over chicken in last 5 min. Serve over rice with steamed broccoli. <strong>Your salmon:</strong> same sauce, bake at 400° for 12–15 min while chicken cooks.' },
+  { id:'f4', cat:'family', emoji:'🍛', name:'Butter Chicken (family) + Chickpea Version (you)', hint:'Make both at once · same spice profile', cuisine:'ind', tags:['High protein','High fiber'], recipe:'Make your normal butter chicken for the family. Separately: jar of tikka masala sauce + 2 cans chickpeas, simmer 15 min. You eat more fiber, they eat what they love. Same spice, same dinner table, different bowls.' },
+  { id:'f5', cat:'family', emoji:'🍝', name:'White Bean + Spinach Pasta', hint:'20 min · trojan horse dinner', cuisine:'med', tags:['High fiber','High protein'], recipe:'Cook pasta. While it cooks: sauté garlic in olive oil, add 1 can cannellini beans, 1 can diced tomatoes, big handful spinach, salt, pepper, chili flake. Toss with pasta + splash of pasta water. Top with parmesan. The beans disappear into the sauce. Kids don\'t notice.' },
+  // SIDES
+  { id:'si1', cat:'sides', emoji:'🥗', name:'Simple Arugula Side Salad', hint:'3 min · goes with any cuisine', cuisine:'', tags:['High fiber','No-cook'], recipe:'Handful arugula + cherry tomatoes + shaved parmesan + lemon juice + olive oil + salt. 3 minutes. Turns any dinner into a more complete meal. Arugula is more interesting than romaine and wilts less.' },
+  { id:'si2', cat:'sides', emoji:'🫘', name:'Quick Spiced Black Beans', hint:'5 min · from can · fiber upgrade', cuisine:'mex', tags:['High fiber','High protein'], recipe:'Drain and rinse a can of black beans. Heat in a small saucepan with a splash of water, cumin, garlic powder, salt. 5 minutes. Add these as your personal side to any Mexican-ish dinner. Adds 15g fiber to your plate without touching the family\'s food.' },
+  { id:'si3', cat:'sides', emoji:'🥦', name:'Roasted Broccoli', hint:'20 min · the vegetable that converts skeptics', cuisine:'', tags:['High fiber'], recipe:'Toss broccoli florets in olive oil, salt, garlic powder. Roast at 425° for 20 min until edges are dark and crispy. The crispy edges are everything. Kids who won\'t touch steamed broccoli often eat this version. Reheats well — keep in Sunday prep rotation.' },
+  // SALMON
+  { id:'sal1', cat:'salmon', emoji:'🫒', name:'Mediterranean Salmon', hint:'Lemon, garlic, oregano, olives', cuisine:'med', tags:['High protein'], recipe:'Rub fillet with olive oil, minced garlic, dried oregano, lemon zest, salt, pepper. Top with a few sliced olives and cherry tomatoes. Bake 400° for 13 min. Serve with roasted veg or a grain bowl. Goes with Greek chicken night for the family.', protein:34, fiber:0, cal:360 },
+  { id:'sal2', cat:'salmon', emoji:'🥢', name:'Miso-Glazed Salmon', hint:'Soy, miso, honey — the best one on the list', cuisine:'asi', tags:['High protein'], recipe:'Mix: 1 tbsp white miso + 1 tbsp soy sauce + 1 tsp honey + ½ tsp sesame oil. Spread on salmon fillet. Bake 400° for 12–14 min. Broil last 2 min for caramelized top. Serve over rice with edamame. The miso caramelizes into something that tastes like a restaurant made it.', protein:34, fiber:0, cal:370 },
+  { id:'sal3', cat:'salmon', emoji:'🌶️', name:'Chili Lime Salmon', hint:'Bright, spicy, Mexican lane', cuisine:'mex', tags:['High protein'], recipe:'Rub with: olive oil, chili powder, cumin, garlic powder, salt, cayenne. Squeeze lime over top. Bake 400° for 13 min. Serve over rice with avocado and black beans. Goes on taco night alongside the family\'s ground beef. Leftovers make great lettuce wraps for lunch.', protein:34, fiber:0, cal:350 },
+  { id:'sal4', cat:'salmon', emoji:'🍋', name:'Simple Lemon-Dill', hint:'The default · works with anything', cuisine:'', tags:['High protein'], recipe:'Olive oil, salt, pepper, dried dill, lemon slices on top. Bake 400° for 13 min. This is the "I don\'t know what cuisine we\'re doing tonight" default. Goes with literally everything.', protein:34, fiber:0, cal:340 },
+  { id:'sal5', cat:'salmon', emoji:'🧄', name:'Garlic Herb Butter Salmon', hint:'Rich, simple, crowd-pleaser', cuisine:'', tags:['High protein'], recipe:'Mix 2 tbsp softened butter with 2 minced garlic cloves, 1 tbsp fresh or dried parsley, pinch of red chili flake. Spread over salmon fillet. Bake 400° for 13–15 min. The butter bastes the fish as it cooks. Serve with roasted veg or crusty bread to scoop up the sauce.', protein:34, fiber:0, cal:400 },
+];
+
+const PANTRY_DATA = {
+  core: [
+    { cat:'Canned Goods', items:['Black beans (4 cans)','Chickpeas (4 cans)','Cannellini beans (2 cans)','Diced tomatoes (4 cans)','Coconut milk (2 cans)','Veggie broth (2 cartons)'] },
+    { cat:'Grains & Dried', items:['Brown rice (large bag)','Farro','Soba noodles','Rolled oats (large)','Red lentils','Green or brown lentils','Pasta (2 shapes)'] },
+    { cat:'Sauces & Condiments', items:['Soy sauce','White miso paste (fridge)','Tahini','Sesame oil','Rice vinegar','Jarred salsa','Olive oil (big bottle)','Chili crisp','Hot sauce'] },
+    { cat:'Spices', items:['Cumin','Smoked paprika','Turmeric','Dried oregano','Garlic powder','Chili powder','Cinnamon','Everything bagel seasoning','Dried dill'] },
+    { cat:'Freezer Always', items:['Shelled edamame (large bag)','Frozen spinach','Frozen mixed berries','Frozen mango chunks','Frozen corn','Frozen bananas (peel + freeze ripe ones)'] },
+    { cat:'Pantry Snacks & Extras', items:['Almond or peanut butter','Hemp seeds','Chia seeds','Whole grain crackers','Mixed nuts','Granola','Seaweed snack packs','Large flour tortillas','Taco seasoning','Cocoa powder','Canned diced peaches'] },
+  ],
+  fresh: [
+    { label:'Baby spinach (large bag)', note:'' },
+    { label:'Bananas (bunch)', note:'' },
+    { label:'Lemons (3–4)', note:'' },
+    { label:'Garlic (1 head)', note:'' },
+    { label:'Salmon fillet (1–2)', note:'for the week' },
+    { label:'Hummus (1–2 containers)', note:'' },
+    { label:'Eggs (dozen)', note:'Britt only' },
+    { label:'Avocados (3–4)', note:'' },
+    { label:'Cheese (block or shredded)', note:'' },
+    { label:'Whatever veg you\'re roasting Sunday', note:'sweet potato, broccoli, zucchini' },
+    { label:'Cherry tomatoes', note:'' },
+    { label:'Cucumber', note:'' },
+    { label:'Chicken thighs or breast', note:'family protein' },
+    { label:'Fresh berries or fruit', note:'oats + snacks' },
+    { label:'Green onions', note:'' },
+    { label:'Pita or naan', note:'' },
+  ]
+};
+
+// Recipe ingredients for shopping list generation
+const RECIPE_INGREDIENTS = {
+  b1: ['Baby spinach','Farro or brown rice (Core)','Chickpeas (Core)','Sweet potato or zucchini','Tahini (Core)','Lemons','Kalamata olives','Cucumber','Feta cheese'],
+  b2: ['Brown rice (Core)','Black beans (Core)','Frozen corn (Core)','Avocados','Salsa (Core)','Shredded cheese','Cilantro'],
+  b3: ['Soba noodles (Core)','Edamame (Core)','Peanut butter (Core)','Soy sauce (Core)','Sesame oil (Core)','Purple cabbage','Cucumber'],
+  b4: ['Red lentils (Core)','Brown rice (Core)','Diced tomatoes (Core)','Veggie broth (Core)','Cucumber','Cilantro','Chili oil'],
+  f1: ['Chicken thighs','Lemons','Garlic','Dried oregano (Core)'],
+  f2: ['Ground beef','Tortillas (Core)','Black beans (Core)','Avocados','Salsa (Core)','Shredded cheese'],
+  f3: ['Chicken thighs or breast','Brown rice (Core)','Soy sauce (Core)','Honey','Sesame oil (Core)','Broccoli'],
+  f4: ['Chicken (for family)','Tikka masala sauce (jar)','Chickpeas (Core)','Coconut milk (Core)'],
+  f5: ['Pasta (Core)','Cannellini beans (Core)','Diced tomatoes (Core)','Baby spinach','Parmesan'],
+  sal1: ['Salmon fillet','Lemons','Dried oregano (Core)','Kalamata olives','Cherry tomatoes'],
+  sal2: ['Salmon fillet','White miso (Core)','Soy sauce (Core)','Honey'],
+  sal3: ['Salmon fillet','Lemons','Chili powder (Core)','Cumin (Core)','Avocados','Black beans (Core)'],
+  sal4: ['Salmon fillet','Lemons','Dried dill (Core)'],
+  sal5: ['Salmon fillet','Butter','Garlic','Fresh parsley'],
+  so1: ['Red lentils (Core)','Diced tomatoes (Core)','Veggie broth (Core)','Cumin (Core)','Smoked paprika (Core)','Turmeric (Core)','Lemons'],
+  so2: ['White miso (Core)','Rice noodles or ramen','Mushrooms','Baby spinach','Soy sauce (Core)','Eggs (Britt only)','Green onions'],
+  w1: ['Chickpeas (Core)','Large tortillas (Core)','Baby spinach','Cucumber','Cherry tomatoes','Feta cheese'],
+  w2: ['Leftover salmon','Butter lettuce','Soy sauce (Core)','Sesame oil (Core)','Purple cabbage','Green onions'],
+  w3: ['Black beans (Core)','Large tortillas (Core)','Shredded cheese','Avocados','Salsa (Core)'],
+};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let ratings = S.get('ratings') || {};      // { recipeId: 'up'|'down' }
+let thisWeek = S.get('thisweek') || [];    // [ recipeId, ... ]
+let oatPicks = S.get('oatpicks') || [];   // [ oatId, ... ]
+let pantryChecked = S.get('pantry') || {};
+let freshChecked = S.get('fresh') || {};
+let shopChecked = S.get('shop') || {};
+let customRecipes = S.get('custom') || [];
+let formTags = [];
+
+function saveState() {
+  S.set('ratings', ratings);
+  S.set('thisweek', thisWeek);
+  S.set('oatpicks', oatPicks);
+  S.set('pantry', pantryChecked);
+  S.set('fresh', freshChecked);
+  S.set('shop', shopChecked);
+  S.set('custom', customRecipes);
+}
+
+function allRecipes() { return [...RECIPES, ...customRecipes]; }
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  el.classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'thisweek') renderWeek();
+  if (id === 'shopping') renderShopping();
+  if (id === 'pantry') renderPantry();
+}
+
+function showRecipeSub(sub, el) {
+  document.querySelectorAll('#recipes .sub-sec').forEach(s => {
+    if (s.id.startsWith('sub-') || s.id === 'sub-' + sub) s.classList.remove('visible');
+  });
+  document.querySelectorAll('#recipe-sub-nav .sub-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('sub-'+sub).classList.add('visible');
+  el.classList.add('active');
+}
+
+function showSubSub(parent, subId, el) {
+  const parentEl = document.getElementById('sub-'+parent);
+  parentEl.querySelectorAll('.sub-sec').forEach(s => s.classList.remove('visible'));
+  parentEl.querySelectorAll('.sub-nav .sub-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById(subId).classList.add('visible');
+  el.classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// RECIPE CARDS
+// ══════════════════════════════════════════
+function cuisineTag(c) {
+  if (!c) return '';
+  const map = { med:'cb-med', mex:'cb-mex', asi:'cb-asi', ind:'cb-ind' };
+  const label = { med:'Mediterranean', mex:'Mexican', asi:'Asian', ind:'Indian' };
+  return `<span class="cb ${map[c]}">${label[c]}</span>`;
+}
+
+function renderCard(r) {
+  const rating = ratings[r.id] || 'none';
+  const inWeek = thisWeek.includes(r.id);
+  const isFav = rating === 'up';
+  const isDisliked = rating === 'down';
+  const macros = (r.protein || r.fiber || r.cal) ? `
+    <div class="macros">
+      ${r.protein ? `<div class="macro"><div class="macro-val">${r.protein}g</div><div class="macro-lbl">Protein</div></div>` : ''}
+      ${r.fiber ? `<div class="macro"><div class="macro-val">${r.fiber}g</div><div class="macro-lbl">Fiber</div></div>` : ''}
+      ${r.cal ? `<div class="macro"><div class="macro-val">${r.cal}</div><div class="macro-lbl">Cal</div></div>` : ''}
+    </div>` : '';
+  const tags = (r.tags||[]).map(t => {
+    const cls = t==='High protein'||t==='High fiber'?'t-teal':t==='No-cook'?'t-gold':t==='Batch cook'?'t-plum':t==='Britt only'?'t-coral':'t-sage';
+    return `<span class="tag ${cls}">${t}</span>`;
+  }).join('');
+  const favStar = isFav ? ' ⭐' : '';
+  return `
+    <div class="rcard ${isFav?'fav':''} ${isDisliked?'disliked':''}" id="rc-${r.id}">
+      <div class="rcard-head" onclick="toggleRCard('${r.id}')">
+        <div class="rcard-icon" style="background:${iconBg(r.emoji)}">${r.emoji}</div>
+        <div class="rcard-meta">
+          <div class="rcard-name">${r.name}${favStar}</div>
+          <div class="rcard-hint">${r.hint}</div>
+          <div class="rcard-tags">${cuisineTag(r.cuisine)}${tags}</div>
+        </div>
+        <div class="rcard-actions" onclick="event.stopPropagation()">
+          <div class="chev" onclick="toggleRCard('${r.id}')">▼</div>
+          <div class="action-row">
+            <div class="btn-icon ${rating==='up'?'active-thumb-up':''}" onclick="rateRecipe('${r.id}','up')" title="Favorite">👍</div>
+            <div class="btn-icon ${rating==='down'?'active-thumb-down':''}" onclick="rateRecipe('${r.id}','down')" title="Not for me">👎</div>
+            <div class="btn-icon ${inWeek?'active-week':''}" onclick="toggleWeek('${r.id}','${r.name}','${r.emoji}','${r.cat}')" title="${inWeek?'Remove from this week':'Add to this week'}">📅</div>
+          </div>
+        </div>
+      </div>
+      <div class="rcard-body">
+        <div class="recipe-label">How to make it</div>
+        <div class="recipe-text">${r.recipe}</div>
+        ${macros}
+      </div>
+    </div>`;
+}
+
+function iconBg(emoji) {
+  const map = {'🫐':'#F2EBF5','🍫':'#FAEAE5','🍓':'#FDECEA','🥬':'#E3F2F0','🍌':'#FBF3E3','🥚':'#FBF3E3','🌶️':'#FEF0E0','🥑':'#E3F2F0','🥓':'#FBF3E3','🧇':'#E8F2EB','🍥':'#FAEAE5','🫙':'#FBF3E3','🌯':'#FEF0E0','🥢':'#E8EEF8','🍛':'#FBE8E8','🫘':'#E3F2F0','🥬':'#E8EEF8','🌮':'#FEF0E0','🍜':'#E8EEF8','🥫':'#E3F2F0','🐟':'#FBF3E3','🫘':'#E3F2F0','🥜':'#FBF3E3','🥕':'#E8F4E8','🧀':'#FAEAE5','🍙':'#E8EEF8','🫒':'#E8F4E8','🍝':'#FBF3E3','🥗':'#E3F2F0','🥦':'#E8EEF8','🍋':'#FBF3E3','🧄':'#F5F2ED'};
+  return map[emoji] || '#F0EBE3';
+}
+
+function toggleRCard(id) {
+  const card = document.getElementById('rc-'+id);
+  if (card) card.classList.toggle('open');
+}
+
+function rateRecipe(id, dir) {
+  if (ratings[id] === dir) { delete ratings[id]; }
+  else { ratings[id] = dir; }
+  saveState();
+  // re-render the card in place
+  const r = allRecipes().find(x => x.id === id);
+  if (r) {
+    const el = document.getElementById('rc-'+id);
+    if (el) { const wasOpen = el.classList.contains('open'); el.outerHTML = renderCard(r); if (wasOpen) document.getElementById('rc-'+id).classList.add('open'); }
+  }
+  toast(dir==='up' ? '⭐ Added to favorites' : '👎 Got it — we\'ll show this less');
+}
+
+function toggleWeek(id, name, emoji, cat) {
+  if (thisWeek.includes(id)) {
+    thisWeek = thisWeek.filter(x => x !== id);
+    toast('Removed from this week');
+  } else {
+    thisWeek.push(id);
+    toast('📅 Added to this week');
+  }
+  saveState();
+  const r = allRecipes().find(x => x.id === id);
+  if (r) {
+    const el = document.getElementById('rc-'+id);
+    if (el) { const wasOpen = el.classList.contains('open'); el.outerHTML = renderCard(r); if (wasOpen) document.getElementById('rc-'+id).classList.add('open'); }
+  }
+}
+
+function filterRecipes(listId, mode, el) {
+  el.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const container = document.getElementById(listId+'-list');
+  if (!container) return;
+  const catMap = { smoothie:'smoothie', hot:'hot', quick:'quick', guilty:'guilty', bowls:'bowls', wraps:'wraps', soups:'soups', lquick:'lquick', snacks:'snacks', family:'family', sides:'sides', salmon:'salmon' };
+  let rs = allRecipes().filter(r => r.cat === listId);
+  if (mode === 'fav') rs = rs.filter(r => ratings[r.id] === 'up');
+  if (mode !== 'fav') rs = rs.sort((a,b) => { const ra = ratings[a.id]==='up'?-1:ratings[a.id]==='down'?1:0; const rb = ratings[b.id]==='up'?-1:ratings[b.id]==='down'?1:0; return ra-rb; });
+  container.innerHTML = rs.length ? rs.map(renderCard).join('') : '<div style="padding:24px;text-align:center;color:var(--ink-light);font-size:13px">No favorites yet — give some recipes a 👍</div>';
+}
+
+function renderRecipeList(listId) {
+  const container = document.getElementById(listId+'-list');
+  if (!container) return;
+  let rs = allRecipes().filter(r => r.cat === listId);
+  rs = rs.sort((a,b) => { const ra = ratings[a.id]==='up'?-1:ratings[a.id]==='down'?1:0; const rb = ratings[b.id]==='up'?-1:ratings[b.id]==='down'?1:0; return ra-rb; });
+  container.innerHTML = rs.map(renderCard).join('');
+}
+
+// ══════════════════════════════════════════
+// OAT PICKER
+// ══════════════════════════════════════════
+function renderOats() {
+  const grid = document.getElementById('oat-grid');
+  grid.innerHTML = OAT_FLAVORS.map(o => `
+    <div class="oat-card ${oatPicks.includes(o.id)?'picked':''}" onclick="pickOat('${o.id}')">
+      <div class="oat-emoji">${o.emoji}</div>
+      <div class="oat-name">${o.name}</div>
+      <div class="oat-desc">${o.desc}</div>
+      <div class="oat-recipe ${oatPicks.includes(o.id)?'visible':''}" id="oat-r-${o.id}">${o.recipe}</div>
+    </div>`).join('');
+  updateOatCounter();
+}
+
+function pickOat(id) {
+  if (oatPicks.includes(id)) {
+    oatPicks = oatPicks.filter(x => x !== id);
+  } else {
+    if (oatPicks.length >= 2) oatPicks.shift();
+    oatPicks.push(id);
+  }
+  saveState();
+  renderOats();
+}
+
+function updateOatCounter() {
+  const c = document.getElementById('oat-counter');
+  if (!c) return;
+  if (oatPicks.length === 0) { c.textContent = 'Tap a flavor to pick it — choose 2 for the week'; c.classList.remove('ready'); }
+  else if (oatPicks.length === 1) { c.textContent = '1 of 2 picked — choose one more'; c.classList.remove('ready'); }
+  else { c.textContent = '✓ Your 2 picks are ready — make 3–4 jars of each Sunday night'; c.classList.add('ready'); }
+}
+
+// ══════════════════════════════════════════
+// THIS WEEK
+// ══════════════════════════════════════════
+function renderWeek() {
+  const el = document.getElementById('week-list');
+  if (!thisWeek.length) {
+    el.innerHTML = `<div class="week-empty"><div class="week-empty-icon">📅</div><div class="week-empty-text">Nothing planned yet.<br>Go to Recipes and tap 📅 on anything you want to make this week.</div></div>`;
+    return;
+  }
+  const catLabel = { smoothie:'Breakfast',hot:'Breakfast',quick:'Breakfast',guilty:'Breakfast',bowls:'Lunch',wraps:'Lunch',soups:'Lunch',lquick:'Lunch',snacks:'Snack',family:'Dinner',sides:'Side',salmon:'Your Salmon' };
+  el.innerHTML = thisWeek.map(id => {
+    const r = allRecipes().find(x => x.id === id);
+    if (!r) return '';
+    return `<div class="week-item">
+      <div class="week-item-icon">${r.emoji}</div>
+      <div class="week-item-info">
+        <div class="week-item-name">${r.name}</div>
+        <div class="week-item-meta">${catLabel[r.cat]||r.cat} · ${r.hint}</div>
+      </div>
+      <div class="week-item-remove" onclick="removeFromWeek('${r.id}')" title="Remove">✕</div>
+    </div>`;
+  }).join('');
+}
+
+function removeFromWeek(id) {
+  thisWeek = thisWeek.filter(x => x !== id);
+  saveState();
+  renderWeek();
+  // update button state in recipe card if visible
+  const r = allRecipes().find(x => x.id === id);
+  if (r) { const el = document.getElementById('rc-'+id); if (el) { const wasOpen = el.classList.contains('open'); el.outerHTML = renderCard(r); if (wasOpen) document.getElementById('rc-'+id).classList.add('open'); } }
+}
+
+function clearWeek() {
+  if (!thisWeek.length) return;
+  if (confirm('Clear all meals from this week?')) { thisWeek = []; saveState(); renderWeek(); }
+}
+
+// ══════════════════════════════════════════
+// SHOPPING
+// ══════════════════════════════════════════
+function generateShoppingList() {
+  if (!thisWeek.length) { toast('Add meals to This Week first'); return; }
+  // collect ingredients
+  const needed = new Set();
+  const coreNeeded = new Set();
+  thisWeek.forEach(id => {
+    const ingr = RECIPE_INGREDIENTS[id] || [];
+    ingr.forEach(i => {
+      if (i.includes('(Core)')) coreNeeded.add(i.replace(' (Core)',''));
+      else needed.add(i);
+    });
+  });
+  shopChecked = {};
+  S.set('shop', shopChecked);
+  const genEl = document.getElementById('generated-list');
+  let html = '';
+  if (needed.size || coreNeeded.size) {
+    if (needed.size) {
+      html += `<div class="shop-section"><div class="shop-section-head">Buy This Week — from your planned meals</div>`;
+      [...needed].forEach(i => { html += shopItemHtml(i,'gen'); });
+      html += '</div>';
+    }
+    if (coreNeeded.size) {
+      html += `<div class="shop-section"><div class="shop-section-head">Check Core Pantry — used in your meals this week</div>`;
+      [...coreNeeded].forEach(i => { html += shopItemHtml(i,'core'); });
+      html += '</div>';
+    }
+  }
+  genEl.innerHTML = html || '';
+  showPage('shopping', document.querySelector('.nav-item:nth-child(3)'));
+  toast('✓ Shopping list generated');
+}
+
+function shopItemHtml(label, prefix) {
+  const key = prefix+'_'+label;
+  const checked = shopChecked[key] ? 'checked' : '';
+  return `<div class="shop-item ${checked}" onclick="toggleShop(this,'${key}')"><div class="shop-check"></div>${label}</div>`;
+}
+
+function toggleShop(el, key) {
+  el.classList.toggle('checked');
+  shopChecked[key] = el.classList.contains('checked');
+  saveState();
+}
+
+function renderShopping() {
+  const freshEl = document.getElementById('fresh-list');
+  freshEl.innerHTML = PANTRY_DATA.fresh.map(item => {
+    const key = 'fresh_'+item.label;
+    const checked = freshChecked[key] ? 'checked' : '';
+    return '<div class="shop-item ' + checked + '" onclick="toggleFresh(this,\'' + key + '\')"><div class="shop-check"></div>' + item.label + (item.note ? '<span class="shop-note">' + item.note + '</span>' : '') + '</div>';
+  }).join('');
+}
+
+function toggleFresh(el, key) {
+  el.classList.toggle('checked');
+  freshChecked[key] = el.classList.contains('checked');
+  saveState();
+}
+
+function renderPantry() {
+  const el = document.getElementById('pantry-content');
+  let html = '<div class="pantry-block"><div class="pantry-block-head"><div class="pantry-block-icon" style="background:var(--ink);color:white">&#127963;</div><div><div class="pantry-block-title">Core Pantry</div><div class="pantry-block-sub">Always stocked. Replenish when low. Never run out of these.</div></div></div><div class="pantry-items">';
+  PANTRY_DATA.core.forEach(section => {
+    html += '<div class="pantry-cat">' + section.cat + '</div>';
+    section.items.forEach(item => {
+      const key = 'c_'+item;
+      const checked = pantryChecked[key] ? 'checked' : '';
+      html += '<div class="p-item ' + checked + '" onclick="togglePantry(this,\'' + key + '\')"><div class="p-check"></div>' + item + '</div>';
+    });
+  });
+  html += '</div></div>';
+  html += '<div class="pantry-block"><div class="pantry-block-head"><div class="pantry-block-icon" style="background:var(--teal);color:white">&#128722;</div><div><div class="pantry-block-title">Weekly Fresh</div><div class="pantry-block-sub">Buy each week. Rotate based on what you\'re making.</div></div></div><div class="pantry-items">';
+  PANTRY_DATA.fresh.forEach(item => {
+    const key = 'f_'+item.label;
+    const checked = pantryChecked[key] ? 'checked' : '';
+    html += '<div class="p-item ' + checked + '" onclick="togglePantry(this,\'' + key + '\')"><div class="p-check"></div>' + item.label + (item.note ? '<span class="p-note">' + item.note + '</span>' : '') + '</div>';
+  });
+  html += '</div></div>';
+  html += '<div class="callout callout-gold" style="margin-top:4px"><strong>The check-in habit:</strong> Scan the Core Pantry once a week before you shop. If something is low, add it. The Core Pantry running out is what causes the &ldquo;nothing feels safe&rdquo; feeling.</div>';
+  el.innerHTML = html;
+}
+
+function togglePantry(el, key) {
+  el.classList.toggle('checked');
+  pantryChecked[key] = el.classList.contains('checked');
+  saveState();
+}
+
+function toggleFormTag(el, tag) {
+  if (formTags.includes(tag)) { formTags = formTags.filter(t => t !== tag); el.style.opacity = '0.4'; }
+  else { formTags.push(tag); el.style.opacity = '1'; }
+}
+
+function addCustomRecipe() {
+  const name = document.getElementById('f-name').value.trim();
+  const cat = document.getElementById('f-cat').value;
+  const cuisine = document.getElementById('f-cuisine').value;
+  const emoji = document.getElementById('f-emoji').value.trim() || '🍽️';
+  const hint = document.getElementById('f-hint').value.trim();
+  const recipe = document.getElementById('f-recipe').value.trim();
+  const protein = parseInt(document.getElementById('f-protein').value) || 0;
+  const fiber = parseInt(document.getElementById('f-fiber').value) || 0;
+  if (!name || !recipe) { toast('Add a name and recipe first'); return; }
+  const r = { id:'custom_'+Date.now(), cat, cuisine, emoji, name, hint, tags:[...formTags], recipe, protein, fiber, cal:0 };
+  customRecipes.push(r);
+  saveState();
+  ['f-name','f-hint','f-recipe','f-protein','f-fiber'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-emoji').value = '';
+  document.getElementById('tag-picker').querySelectorAll('.tag').forEach(t => t.style.opacity = '0.4');
+  formTags = [];
+  toast('Recipe saved to your library');
+  renderRecipeList(cat);
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+const LISTS = ['smoothie','hot','quick','guilty','bowls','wraps','soups','lquick','snacks','family','sides','salmon'];
+LISTS.forEach(renderRecipeList);
+renderOats();
+document.querySelectorAll('#tag-picker .tag').forEach(t => t.style.opacity = '0.4');
+</script>
+</body>
+</html>

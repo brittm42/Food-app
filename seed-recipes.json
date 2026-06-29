@@ -1,0 +1,1684 @@
+{
+  "_meta": {
+    "description": "Seed data for Britt's Food System web app. Import into Supabase. Recipe categories: smoothie, hot, quick, guilty (breakfast); bowls, wraps, soups, lquick (lunch); snacks; family, sides (dinner); salmon. Cuisines: med, mex, asi, ind. Tags are free-form chips.",
+    "cuisines": {
+      "med": "Mediterranean",
+      "mex": "Mexican",
+      "asi": "Asian",
+      "ind": "Indian"
+    },
+    "category_groups": {
+      "breakfast": [
+        "oats",
+        "smoothie",
+        "hot",
+        "quick",
+        "guilty"
+      ],
+      "lunch": [
+        "bowls",
+        "wraps",
+        "soups",
+        "lquick"
+      ],
+      "snacks": [
+        "snacks"
+      ],
+      "dinner": [
+        "family",
+        "sides"
+      ],
+      "salmon": [
+        "salmon"
+      ]
+    }
+  },
+  "oat_base": "1/2 cup rolled oats + 3/4 cup milk + 2 tbsp chia seeds + pinch salt. The flavor layer is what changes. Make 3-4 jars of each pick.",
+  "oat_flavors": [
+    {
+      "id": "pbj",
+      "emoji": "🍇",
+      "name": "PB&J",
+      "desc": "Peanut butter, strawberry jam, banana slices",
+      "vibe": "Sweet & nostalgic",
+      "recipe": "Add to base: 1 tbsp peanut butter, 1 tbsp strawberry jam, stir well. Top in the morning with sliced banana and a drizzle of extra PB. The jam melts in overnight — tastes like dessert."
+    },
+    {
+      "id": "choco",
+      "emoji": "🍫",
+      "name": "Dark Chocolate Raspberry",
+      "desc": "Cocoa powder, frozen raspberries, honey",
+      "vibe": "Rich & dessert-y",
+      "recipe": "Add to base: 1 tbsp cocoa powder, 1 tsp honey, handful of frozen raspberries (they thaw overnight). Top with a few dark chocolate chips. Feels indulgent, isn't."
+    },
+    {
+      "id": "peach",
+      "emoji": "🍑",
+      "name": "Peach Cobbler",
+      "desc": "Canned peaches, brown sugar, cinnamon, vanilla",
+      "vibe": "Warm & cozy",
+      "recipe": "Add to base: 1/4 tsp cinnamon, 1/4 tsp vanilla extract, 1 tsp brown sugar. Stir in a few spoonfuls of canned diced peaches (in juice, not syrup). Top with granola in the morning for the cobbler crunch."
+    },
+    {
+      "id": "tropical",
+      "emoji": "🥭",
+      "name": "Tropical",
+      "desc": "Coconut milk, mango, lime zest",
+      "vibe": "Bright & fresh",
+      "recipe": "Swap base milk for: 1/2 coconut milk + 1/4 regular milk. Add frozen mango chunks, squeeze of lime. Tastes nothing like health food."
+    },
+    {
+      "id": "apple",
+      "emoji": "🍎",
+      "name": "Apple Pie",
+      "desc": "Grated apple, cinnamon, maple syrup, walnuts",
+      "vibe": "Warm & sweet",
+      "recipe": "Add to base: 1/2 grated apple (softens overnight), 1/2 tsp cinnamon, 1 tsp maple syrup. Top with crushed walnuts. Add a pinch of nutmeg if you have it."
+    },
+    {
+      "id": "matcha",
+      "emoji": "🍵",
+      "name": "Matcha Honey",
+      "desc": "Matcha powder, honey, vanilla, white chocolate chips",
+      "vibe": "Earthy & interesting",
+      "recipe": "Add to base: 1 tsp matcha powder, 1 tsp honey, 1/4 tsp vanilla. Whisk the matcha into a little warm milk first so it dissolves, then stir into the jar. Top with a few white chocolate chips."
+    }
+  ],
+  "recipes": [
+    {
+      "id": "s1",
+      "cat": "smoothie",
+      "emoji": "🫐",
+      "name": "Wild Blueberry + Almond Butter",
+      "hint": "Antioxidant-heavy · rich + satisfying",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": "Blend: 1 cup frozen wild blueberries · 1 frozen banana · 1 tbsp almond butter · 1 cup oat milk · 1 tbsp hemp seeds · big handful frozen spinach (you won't taste it). Optional: scoop vanilla protein powder. Blend until smooth.",
+      "protein": 22,
+      "fiber": 9,
+      "cal": 380,
+      "ingredients": [
+        {
+          "name": "Frozen wild blueberries",
+          "core": true
+        },
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Almond butter",
+          "core": true
+        },
+        {
+          "name": "Oat milk",
+          "core": false
+        },
+        {
+          "name": "Hemp seeds",
+          "core": true
+        },
+        {
+          "name": "Frozen spinach",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "cat": "smoothie",
+      "emoji": "🍫",
+      "name": "Chocolate PB Protein Shake",
+      "hint": "Dessert disguised as breakfast",
+      "cuisine": "",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Blend: 1 frozen banana · 1 tbsp peanut butter · 1 tbsp cocoa powder · 1 cup oat milk · 1 scoop chocolate protein powder · handful of ice. Tastes like a Frosty. Has 30g of protein.",
+      "protein": 30,
+      "fiber": 5,
+      "cal": 400,
+      "ingredients": [
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Peanut butter",
+          "core": true
+        },
+        {
+          "name": "Cocoa powder",
+          "core": true
+        },
+        {
+          "name": "Oat milk",
+          "core": false
+        },
+        {
+          "name": "Chocolate protein powder",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "cat": "smoothie",
+      "emoji": "🍓",
+      "name": "Strawberry Coconut Smoothie Bowl",
+      "hint": "Thicker · use a spoon · more satisfying",
+      "cuisine": "",
+      "tags": [
+        "High fiber"
+      ],
+      "recipe": "Blend thick: 1.5 cups frozen strawberries · 1/2 frozen banana · 1/2 cup coconut milk only (keep it thick). Pour into bowl. Top with: granola, sliced fresh strawberries, drizzle of honey. The toppings are the whole point.",
+      "protein": 6,
+      "fiber": 10,
+      "cal": 360,
+      "ingredients": [
+        {
+          "name": "Frozen strawberries",
+          "core": true
+        },
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Coconut milk",
+          "core": true
+        },
+        {
+          "name": "Granola",
+          "core": true
+        },
+        {
+          "name": "Fresh strawberries",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "cat": "smoothie",
+      "emoji": "🥬",
+      "name": "Green Goddess Bowl",
+      "hint": "Doesn't taste like grass, promise",
+      "cuisine": "",
+      "tags": [
+        "High fiber"
+      ],
+      "recipe": "Blend thick: 1 cup frozen mango · 1 frozen banana · 2 big handfuls frozen spinach · 1/2 cup coconut milk. Top with: kiwi, hemp seeds, chia seeds, drizzle of almond butter, granola. The mango and banana completely mask the spinach.",
+      "protein": 10,
+      "fiber": 12,
+      "cal": 390,
+      "ingredients": [
+        {
+          "name": "Frozen mango",
+          "core": true
+        },
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Frozen spinach",
+          "core": true
+        },
+        {
+          "name": "Coconut milk",
+          "core": true
+        },
+        {
+          "name": "Hemp seeds",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "cat": "smoothie",
+      "emoji": "🍌",
+      "name": "Peanut Butter Banana",
+      "hint": "Classic · filling · 3 min",
+      "cuisine": "",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Blend: 1 frozen banana · 2 tbsp peanut butter · 1 cup oat milk · 1 tbsp honey · handful of ice. Simple and always works. Add protein powder if you want more staying power.",
+      "protein": 18,
+      "fiber": 5,
+      "cal": 350,
+      "ingredients": [
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Peanut butter",
+          "core": true
+        },
+        {
+          "name": "Oat milk",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "h1",
+      "cat": "hot",
+      "emoji": "🥚",
+      "name": "Mediterranean Scramble",
+      "hint": "10 min · spinach, feta, sun-dried tomato · Britt only",
+      "cuisine": "med",
+      "tags": [
+        "High protein",
+        "Britt only"
+      ],
+      "recipe": "Scramble 3 eggs in olive oil with a handful of baby spinach, 2 tbsp crumbled feta, and a few sliced sun-dried tomatoes (oil-packed jar). Season with oregano, salt, pepper. Serve with toasted whole grain bread. Tastes like brunch at a café.",
+      "protein": 26,
+      "fiber": 3,
+      "cal": 380,
+      "ingredients": [
+        {
+          "name": "Eggs",
+          "core": false
+        },
+        {
+          "name": "Baby spinach",
+          "core": false
+        },
+        {
+          "name": "Feta cheese",
+          "core": false
+        },
+        {
+          "name": "Sun-dried tomatoes",
+          "core": true
+        },
+        {
+          "name": "Whole grain bread",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "h2",
+      "cat": "hot",
+      "emoji": "🌶️",
+      "name": "Huevos-Style Skillet",
+      "hint": "12 min · eggs in spiced tomato sauce · Britt only",
+      "cuisine": "mex",
+      "tags": [
+        "High protein",
+        "High fiber",
+        "Britt only"
+      ],
+      "recipe": "Heat 1/2 cup salsa in a small pan until bubbling. Add 1/2 cup black beans, stir. Make 2 small wells, crack an egg into each. Cover, cook 4–5 min until whites are set. Top with avocado, hot sauce. Eat with tortillas.",
+      "protein": 24,
+      "fiber": 10,
+      "cal": 380,
+      "ingredients": [
+        {
+          "name": "Salsa",
+          "core": true
+        },
+        {
+          "name": "Black beans",
+          "core": true
+        },
+        {
+          "name": "Eggs",
+          "core": false
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Tortillas",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "q1",
+      "cat": "quick",
+      "emoji": "🥑",
+      "name": "Avocado Toast (three ways)",
+      "hint": "5 min · no-cook · pick a direction",
+      "cuisine": "",
+      "tags": [
+        "High fiber",
+        "No-cook"
+      ],
+      "recipe": "Toast whole grain bread. Smash 1/2 avocado on top with salt + lemon. Then pick: Mediterranean — feta + cherry tomato + oregano. Mexican — hot sauce + cilantro + everything bagel. Rich — chili crisp + sesame seeds + soy drizzle.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Whole grain bread",
+          "core": false
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "cat": "quick",
+      "emoji": "🍌",
+      "name": "Banana + Nut Butter + Hemp Seeds",
+      "hint": "1 min · always there",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "No-cook"
+      ],
+      "recipe": "Slice a banana, spread nut butter on each piece, sprinkle hemp seeds. Hemp seeds add 10g protein with zero effort and zero flavor disruption. Eat while figuring out if you're actually hungry enough for a real breakfast.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Bananas",
+          "core": false
+        },
+        {
+          "name": "Nut butter",
+          "core": true
+        },
+        {
+          "name": "Hemp seeds",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "g1",
+      "cat": "guilty",
+      "emoji": "🥓",
+      "name": "Bacon + Egg + Avocado Plate",
+      "hint": "The complete version · Britt only",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "Britt only"
+      ],
+      "recipe": "2–3 strips bacon. 2 fried or scrambled eggs. 1/2 avocado sliced with salt + lime. Handful of fruit on the side. The bacon is front and center, the eggs and avocado do the nutritional heavy lifting. This is the breakfast that doesn't feel like a compromise.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Bacon",
+          "core": false
+        },
+        {
+          "name": "Eggs",
+          "core": false
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "g2",
+      "cat": "guilty",
+      "emoji": "🧇",
+      "name": "Protein Waffles",
+      "hint": "Same ritual, better macros · family-friendly",
+      "cuisine": "",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Use your normal waffle mix but add 1 scoop vanilla protein powder to the batter and swap half the liquid for oat milk. Goes from ~5g protein to ~20g. Top with fresh berries + small drizzle of maple syrup. Serve alongside bacon — not a trade-off, an upgrade.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Waffle mix",
+          "core": false
+        },
+        {
+          "name": "Vanilla protein powder",
+          "core": false
+        },
+        {
+          "name": "Fresh berries",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "g3",
+      "cat": "guilty",
+      "emoji": "🍥",
+      "name": "Cinnamon Rolls",
+      "hint": "Just enjoy them · Saturday ritual",
+      "cuisine": "",
+      "tags": [],
+      "recipe": "No optimization needed. Cinnamon rolls on Saturday morning are a ritual, not a nutrition problem. If you want, pair with a protein smoothie or some eggs alongside to balance the sugar spike — but don't over-engineer this one.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": []
+    },
+    {
+      "id": "b1",
+      "cat": "bowls",
+      "emoji": "🫙",
+      "name": "Mediterranean Grain Bowl",
+      "hint": "Farro, chickpeas, roasted veg, tahini",
+      "cuisine": "med",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Base: Farro or brown rice. Protein: Chickpeas (from can or roasted Sunday). Veg: Roasted sweet potato + baby spinach. Sauce: Tahini + lemon + water + garlic, thinned to a drizzle. Extras: Kalamata olives, cucumber, crumbled feta, red onion.",
+      "protein": 20,
+      "fiber": 14,
+      "cal": 480,
+      "ingredients": [
+        {
+          "name": "Farro or brown rice",
+          "core": true
+        },
+        {
+          "name": "Chickpeas",
+          "core": true
+        },
+        {
+          "name": "Sweet potato or zucchini",
+          "core": false
+        },
+        {
+          "name": "Baby spinach",
+          "core": false
+        },
+        {
+          "name": "Tahini",
+          "core": true
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        },
+        {
+          "name": "Kalamata olives",
+          "core": false
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        },
+        {
+          "name": "Feta cheese",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "cat": "bowls",
+      "emoji": "🌯",
+      "name": "Mexican Rice Bowl",
+      "hint": "Black beans, corn, salsa, avocado",
+      "cuisine": "mex",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Base: Brown rice. Protein: Black beans warmed with cumin + garlic powder. Veg: Corn (frozen, microwaved), cherry tomatoes. Sauce: Salsa + squeeze of lime. Extras: Avocado, shredded cheese, cilantro, hot sauce. Add leftover chicken to make it more substantial.",
+      "protein": 18,
+      "fiber": 14,
+      "cal": 460,
+      "ingredients": [
+        {
+          "name": "Brown rice",
+          "core": true
+        },
+        {
+          "name": "Black beans",
+          "core": true
+        },
+        {
+          "name": "Frozen corn",
+          "core": true
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Salsa",
+          "core": true
+        },
+        {
+          "name": "Shredded cheese",
+          "core": false
+        },
+        {
+          "name": "Cilantro",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "b3",
+      "cat": "bowls",
+      "emoji": "🥢",
+      "name": "Sesame Noodle Bowl",
+      "hint": "Soba noodles, edamame, peanut sauce",
+      "cuisine": "asi",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": "Cook soba noodles (8 min), rinse cold. Sauce: 2 tbsp peanut butter + 1 tbsp soy sauce + 1 tsp sesame oil + 1 tsp rice vinegar + splash of water. Toss noodles. Top with: edamame, purple cabbage, cucumber, green onion, sesame seeds. Better as leftovers.",
+      "protein": 22,
+      "fiber": 10,
+      "cal": 480,
+      "ingredients": [
+        {
+          "name": "Soba noodles",
+          "core": true
+        },
+        {
+          "name": "Edamame",
+          "core": true
+        },
+        {
+          "name": "Peanut butter",
+          "core": true
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        },
+        {
+          "name": "Sesame oil",
+          "core": true
+        },
+        {
+          "name": "Purple cabbage",
+          "core": false
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "b4",
+      "cat": "bowls",
+      "emoji": "🍛",
+      "name": "Spiced Lentil Bowl",
+      "hint": "Masala-spiced lentils, rice, cucumber",
+      "cuisine": "ind",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Reheat a portion of batch lentil soup. Serve over rice. Top with: diced cucumber + squeeze of lemon + pinch of cumin. Add cilantro and a drizzle of chili oil. Feels like a real restaurant lunch.",
+      "protein": 18,
+      "fiber": 16,
+      "cal": 420,
+      "ingredients": [
+        {
+          "name": "Red lentils",
+          "core": true
+        },
+        {
+          "name": "Brown rice",
+          "core": true
+        },
+        {
+          "name": "Diced tomatoes",
+          "core": true
+        },
+        {
+          "name": "Veggie broth",
+          "core": true
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        },
+        {
+          "name": "Cilantro",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "w1",
+      "cat": "wraps",
+      "emoji": "🫘",
+      "name": "Smashed Chickpea Wrap",
+      "hint": "5 min · no cook · Mediterranean",
+      "cuisine": "med",
+      "tags": [
+        "High fiber",
+        "High protein",
+        "No-cook"
+      ],
+      "recipe": "Drain + rinse a can of chickpeas. Smash roughly with a fork. Mix in olive oil, lemon, cumin, salt, pepper. Spread on a large tortilla with baby spinach, sliced cucumber, cherry tomatoes, feta. Roll tight. Shockingly satisfying for 5 minutes of effort.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Chickpeas",
+          "core": true
+        },
+        {
+          "name": "Large tortillas",
+          "core": true
+        },
+        {
+          "name": "Baby spinach",
+          "core": false
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        },
+        {
+          "name": "Cherry tomatoes",
+          "core": false
+        },
+        {
+          "name": "Feta cheese",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "w2",
+      "cat": "wraps",
+      "emoji": "🥬",
+      "name": "Salmon Lettuce Wraps",
+      "hint": "Use leftover baked salmon · 5 min",
+      "cuisine": "asi",
+      "tags": [
+        "High protein",
+        "Britt only"
+      ],
+      "recipe": "Flake leftover baked salmon. Toss with soy sauce, sesame oil, lime juice, a little sriracha. Spoon into butter lettuce leaves. Top with: shredded purple cabbage, green onion, sesame seeds, julienned carrot. This is why you always make extra salmon at dinner.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Leftover salmon",
+          "core": false
+        },
+        {
+          "name": "Butter lettuce",
+          "core": false
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        },
+        {
+          "name": "Sesame oil",
+          "core": true
+        },
+        {
+          "name": "Purple cabbage",
+          "core": false
+        },
+        {
+          "name": "Green onions",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "w3",
+      "cat": "wraps",
+      "emoji": "🌮",
+      "name": "Black Bean + Avocado Quesadilla",
+      "hint": "10 min · family-friendly",
+      "cuisine": "mex",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Fill a large tortilla with: canned black beans (drained), shredded cheese, sliced avocado, spoonful of salsa. Fold in half, cook in a dry pan 3 min per side until crispy. Cut into wedges. Add spinach for yourself.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Black beans",
+          "core": true
+        },
+        {
+          "name": "Large tortillas",
+          "core": true
+        },
+        {
+          "name": "Shredded cheese",
+          "core": false
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Salsa",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "so1",
+      "cat": "soups",
+      "emoji": "🫙",
+      "name": "Red Lentil Soup",
+      "hint": "Sunday batch · 4 lunches · 30 min",
+      "cuisine": "ind",
+      "tags": [
+        "High fiber",
+        "High protein",
+        "Batch cook"
+      ],
+      "recipe": "Sauté 1 diced onion + 3 garlic cloves in olive oil. Add 1 cup red lentils, 1 can diced tomatoes, 4 cups veggie broth, 1 tsp cumin + 1 tsp smoked paprika + 1/2 tsp turmeric + salt. Simmer 25 min. Squeeze of lemon before serving. Portion into 4 containers. Reheats perfectly.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Red lentils",
+          "core": true
+        },
+        {
+          "name": "Diced tomatoes",
+          "core": true
+        },
+        {
+          "name": "Veggie broth",
+          "core": true
+        },
+        {
+          "name": "Onion",
+          "core": false
+        },
+        {
+          "name": "Garlic",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "so2",
+      "cat": "soups",
+      "emoji": "🍜",
+      "name": "Miso Broth with Noodles",
+      "hint": "15 min · light but warming",
+      "cuisine": "asi",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Bring 2 cups broth to a simmer. Stir in 1 tbsp white miso (don't boil after). Add rice noodles, sliced mushrooms, baby spinach, 1 tsp soy sauce. Top with: soft-boiled egg (Britt only), green onion, sesame oil drizzle, chili crisp.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "White miso",
+          "core": true
+        },
+        {
+          "name": "Rice noodles or ramen",
+          "core": false
+        },
+        {
+          "name": "Mushrooms",
+          "core": false
+        },
+        {
+          "name": "Baby spinach",
+          "core": false
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        },
+        {
+          "name": "Green onions",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "lq1",
+      "cat": "lquick",
+      "emoji": "🥫",
+      "name": "Mezze Plate",
+      "hint": "2 min · pantry only · no cook",
+      "cuisine": "med",
+      "tags": [
+        "No-cook"
+      ],
+      "recipe": "Hummus · olives · pita or crackers · sliced cucumber + cherry tomatoes · handful of nuts · feta if you have it. This is a real lunch, not a snack plate. The hummus (protein) + nuts (fat) + veg (fiber) combo keeps you full. Your nothing-in-the-fridge emergency lunch.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Hummus",
+          "core": false
+        },
+        {
+          "name": "Crackers",
+          "core": true
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        },
+        {
+          "name": "Cherry tomatoes",
+          "core": false
+        },
+        {
+          "name": "Mixed nuts",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "lq2",
+      "cat": "lquick",
+      "emoji": "🐟",
+      "name": "Salmon + Rice + Avocado",
+      "hint": "Leftover salmon · 5 min assembly",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "Britt only"
+      ],
+      "recipe": "Reheat rice. Flake salmon on top cold or warm — both work. Add sliced avocado, drizzle of soy sauce or lemon, sesame seeds. Done. This is why the cook-alongside system works: make extra so you always have this for the next day.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Leftover salmon",
+          "core": false
+        },
+        {
+          "name": "Brown rice",
+          "core": true
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "sn1",
+      "cat": "snacks",
+      "emoji": "🫘",
+      "name": "Edamame with Sea Salt",
+      "hint": "3 min microwave · always ready",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": "Keep shelled frozen edamame in the freezer always. Microwave 1 cup for 3 minutes. Toss with sea salt. Also good with: everything bagel seasoning, chili lime salt, or soy sauce + sesame oil drizzle. 17g protein from a snack.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Edamame",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "sn2",
+      "cat": "snacks",
+      "emoji": "🥜",
+      "name": "Nut Butter + Apple or Banana",
+      "hint": "1 min · stabilizes blood sugar",
+      "cuisine": "",
+      "tags": [
+        "High fiber",
+        "No-cook"
+      ],
+      "recipe": "Almond or peanut butter. Apple or banana. The fat + fiber + natural sugar combo is the most stabilizing snack combo there is. Keep a jar accessible — not buried in the pantry.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Nut butter",
+          "core": true
+        },
+        {
+          "name": "Apples or bananas",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "sn3",
+      "cat": "snacks",
+      "emoji": "🥕",
+      "name": "Veggies + Hummus",
+      "hint": "Cut Sunday · eat all week",
+      "cuisine": "",
+      "tags": [
+        "High fiber"
+      ],
+      "recipe": "Cut carrots, celery, cucumber, and bell pepper on Sunday. Store in water in containers. This snack only happens when the veg is already cut. It never happens when you have to cut it first. Cut the veg.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Carrots",
+          "core": false
+        },
+        {
+          "name": "Celery",
+          "core": false
+        },
+        {
+          "name": "Cucumber",
+          "core": false
+        },
+        {
+          "name": "Bell pepper",
+          "core": false
+        },
+        {
+          "name": "Hummus",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "sn4",
+      "cat": "snacks",
+      "emoji": "🧀",
+      "name": "Cheese + Crackers + Fruit",
+      "hint": "2 min · pantry staple",
+      "cuisine": "",
+      "tags": [
+        "High protein",
+        "No-cook"
+      ],
+      "recipe": "Block of cheddar or pepper jack, whole grain crackers, handful of grapes or apple slices. The adult snack plate that feels indulgent and isn't. Keep a block of cheese in the fridge at all times.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Cheese",
+          "core": false
+        },
+        {
+          "name": "Crackers",
+          "core": true
+        },
+        {
+          "name": "Fruit",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "sn5",
+      "cat": "snacks",
+      "emoji": "🍙",
+      "name": "Seaweed Snacks + Nuts",
+      "hint": "No prep · satisfying umami crunch",
+      "cuisine": "asi",
+      "tags": [
+        "No-cook"
+      ],
+      "recipe": "Roasted seaweed snack packs + a small handful of almonds or cashews. Covers the salty crunch craving without chips. Good pantry staple for when you want something savory mid-afternoon.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Seaweed snack packs",
+          "core": true
+        },
+        {
+          "name": "Mixed nuts",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "f1",
+      "cat": "family",
+      "emoji": "🫒",
+      "name": "Greek Chicken Thighs",
+      "hint": "30 min · lemon-oregano · sheet pan",
+      "cuisine": "med",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Marinate chicken thighs in: olive oil, lemon juice + zest, garlic, dried oregano, salt, pepper (even 30 min works). Roast at 425° for 25–30 min skin-side up. Serve with roasted potatoes or pita, cucumber, olives. Your salmon: same seasoning on a fillet, same pan, pull it out 10 min earlier.",
+      "protein": 38,
+      "fiber": 0,
+      "cal": 420,
+      "ingredients": [
+        {
+          "name": "Chicken thighs",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        },
+        {
+          "name": "Garlic",
+          "core": false
+        },
+        {
+          "name": "Dried oregano",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "f2",
+      "cat": "family",
+      "emoji": "🌮",
+      "name": "Taco Night (with your upgrade)",
+      "hint": "Your existing go-to · personal fiber boost",
+      "cuisine": "mex",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Keep making these exactly how you do. For yourself: add a side of spiced black beans + rice to bump fiber significantly, pile on extra avocado, add pickled red onion. Family gets the tacos they love, you get a more complete meal. No extra cooking required.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Ground beef",
+          "core": false
+        },
+        {
+          "name": "Tortillas",
+          "core": true
+        },
+        {
+          "name": "Black beans",
+          "core": true
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Salsa",
+          "core": true
+        },
+        {
+          "name": "Shredded cheese",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "f3",
+      "cat": "family",
+      "emoji": "🍜",
+      "name": "Teriyaki Chicken + Rice",
+      "hint": "25 min · kid-friendly · weeknight easy",
+      "cuisine": "asi",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Pan-sear chicken thighs or breast. Make quick teriyaki: 3 tbsp soy sauce + 1 tbsp honey + 1 tsp sesame oil + 1 tsp cornstarch. Pour over chicken in last 5 min. Serve over rice with steamed broccoli. Your salmon: same sauce, bake at 400° for 12–15 min while chicken cooks.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Chicken thighs or breast",
+          "core": false
+        },
+        {
+          "name": "Brown rice",
+          "core": true
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        },
+        {
+          "name": "Honey",
+          "core": false
+        },
+        {
+          "name": "Sesame oil",
+          "core": true
+        },
+        {
+          "name": "Broccoli",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "f4",
+      "cat": "family",
+      "emoji": "🍛",
+      "name": "Butter Chicken (family) + Chickpea Version (you)",
+      "hint": "Make both at once · same spice profile",
+      "cuisine": "ind",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": "Make your normal butter chicken for the family. Separately: jar of tikka masala sauce + 2 cans chickpeas, simmer 15 min. You eat more fiber, they eat what they love. Same spice, same dinner table, different bowls.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Chicken (for family)",
+          "core": false
+        },
+        {
+          "name": "Tikka masala sauce (jar)",
+          "core": false
+        },
+        {
+          "name": "Chickpeas",
+          "core": true
+        },
+        {
+          "name": "Coconut milk",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "f5",
+      "cat": "family",
+      "emoji": "🍝",
+      "name": "White Bean + Spinach Pasta",
+      "hint": "20 min · trojan horse dinner",
+      "cuisine": "med",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Cook pasta. While it cooks: sauté garlic in olive oil, add 1 can cannellini beans, 1 can diced tomatoes, big handful spinach, salt, pepper, chili flake. Toss with pasta + splash of pasta water. Top with parmesan. The beans disappear into the sauce. Kids don't notice.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Pasta",
+          "core": true
+        },
+        {
+          "name": "Cannellini beans",
+          "core": true
+        },
+        {
+          "name": "Diced tomatoes",
+          "core": true
+        },
+        {
+          "name": "Baby spinach",
+          "core": false
+        },
+        {
+          "name": "Parmesan",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "si1",
+      "cat": "sides",
+      "emoji": "🥗",
+      "name": "Simple Arugula Side Salad",
+      "hint": "3 min · goes with any cuisine",
+      "cuisine": "",
+      "tags": [
+        "High fiber",
+        "No-cook"
+      ],
+      "recipe": "Handful arugula + cherry tomatoes + shaved parmesan + lemon juice + olive oil + salt. 3 minutes. Turns any dinner into a more complete meal. Arugula is more interesting than romaine and wilts less.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Arugula",
+          "core": false
+        },
+        {
+          "name": "Cherry tomatoes",
+          "core": false
+        },
+        {
+          "name": "Parmesan",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "si2",
+      "cat": "sides",
+      "emoji": "🫘",
+      "name": "Quick Spiced Black Beans",
+      "hint": "5 min · from can · fiber upgrade",
+      "cuisine": "mex",
+      "tags": [
+        "High fiber",
+        "High protein"
+      ],
+      "recipe": "Drain and rinse a can of black beans. Heat in a small saucepan with a splash of water, cumin, garlic powder, salt. 5 minutes. Add these as your personal side to any Mexican-ish dinner. Adds 15g fiber to your plate without touching the family's food.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Black beans",
+          "core": true
+        },
+        {
+          "name": "Cumin",
+          "core": true
+        },
+        {
+          "name": "Garlic powder",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "si3",
+      "cat": "sides",
+      "emoji": "🥦",
+      "name": "Roasted Broccoli",
+      "hint": "20 min · the vegetable that converts skeptics",
+      "cuisine": "",
+      "tags": [
+        "High fiber"
+      ],
+      "recipe": "Toss broccoli florets in olive oil, salt, garlic powder. Roast at 425° for 20 min until edges are dark and crispy. The crispy edges are everything. Kids who won't touch steamed broccoli often eat this version. Reheats well — keep in Sunday prep rotation.",
+      "protein": 0,
+      "fiber": 0,
+      "cal": 0,
+      "ingredients": [
+        {
+          "name": "Broccoli",
+          "core": false
+        },
+        {
+          "name": "Garlic powder",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "sal1",
+      "cat": "salmon",
+      "emoji": "🫒",
+      "name": "Mediterranean Salmon",
+      "hint": "Lemon, garlic, oregano, olives",
+      "cuisine": "med",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Rub fillet with olive oil, minced garlic, dried oregano, lemon zest, salt, pepper. Top with a few sliced olives and cherry tomatoes. Bake 400° for 13 min. Serve with roasted veg or a grain bowl. Goes with Greek chicken night for the family.",
+      "protein": 34,
+      "fiber": 0,
+      "cal": 360,
+      "ingredients": [
+        {
+          "name": "Salmon fillet",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        },
+        {
+          "name": "Dried oregano",
+          "core": true
+        },
+        {
+          "name": "Kalamata olives",
+          "core": false
+        },
+        {
+          "name": "Cherry tomatoes",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "sal2",
+      "cat": "salmon",
+      "emoji": "🥢",
+      "name": "Miso-Glazed Salmon",
+      "hint": "Soy, miso, honey — the best one on the list",
+      "cuisine": "asi",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Mix: 1 tbsp white miso + 1 tbsp soy sauce + 1 tsp honey + 1/2 tsp sesame oil. Spread on salmon fillet. Bake 400° for 12–14 min. Broil last 2 min for caramelized top. Serve over rice with edamame. The miso caramelizes into something that tastes like a restaurant made it.",
+      "protein": 34,
+      "fiber": 0,
+      "cal": 370,
+      "ingredients": [
+        {
+          "name": "Salmon fillet",
+          "core": false
+        },
+        {
+          "name": "White miso",
+          "core": true
+        },
+        {
+          "name": "Soy sauce",
+          "core": true
+        },
+        {
+          "name": "Honey",
+          "core": false
+        }
+      ]
+    },
+    {
+      "id": "sal3",
+      "cat": "salmon",
+      "emoji": "🌶️",
+      "name": "Chili Lime Salmon",
+      "hint": "Bright, spicy, Mexican lane",
+      "cuisine": "mex",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Rub with: olive oil, chili powder, cumin, garlic powder, salt, cayenne. Squeeze lime over top. Bake 400° for 13 min. Serve over rice with avocado and black beans. Goes on taco night alongside the family's ground beef. Leftovers make great lettuce wraps for lunch.",
+      "protein": 34,
+      "fiber": 0,
+      "cal": 350,
+      "ingredients": [
+        {
+          "name": "Salmon fillet",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        },
+        {
+          "name": "Chili powder",
+          "core": true
+        },
+        {
+          "name": "Cumin",
+          "core": true
+        },
+        {
+          "name": "Avocados",
+          "core": false
+        },
+        {
+          "name": "Black beans",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "sal4",
+      "cat": "salmon",
+      "emoji": "🍋",
+      "name": "Simple Lemon-Dill",
+      "hint": "The default · works with anything",
+      "cuisine": "",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Olive oil, salt, pepper, dried dill, lemon slices on top. Bake 400° for 13 min. This is the I-don't-know-what-cuisine-we're-doing-tonight default. Goes with literally everything.",
+      "protein": 34,
+      "fiber": 0,
+      "cal": 340,
+      "ingredients": [
+        {
+          "name": "Salmon fillet",
+          "core": false
+        },
+        {
+          "name": "Lemons",
+          "core": false
+        },
+        {
+          "name": "Dried dill",
+          "core": true
+        }
+      ]
+    },
+    {
+      "id": "sal5",
+      "cat": "salmon",
+      "emoji": "🧄",
+      "name": "Garlic Herb Butter Salmon",
+      "hint": "Rich, simple, crowd-pleaser",
+      "cuisine": "",
+      "tags": [
+        "High protein"
+      ],
+      "recipe": "Mix 2 tbsp softened butter with 2 minced garlic cloves, 1 tbsp fresh or dried parsley, pinch of red chili flake. Spread over salmon fillet. Bake 400° for 13–15 min. The butter bastes the fish as it cooks. Serve with roasted veg or crusty bread to scoop up the sauce.",
+      "protein": 34,
+      "fiber": 0,
+      "cal": 400,
+      "ingredients": [
+        {
+          "name": "Salmon fillet",
+          "core": false
+        },
+        {
+          "name": "Butter",
+          "core": false
+        },
+        {
+          "name": "Garlic",
+          "core": false
+        },
+        {
+          "name": "Fresh parsley",
+          "core": false
+        }
+      ]
+    }
+  ],
+  "pantry": {
+    "core": [
+      {
+        "category": "Canned Goods",
+        "items": [
+          "Black beans (4 cans)",
+          "Chickpeas (4 cans)",
+          "Cannellini beans (2 cans)",
+          "Diced tomatoes (4 cans)",
+          "Coconut milk (2 cans)",
+          "Veggie broth (2 cartons)"
+        ]
+      },
+      {
+        "category": "Grains & Dried",
+        "items": [
+          "Brown rice (large bag)",
+          "Farro",
+          "Soba noodles",
+          "Rolled oats (large)",
+          "Red lentils",
+          "Green or brown lentils",
+          "Pasta (2 shapes)"
+        ]
+      },
+      {
+        "category": "Sauces & Condiments",
+        "items": [
+          "Soy sauce",
+          "White miso paste (fridge)",
+          "Tahini",
+          "Sesame oil",
+          "Rice vinegar",
+          "Jarred salsa",
+          "Olive oil (big bottle)",
+          "Chili crisp",
+          "Hot sauce"
+        ]
+      },
+      {
+        "category": "Spices",
+        "items": [
+          "Cumin",
+          "Smoked paprika",
+          "Turmeric",
+          "Dried oregano",
+          "Garlic powder",
+          "Chili powder",
+          "Cinnamon",
+          "Everything bagel seasoning",
+          "Dried dill"
+        ]
+      },
+      {
+        "category": "Freezer Always",
+        "items": [
+          "Shelled edamame (large bag)",
+          "Frozen spinach",
+          "Frozen mixed berries",
+          "Frozen mango chunks",
+          "Frozen corn",
+          "Frozen bananas (peel + freeze ripe ones)"
+        ]
+      },
+      {
+        "category": "Pantry Snacks & Extras",
+        "items": [
+          "Almond or peanut butter",
+          "Hemp seeds",
+          "Chia seeds",
+          "Whole grain crackers",
+          "Mixed nuts",
+          "Granola",
+          "Seaweed snack packs",
+          "Large flour tortillas",
+          "Taco seasoning",
+          "Cocoa powder",
+          "Canned diced peaches"
+        ]
+      }
+    ],
+    "fresh": [
+      {
+        "label": "Baby spinach (large bag)",
+        "note": ""
+      },
+      {
+        "label": "Bananas (bunch)",
+        "note": ""
+      },
+      {
+        "label": "Lemons (3–4)",
+        "note": ""
+      },
+      {
+        "label": "Garlic (1 head)",
+        "note": ""
+      },
+      {
+        "label": "Salmon fillet (1–2)",
+        "note": "for the week"
+      },
+      {
+        "label": "Hummus (1–2 containers)",
+        "note": ""
+      },
+      {
+        "label": "Eggs (dozen)",
+        "note": "Britt only"
+      },
+      {
+        "label": "Avocados (3–4)",
+        "note": ""
+      },
+      {
+        "label": "Cheese (block or shredded)",
+        "note": ""
+      },
+      {
+        "label": "Whatever veg you're roasting Sunday",
+        "note": "sweet potato, broccoli, zucchini"
+      },
+      {
+        "label": "Cherry tomatoes",
+        "note": ""
+      },
+      {
+        "label": "Cucumber",
+        "note": ""
+      },
+      {
+        "label": "Chicken thighs or breast",
+        "note": "family protein"
+      },
+      {
+        "label": "Fresh berries or fruit",
+        "note": "oats + snacks"
+      },
+      {
+        "label": "Green onions",
+        "note": ""
+      },
+      {
+        "label": "Pita or naan",
+        "note": ""
+      }
+    ]
+  }
+}
