@@ -1,0 +1,58 @@
+import type { Metadata } from "next";
+import { Fraunces, DM_Sans, DM_Mono } from "next/font/google";
+import "./globals.css";
+import TopNav from "@/components/TopNav";
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: "variable",
+  style: ["normal", "italic"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: "variable",
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
+
+export const metadata: Metadata = {
+  title: "Britt's Food System",
+  description: "A personal recipe library, pantry tracker, and shopping list.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${dmSans.variable} ${dmMono.variable} antialiased`}
+    >
+      <body className="min-h-screen flex flex-col font-body bg-bg text-ink">
+        <header className="bg-ink px-5 py-7 text-center">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-teal-mid mb-2">
+            Britt&apos;s Food System
+          </div>
+          <h1 className="font-display text-2xl font-light text-white leading-tight mb-1">
+            Eat what you <em className="italic text-teal-mid">actually</em>{" "}
+            want.
+          </h1>
+          <p className="text-xs text-[#706860]">
+            Mediterranean · Mexican · Asian · Indian · Your salmon · Real food
+          </p>
+        </header>
+        <TopNav />
+        <main className="flex-1 px-4 pt-5 pb-16">{children}</main>
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,102 @@
+"use client";
+
+import { useState } from "react";
+import type { Recipe } from "@/lib/types";
+import { CUISINE_LABELS } from "@/lib/types";
+
+const CUISINE_BADGE_CLASSES: Record<string, string> = {
+  med: "bg-cuisine-med-light text-cuisine-med",
+  mex: "bg-cuisine-mex-light text-cuisine-mex",
+  asi: "bg-cuisine-asi-light text-cuisine-asi",
+  ind: "bg-cuisine-ind-light text-cuisine-ind",
+};
+
+const TAG_CLASSES: Record<string, string> = {
+  "High protein": "bg-teal-light text-teal",
+  "High fiber": "bg-teal-light text-teal",
+  "No-cook": "bg-gold-light text-gold",
+  "Batch cook": "bg-plum-light text-plum",
+  "Britt only": "bg-coral-light text-coral",
+};
+
+export default function RecipeCard({ recipe }: { recipe: Recipe }) {
+  const [open, setOpen] = useState(false);
+  const hasMacros = Boolean(recipe.protein || recipe.fiber || recipe.cal);
+
+  return (
+    <div className="bg-surface border border-border rounded-[14px] overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-start gap-3 p-3.5 text-left cursor-pointer"
+      >
+        <div className="w-[38px] h-[38px] rounded-[10px] bg-surface-warm flex items-center justify-center text-lg flex-shrink-0">
+          {recipe.emoji}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-sm leading-tight mb-0.5">
+            {recipe.name}
+          </div>
+          {recipe.hint && (
+            <div className="text-xs text-ink-light">{recipe.hint}</div>
+          )}
+          <div className="flex gap-1.5 flex-wrap mt-1.5">
+            {recipe.cuisine && CUISINE_LABELS[recipe.cuisine] && (
+              <span
+                className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${CUISINE_BADGE_CLASSES[recipe.cuisine]}`}
+              >
+                {CUISINE_LABELS[recipe.cuisine]}
+              </span>
+            )}
+            {recipe.tags.map((tag) => (
+              <span
+                key={tag}
+                className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${TAG_CLASSES[tag] ?? "bg-sage-light text-sage"}`}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div
+          className={`text-[11px] text-ink-light transition-transform flex-shrink-0 mt-1 ${open ? "rotate-180" : ""}`}
+        >
+          ▼
+        </div>
+      </button>
+      {open && (
+        <div className="border-t border-border px-3.5 py-4">
+          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5">
+            How to make it
+          </div>
+          <div
+            className="text-[13.5px] leading-relaxed [&_strong]:font-semibold"
+            dangerouslySetInnerHTML={{ __html: recipe.recipe }}
+          />
+          {hasMacros && (
+            <div className="flex gap-2 mt-3.5">
+              {recipe.protein ? (
+                <Macro value={`${recipe.protein}g`} label="Protein" />
+              ) : null}
+              {recipe.fiber ? (
+                <Macro value={`${recipe.fiber}g`} label="Fiber" />
+              ) : null}
+              {recipe.cal ? <Macro value={`${recipe.cal}`} label="Cal" /> : null}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Macro({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex-1 bg-surface-warm rounded-lg py-2 text-center">
+      <div className="font-display text-base text-teal leading-none">
+        {value}
+      </div>
+      <div className="font-mono text-[10px] text-ink-light mt-1">{label}</div>
+    </div>
+  );
+}

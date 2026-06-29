@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Neutrals */
+  --color-bg: #f5f2ed;
+  --color-surface: #ffffff;
+  --color-surface-warm: #ede9e2;
+  --color-ink: #1e1b17;
+  --color-ink-mid: #4a4540;
+  --color-ink-light: #8a837a;
+  --color-border: #ddd8d0;
+
+  /* Brand accents */
+  --color-teal: #1f7a6e;
+  --color-teal-light: #e3f2f0;
+  --color-teal-mid: #a8d5cf;
+  --color-coral: #c94f30;
+  --color-coral-light: #faeae5;
+  --color-gold: #b8842a;
+  --color-gold-light: #fbf3e3;
+  --color-plum: #6b3f7a;
+  --color-plum-light: #f0eaf5;
+  --color-sage: #4a7a5a;
+  --color-sage-light: #e8f2eb;
+  --color-red: #c0392b;
+  --color-red-light: #fdecea;
+
+  /* Cuisine badges */
+  --color-cuisine-med: #2e6b3e;
+  --color-cuisine-med-light: #e8f4e8;
+  --color-cuisine-mex: #b06020;
+  --color-cuisine-mex-light: #fef0e0;
+  --color-cuisine-asi: #2a4a8a;
+  --color-cuisine-asi-light: #e8eef8;
+  --color-cuisine-ind: #8a2a2a;
+  --color-cuisine-ind-light: #fbe8e8;
+
+  /* Type */
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-dm-mono);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
