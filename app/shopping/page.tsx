@@ -8,16 +8,22 @@ export default async function ShoppingPage() {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return null;
 
-  const [{ data: queue, error }, { data: checkedRows }] = await Promise.all([
-    supabase
-      .from("week_queue")
-      .select("recipe:recipes(ingredients)")
-      .eq("user_id", userData.user.id),
-    supabase
-      .from("pantry_state")
-      .select("item_key")
-      .eq("user_id", userData.user.id),
-  ]);
+  const [{ data: queue, error }, { data: checkedRows }, { data: staplesRows }] =
+    await Promise.all([
+      supabase
+        .from("week_queue")
+        .select("recipe:recipes(ingredients)")
+        .eq("user_id", userData.user.id),
+      supabase
+        .from("pantry_state")
+        .select("item_key")
+        .eq("user_id", userData.user.id),
+      supabase
+        .from("pantry_staples")
+        .select("*")
+        .eq("user_id", userData.user.id)
+        .order("created_at", { ascending: true }),
+    ]);
 
   if (error) {
     return (
@@ -54,12 +60,18 @@ export default async function ShoppingPage() {
     note: item.note,
     checked: checkedKeys.has(`shopping:weekly:${item.label}`),
   }));
+  const staples = (staplesRows ?? []).map((staple) => ({
+    key: `shopping:staple:${staple.id}`,
+    label: staple.label,
+    checked: checkedKeys.has(`shopping:staple:${staple.id}`),
+  }));
 
   return (
     <ShoppingListView
       fresh={fresh}
       core={core}
       weekly={weekly}
+      staples={staples}
       hasQueue={(queue?.length ?? 0) > 0}
     />
   );

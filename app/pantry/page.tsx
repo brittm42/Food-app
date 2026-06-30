@@ -6,10 +6,17 @@ export default async function PantryPage() {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return null;
 
-  const { data: checkedRows, error } = await supabase
-    .from("pantry_state")
-    .select("item_key")
-    .eq("user_id", userData.user.id);
+  const [{ data: checkedRows, error }, { data: staples }] = await Promise.all([
+    supabase
+      .from("pantry_state")
+      .select("item_key")
+      .eq("user_id", userData.user.id),
+    supabase
+      .from("pantry_staples")
+      .select("*")
+      .eq("user_id", userData.user.id)
+      .order("created_at", { ascending: true }),
+  ]);
 
   if (error) {
     return (
@@ -21,5 +28,5 @@ export default async function PantryPage() {
 
   const checkedKeys = (checkedRows ?? []).map((r) => r.item_key);
 
-  return <PantryView checkedKeys={checkedKeys} />;
+  return <PantryView checkedKeys={checkedKeys} staples={staples ?? []} />;
 }

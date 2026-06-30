@@ -30,6 +30,7 @@ export default function RecipesBrowser({
   const subCats = SUB_CATEGORIES[activeMeal];
   const [activeSub, setActiveSub] = useState(subCats[0].id);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [kidFriendlyOnly, setKidFriendlyOnly] = useState(false);
 
   function selectMeal(meal: MealType) {
     setActiveMeal(meal);
@@ -50,7 +51,9 @@ export default function RecipesBrowser({
   const visibleSubCats = SUB_CATEGORIES[activeMeal];
   const showOats = activeMeal === "breakfast" && activeSub === "oats";
   const visibleRecipes = (recipesByCategory[activeSub] ?? []).filter(
-    (r) => !favoritesOnly || r.rating === "up"
+    (r) =>
+      (!favoritesOnly || r.rating === "up") &&
+      (!kidFriendlyOnly || r.tags.includes("Kid-friendly"))
   );
 
   return (
@@ -84,7 +87,14 @@ export default function RecipesBrowser({
       )}
 
       {!showOats && (
-        <div className="flex justify-end mb-3">
+        <div className="flex justify-end gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => setKidFriendlyOnly((v) => !v)}
+            className={`${TAB_BASE} ${kidFriendlyOnly ? TAB_ACTIVE : TAB_INACTIVE}`}
+          >
+            🧒 Kid-friendly only
+          </button>
           <button
             type="button"
             onClick={() => setFavoritesOnly((v) => !v)}

@@ -9,11 +9,13 @@ export default function ShoppingListView({
   fresh,
   core,
   weekly,
+  staples,
   hasQueue,
 }: {
   fresh: Item[];
   core: Item[];
   weekly: Item[];
+  staples: Item[];
   hasQueue: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
@@ -57,6 +59,14 @@ export default function ShoppingListView({
         onToggle={toggle}
         disabled={isPending}
       />
+      {staples.length > 0 && (
+        <ChecklistSection
+          title="My Staples"
+          items={staples}
+          onToggle={toggle}
+          disabled={isPending}
+        />
+      )}
     </div>
   );
 }

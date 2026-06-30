@@ -110,6 +110,16 @@ export function mealTypeForCategory(category: string): MealType {
 export type CorePantryCategory = { category: string; items: string[] };
 export type FreshItem = { label: string; note: string };
 
+// User-added always-stock items not tied to any recipe (e.g. Nutella,
+// pretzel sticks). Unlike CORE_PANTRY/WEEKLY_FRESH above, this list itself
+// is per-user data stored in the `pantry_staples` table, not static config.
+export type PantryStaple = {
+  id: string;
+  user_id: string;
+  label: string;
+  created_at: string;
+};
+
 // Static reference catalog (PRD: "the item catalog itself can be a static
 // config in the codebase (it rarely changes)"). Checked state lives in the
 // `pantry_state` table, keyed by a namespaced string built from these labels.
