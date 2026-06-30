@@ -1,8 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// No auth exists yet in this slice, so there's no session to refresh —
-// `setAll` is intentionally omitted and gets added when login ships.
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -13,6 +11,17 @@ export async function createClient() {
       cookies: {
         getAll() {
           return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Called from a Server Component, where cookies can't be
+            // written. Safe to ignore — proxy.ts refreshes the session
+            // on every request, so the cookie write isn't load-bearing here.
+          }
         },
       },
     }

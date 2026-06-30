@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Recipe, MealType } from "@/lib/types";
+import type { RecipeWithRating, RatingValue, MealType } from "@/lib/types";
 import { MEAL_TYPES, SUB_CATEGORIES, OAT_FLAVORS, OAT_BASE } from "@/lib/types";
 import RecipeCard from "@/components/RecipeCard";
 
@@ -10,10 +10,17 @@ const TAB_BASE =
 const TAB_ACTIVE = "bg-ink text-white border-ink";
 const TAB_INACTIVE = "bg-surface text-ink-light border-border hover:bg-surface-warm";
 
-export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
+function ratingRank(rating: RatingValue | null) {
+  if (rating === "up") return 0;
+  if (rating === "down") return 2;
+  return 1;
+}
+
+export default function RecipesBrowser({ recipes }: { recipes: RecipeWithRating[] }) {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const subCats = SUB_CATEGORIES[activeMeal];
   const [activeSub, setActiveSub] = useState(subCats[0].id);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
 
   function selectMeal(meal: MealType) {
     setActiveMeal(meal);
@@ -21,14 +28,21 @@ export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
   }
 
   const recipesByCategory = useMemo(() => {
-    const map: Record<string, Recipe[]> = {};
+    const map: Record<string, RecipeWithRating[]> = {};
     for (const r of recipes) {
       (map[r.category] ??= []).push(r);
+    }
+    for (const list of Object.values(map)) {
+      list.sort((a, b) => ratingRank(a.rating) - ratingRank(b.rating));
     }
     return map;
   }, [recipes]);
 
   const visibleSubCats = SUB_CATEGORIES[activeMeal];
+  const showOats = activeMeal === "breakfast" && activeSub === "oats";
+  const visibleRecipes = (recipesByCategory[activeSub] ?? []).filter(
+    (r) => !favoritesOnly || r.rating === "up"
+  );
 
   return (
     <div>
@@ -60,16 +74,24 @@ export default function RecipesBrowser({ recipes }: { recipes: Recipe[] }) {
         </div>
       )}
 
-      {activeMeal === "breakfast" && activeSub === "oats" ? (
-        <OatFlavorGrid />
-      ) : (
-        <RecipeList recipes={recipesByCategory[activeSub] ?? []} />
+      {!showOats && (
+        <div className="flex justify-end mb-3">
+          <button
+            type="button"
+            onClick={() => setFavoritesOnly((v) => !v)}
+            className={`${TAB_BASE} ${favoritesOnly ? TAB_ACTIVE : TAB_INACTIVE}`}
+          >
+            ⭐ Favorites only
+          </button>
+        </div>
       )}
+
+      {showOats ? <OatFlavorGrid /> : <RecipeList recipes={visibleRecipes} />}
     </div>
   );
 }
 
-function RecipeList({ recipes }: { recipes: Recipe[] }) {
+function RecipeList({ recipes }: { recipes: RecipeWithRating[] }) {
   if (recipes.length === 0) {
     return (
       <div className="text-center text-ink-light text-sm py-10">

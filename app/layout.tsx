@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import TopNav from "@/components/TopNav";
+import AuthBar from "@/components/AuthBar";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -51,6 +52,7 @@ export default function RootLayout({
           </p>
         </header>
         <TopNav />
+        <AuthBar />
         <main className="flex-1 px-4 pt-5 pb-16">{children}</main>
       </body>
     </html>

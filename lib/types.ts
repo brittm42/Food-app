@@ -17,6 +17,19 @@ export type Recipe = {
   updated_at: string;
 };
 
+export type RatingValue = "up" | "down";
+
+export type Rating = {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  rating: RatingValue;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RecipeWithRating = Recipe & { rating: RatingValue | null };
+
 export type MealType = "breakfast" | "lunch" | "snacks" | "dinner" | "salmon";
 
 export const MEAL_TYPES: { id: MealType; label: string }[] = [
