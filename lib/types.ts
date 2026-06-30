@@ -28,7 +28,14 @@ export type Rating = {
   updated_at: string;
 };
 
-export type RecipeWithRating = Recipe & { rating: RatingValue | null };
+export type RecipeWithRating = Recipe & { rating: RatingValue | null; queued: boolean };
+
+export type WeekQueueItem = {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  added_at: string;
+};
 
 export type MealType = "breakfast" | "lunch" | "snacks" | "dinner" | "salmon";
 
@@ -70,6 +77,124 @@ export const CUISINE_LABELS: Record<string, string> = {
   asi: "Asian",
   ind: "Indian",
 };
+
+export function mealTypeForCategory(category: string): MealType {
+  for (const meal of MEAL_TYPES) {
+    if (SUB_CATEGORIES[meal.id].some((sub) => sub.id === category)) {
+      return meal.id;
+    }
+  }
+  return "snacks";
+}
+
+export type CorePantryCategory = { category: string; items: string[] };
+export type FreshItem = { label: string; note: string };
+
+// Static reference catalog (PRD: "the item catalog itself can be a static
+// config in the codebase (it rarely changes)"). Checked state lives in the
+// `pantry_state` table, keyed by a namespaced string built from these labels.
+export const CORE_PANTRY: CorePantryCategory[] = [
+  {
+    category: "Canned Goods",
+    items: [
+      "Black beans (4 cans)",
+      "Chickpeas (4 cans)",
+      "Cannellini beans (2 cans)",
+      "Diced tomatoes (4 cans)",
+      "Coconut milk (2 cans)",
+      "Veggie broth (2 cartons)",
+    ],
+  },
+  {
+    category: "Grains & Dried",
+    items: [
+      "Brown rice (large bag)",
+      "Farro",
+      "Soba noodles",
+      "Rolled oats (large)",
+      "Red lentils",
+      "Green or brown lentils",
+      "Pasta (2 shapes)",
+    ],
+  },
+  {
+    category: "Sauces & Condiments",
+    items: [
+      "Soy sauce",
+      "White miso paste (fridge)",
+      "Tahini",
+      "Sesame oil",
+      "Rice vinegar",
+      "Jarred salsa",
+      "Olive oil (big bottle)",
+      "Chili crisp",
+      "Hot sauce",
+    ],
+  },
+  {
+    category: "Spices",
+    items: [
+      "Cumin",
+      "Smoked paprika",
+      "Turmeric",
+      "Dried oregano",
+      "Garlic powder",
+      "Chili powder",
+      "Cinnamon",
+      "Everything bagel seasoning",
+      "Dried dill",
+    ],
+  },
+  {
+    category: "Freezer Always",
+    items: [
+      "Shelled edamame (large bag)",
+      "Frozen spinach",
+      "Frozen mixed berries",
+      "Frozen mango chunks",
+      "Frozen corn",
+      "Frozen bananas (peel + freeze ripe ones)",
+    ],
+  },
+  {
+    category: "Pantry Snacks & Extras",
+    items: [
+      "Almond or peanut butter",
+      "Hemp seeds",
+      "Chia seeds",
+      "Whole grain crackers",
+      "Mixed nuts",
+      "Granola",
+      "Seaweed snack packs",
+      "Large flour tortillas",
+      "Taco seasoning",
+      "Cocoa powder",
+      "Canned diced peaches",
+    ],
+  },
+];
+
+export const WEEKLY_FRESH: FreshItem[] = [
+  { label: "Baby spinach (large bag)", note: "" },
+  { label: "Bananas (bunch)", note: "" },
+  { label: "Lemons (3–4)", note: "" },
+  { label: "Garlic (1 head)", note: "" },
+  { label: "Salmon fillet (1–2)", note: "for the week" },
+  { label: "Hummus (1–2 containers)", note: "" },
+  { label: "Eggs (dozen)", note: "Britt only" },
+  { label: "Avocados (3–4)", note: "" },
+  { label: "Cheese (block or shredded)", note: "" },
+  {
+    label: "Whatever veg you're roasting Sunday",
+    note: "sweet potato, broccoli, zucchini",
+  },
+  { label: "Cherry tomatoes", note: "" },
+  { label: "Cucumber", note: "" },
+  { label: "Chicken thighs or breast", note: "family protein" },
+  { label: "Fresh berries or fruit", note: "oats + snacks" },
+  { label: "Green onions", note: "" },
+  { label: "Pita or naan", note: "" },
+];
 
 export const OAT_BASE =
   "1/2 cup rolled oats + 3/4 cup milk + 2 tbsp chia seeds + pinch salt. The flavor layer is what changes. Make 3-4 jars of each pick.";

@@ -31,7 +31,7 @@ const rows = seedData.recipes.map((r) => ({
   fiber: r.fiber ?? null,
   cal: r.cal ?? null,
   tags: r.tags ?? [],
-  ingredients: null,
+  ingredients: r.ingredients ?? null,
   is_seed: true,
   user_id: null,
 }));

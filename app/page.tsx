@@ -19,19 +19,28 @@ export default async function RecipesPage() {
   }
 
   let ratingsByRecipe: Record<string, RatingValue> = {};
+  let queuedRecipeIds = new Set<string>();
   if (userData.user) {
-    const { data: ratings } = await supabase
-      .from("ratings")
-      .select("recipe_id, rating")
-      .eq("user_id", userData.user.id);
+    const [{ data: ratings }, { data: queued }] = await Promise.all([
+      supabase
+        .from("ratings")
+        .select("recipe_id, rating")
+        .eq("user_id", userData.user.id),
+      supabase
+        .from("week_queue")
+        .select("recipe_id")
+        .eq("user_id", userData.user.id),
+    ]);
     ratingsByRecipe = Object.fromEntries(
       (ratings ?? []).map((r) => [r.recipe_id, r.rating as RatingValue])
     );
+    queuedRecipeIds = new Set((queued ?? []).map((q) => q.recipe_id));
   }
 
   const recipesWithRatings: RecipeWithRating[] = (recipes ?? []).map((r) => ({
     ...(r as Recipe),
     rating: ratingsByRecipe[r.id] ?? null,
+    queued: queuedRecipeIds.has(r.id),
   }));
 
   return <RecipesBrowser recipes={recipesWithRatings} />;

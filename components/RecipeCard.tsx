@@ -4,6 +4,7 @@ import { useTransition, useState } from "react";
 import type { RecipeWithRating, RatingValue } from "@/lib/types";
 import { CUISINE_LABELS } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
+import { toggleThisWeek } from "@/app/actions/week-queue";
 
 const CUISINE_BADGE_CLASSES: Record<string, string> = {
   med: "bg-cuisine-med-light text-cuisine-med",
@@ -28,6 +29,12 @@ export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
   function rate(value: RatingValue) {
     startTransition(() => {
       setRating(recipe.id, value);
+    });
+  }
+
+  function queue() {
+    startTransition(() => {
+      toggleThisWeek(recipe.id);
     });
   }
 
@@ -100,6 +107,19 @@ export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
               }`}
             >
               👎
+            </button>
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={queue}
+              aria-label={recipe.queued ? "Remove from This Week" : "Add to This Week"}
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors disabled:opacity-50 ${
+                recipe.queued
+                  ? "bg-gold text-white"
+                  : "bg-surface-warm text-ink-light hover:bg-gold-light"
+              }`}
+            >
+              📅
             </button>
           </div>
           <button
