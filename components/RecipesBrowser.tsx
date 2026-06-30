@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import type { RecipeWithRating, TagColor, RatingValue, MealType } from "@/lib/types";
 import { MEAL_TYPES, SUB_CATEGORIES, OAT_FLAVORS, OAT_BASE } from "@/lib/types";
 import RecipeCard from "@/components/RecipeCard";
+import { toggleOatPick } from "@/app/actions/oat-picks";
 
 const TAB_BASE =
   "flex-shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-wide px-3.5 py-1.5 rounded-full border cursor-pointer transition-colors";
@@ -19,9 +20,11 @@ function ratingRank(rating: RatingValue | null) {
 export default function RecipesBrowser({
   recipes,
   tagColors,
+  pickedFlavorIds,
 }: {
   recipes: RecipeWithRating[];
   tagColors: TagColor[];
+  pickedFlavorIds: string[];
 }) {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const subCats = SUB_CATEGORIES[activeMeal];
@@ -93,7 +96,7 @@ export default function RecipesBrowser({
       )}
 
       {showOats ? (
-        <OatFlavorGrid />
+        <OatFlavorGrid pickedFlavorIds={pickedFlavorIds} />
       ) : (
         <RecipeList recipes={visibleRecipes} tagColors={tagColors} />
       )}
@@ -125,8 +128,22 @@ function RecipeList({
   );
 }
 
-function OatFlavorGrid() {
-  const [open, setOpen] = useState<string | null>(null);
+function OatFlavorGrid({ pickedFlavorIds }: { pickedFlavorIds: string[] }) {
+  const [isPending, startTransition] = useTransition();
+  const pickedCount = pickedFlavorIds.length;
+
+  function pick(flavorId: string) {
+    startTransition(() => {
+      toggleOatPick(flavorId);
+    });
+  }
+
+  const counterText =
+    pickedCount >= 2
+      ? "Your 2 picks are ready ✓"
+      : pickedCount === 1
+        ? "1 of 2 picked"
+        : "Pick 2 flavors for the week";
 
   return (
     <div>
@@ -134,16 +151,20 @@ function OatFlavorGrid() {
         <strong className="text-teal-mid">Base (always the same):</strong>{" "}
         {OAT_BASE}
       </div>
+      <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2.5">
+        {counterText}
+      </div>
       <div className="grid grid-cols-2 gap-2.5">
         {OAT_FLAVORS.map((flavor) => {
-          const isOpen = open === flavor.id;
+          const isPicked = pickedFlavorIds.includes(flavor.id);
           return (
             <button
               key={flavor.id}
               type="button"
-              onClick={() => setOpen((cur) => (cur === flavor.id ? null : flavor.id))}
-              className={`text-left bg-surface border rounded-xl p-3.5 cursor-pointer transition-colors ${
-                isOpen ? "border-gold bg-gold-light" : "border-border"
+              disabled={isPending}
+              onClick={() => pick(flavor.id)}
+              className={`text-left bg-surface border rounded-xl p-3.5 cursor-pointer transition-colors disabled:opacity-50 ${
+                isPicked ? "border-gold bg-gold-light" : "border-border"
               }`}
             >
               <div className="text-xl mb-1.5">{flavor.emoji}</div>
@@ -153,7 +174,7 @@ function OatFlavorGrid() {
               <div className="text-[11px] text-ink-light leading-snug">
                 {flavor.desc}
               </div>
-              {isOpen && (
+              {isPicked && (
                 <div
                   className="mt-2.5 bg-white rounded-lg p-3 text-[12.5px] leading-relaxed border border-border [&_strong]:font-semibold"
                   dangerouslySetInnerHTML={{ __html: flavor.recipe }}

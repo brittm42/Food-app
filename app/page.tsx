@@ -21,8 +21,9 @@ export default async function RecipesPage() {
 
   let ratingsByRecipe: Record<string, RatingValue> = {};
   let queuedRecipeIds = new Set<string>();
+  let pickedFlavorIds: string[] = [];
   if (userData.user) {
-    const [{ data: ratings }, { data: queued }] = await Promise.all([
+    const [{ data: ratings }, { data: queued }, { data: picks }] = await Promise.all([
       supabase
         .from("ratings")
         .select("recipe_id, rating")
@@ -31,11 +32,17 @@ export default async function RecipesPage() {
         .from("week_queue")
         .select("recipe_id")
         .eq("user_id", userData.user.id),
+      supabase
+        .from("oat_picks")
+        .select("flavor_id")
+        .eq("user_id", userData.user.id)
+        .order("picked_at", { ascending: true }),
     ]);
     ratingsByRecipe = Object.fromEntries(
       (ratings ?? []).map((r) => [r.recipe_id, r.rating as RatingValue])
     );
     queuedRecipeIds = new Set((queued ?? []).map((q) => q.recipe_id));
+    pickedFlavorIds = (picks ?? []).map((p) => p.flavor_id as string);
   }
 
   const recipesWithRatings: RecipeWithRating[] = (recipes ?? []).map((r) => ({
@@ -46,6 +53,10 @@ export default async function RecipesPage() {
   }));
 
   return (
-    <RecipesBrowser recipes={recipesWithRatings} tagColors={(tagColors ?? []) as TagColor[]} />
+    <RecipesBrowser
+      recipes={recipesWithRatings}
+      tagColors={(tagColors ?? []) as TagColor[]}
+      pickedFlavorIds={pickedFlavorIds}
+    />
   );
 }
