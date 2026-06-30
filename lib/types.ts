@@ -3,16 +3,19 @@ export type Recipe = {
   user_id: string | null;
   name: string;
   category: string;
-  cuisine: string | null;
+  cuisines: string[];
   emoji: string | null;
   hint: string | null;
   recipe: string;
+  source: string | null;
+  servings: number | null;
   protein: number | null;
   fiber: number | null;
   cal: number | null;
   tags: string[];
   ingredients: { name: string; core: boolean }[] | null;
   is_seed: boolean;
+  is_ai_generated: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -28,7 +31,11 @@ export type Rating = {
   updated_at: string;
 };
 
-export type RecipeWithRating = Recipe & { rating: RatingValue | null; queued: boolean };
+export type RecipeWithRating = Recipe & {
+  rating: RatingValue | null;
+  queued: boolean;
+  editable: boolean;
+};
 
 export type WeekQueueItem = {
   id: string;
@@ -76,6 +83,19 @@ export const CUISINE_LABELS: Record<string, string> = {
   mex: "Mexican",
   asi: "Asian",
   ind: "Indian",
+};
+
+export type TagColor = { name: string; color: string };
+
+export const TAG_COLOR_OPTIONS = ["teal", "coral", "gold", "plum", "sage", "red"] as const;
+
+export const TAG_COLOR_CLASSES: Record<string, string> = {
+  teal: "bg-teal-light text-teal",
+  coral: "bg-coral-light text-coral",
+  gold: "bg-gold-light text-gold",
+  plum: "bg-plum-light text-plum",
+  sage: "bg-sage-light text-sage",
+  red: "bg-red-light text-red",
 };
 
 export function mealTypeForCategory(category: string): MealType {

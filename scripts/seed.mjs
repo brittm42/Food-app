@@ -23,7 +23,7 @@ const seedData = JSON.parse(readFileSync(seedPath, "utf-8"));
 const rows = seedData.recipes.map((r) => ({
   name: r.name,
   category: r.cat,
-  cuisine: r.cuisine || null,
+  cuisines: r.cuisine ? [r.cuisine] : [],
   emoji: r.emoji ?? null,
   hint: r.hint ?? null,
   recipe: r.recipe,

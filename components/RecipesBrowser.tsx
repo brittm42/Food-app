@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { RecipeWithRating, RatingValue, MealType } from "@/lib/types";
+import type { RecipeWithRating, TagColor, RatingValue, MealType } from "@/lib/types";
 import { MEAL_TYPES, SUB_CATEGORIES, OAT_FLAVORS, OAT_BASE } from "@/lib/types";
 import RecipeCard from "@/components/RecipeCard";
 
@@ -16,7 +16,13 @@ function ratingRank(rating: RatingValue | null) {
   return 1;
 }
 
-export default function RecipesBrowser({ recipes }: { recipes: RecipeWithRating[] }) {
+export default function RecipesBrowser({
+  recipes,
+  tagColors,
+}: {
+  recipes: RecipeWithRating[];
+  tagColors: TagColor[];
+}) {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const subCats = SUB_CATEGORIES[activeMeal];
   const [activeSub, setActiveSub] = useState(subCats[0].id);
@@ -86,12 +92,22 @@ export default function RecipesBrowser({ recipes }: { recipes: RecipeWithRating[
         </div>
       )}
 
-      {showOats ? <OatFlavorGrid /> : <RecipeList recipes={visibleRecipes} />}
+      {showOats ? (
+        <OatFlavorGrid />
+      ) : (
+        <RecipeList recipes={visibleRecipes} tagColors={tagColors} />
+      )}
     </div>
   );
 }
 
-function RecipeList({ recipes }: { recipes: RecipeWithRating[] }) {
+function RecipeList({
+  recipes,
+  tagColors,
+}: {
+  recipes: RecipeWithRating[];
+  tagColors: TagColor[];
+}) {
   if (recipes.length === 0) {
     return (
       <div className="text-center text-ink-light text-sm py-10">
@@ -103,7 +119,7 @@ function RecipeList({ recipes }: { recipes: RecipeWithRating[] }) {
   return (
     <div className="flex flex-col gap-2.5">
       {recipes.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
+        <RecipeCard key={recipe.id} recipe={recipe} tagColors={tagColors} />
       ))}
     </div>
   );

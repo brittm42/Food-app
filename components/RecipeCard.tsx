@@ -1,8 +1,9 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import type { RecipeWithRating, RatingValue } from "@/lib/types";
-import { CUISINE_LABELS } from "@/lib/types";
+import Link from "next/link";
+import type { RecipeWithRating, TagColor, RatingValue } from "@/lib/types";
+import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
 import { toggleThisWeek } from "@/app/actions/week-queue";
 
@@ -13,18 +14,17 @@ const CUISINE_BADGE_CLASSES: Record<string, string> = {
   ind: "bg-cuisine-ind-light text-cuisine-ind",
 };
 
-const TAG_CLASSES: Record<string, string> = {
-  "High protein": "bg-teal-light text-teal",
-  "High fiber": "bg-teal-light text-teal",
-  "No-cook": "bg-gold-light text-gold",
-  "Batch cook": "bg-plum-light text-plum",
-  "Britt only": "bg-coral-light text-coral",
-};
-
-export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
+export default function RecipeCard({
+  recipe,
+  tagColors,
+}: {
+  recipe: RecipeWithRating;
+  tagColors: TagColor[];
+}) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const hasMacros = Boolean(recipe.protein || recipe.fiber || recipe.cal);
+  const tagColorByName = Object.fromEntries(tagColors.map((t) => [t.name, t.color]));
 
   function rate(value: RatingValue) {
     startTransition(() => {
@@ -62,17 +62,28 @@ export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
               <div className="text-xs text-ink-light">{recipe.hint}</div>
             )}
             <div className="flex gap-1.5 flex-wrap mt-1.5">
-              {recipe.cuisine && CUISINE_LABELS[recipe.cuisine] && (
-                <span
-                  className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${CUISINE_BADGE_CLASSES[recipe.cuisine]}`}
-                >
-                  {CUISINE_LABELS[recipe.cuisine]}
+              {recipe.is_ai_generated && (
+                <span className="font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-plum-light text-plum">
+                  ✨ AI
                 </span>
+              )}
+              {recipe.cuisines.map(
+                (cuisine) =>
+                  CUISINE_LABELS[cuisine] && (
+                    <span
+                      key={cuisine}
+                      className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${CUISINE_BADGE_CLASSES[cuisine]}`}
+                    >
+                      {CUISINE_LABELS[cuisine]}
+                    </span>
+                  )
               )}
               {recipe.tags.map((tag) => (
                 <span
                   key={tag}
-                  className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${TAG_CLASSES[tag] ?? "bg-sage-light text-sage"}`}
+                  className={`font-mono text-[10px] px-1.5 py-0.5 rounded-full ${
+                    TAG_COLOR_CLASSES[tagColorByName[tag]] ?? "bg-sage-light text-sage"
+                  }`}
                 >
                   {tag}
                 </span>
@@ -121,6 +132,15 @@ export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
             >
               📅
             </button>
+            {recipe.editable && (
+              <Link
+                href={`/recipes/${recipe.id}/edit`}
+                aria-label="Edit recipe"
+                className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors bg-surface-warm text-ink-light hover:bg-sage-light"
+              >
+                ✏️
+              </Link>
+            )}
           </div>
           <button
             type="button"
@@ -151,6 +171,16 @@ export default function RecipeCard({ recipe }: { recipe: RecipeWithRating }) {
               ) : null}
               {recipe.cal ? <Macro value={`${recipe.cal}`} label="Cal" /> : null}
             </div>
+          )}
+          {recipe.source && (
+            <a
+              href={recipe.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block mt-3 text-xs text-teal underline truncate"
+            >
+              Source ↗
+            </a>
           )}
         </div>
       )}

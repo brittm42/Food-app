@@ -1,12 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import RecipesBrowser from "@/components/RecipesBrowser";
-import type { Recipe, RecipeWithRating, RatingValue } from "@/lib/types";
+import type { Recipe, RecipeWithRating, RatingValue, TagColor } from "@/lib/types";
 
 export default async function RecipesPage() {
   const supabase = await createClient();
 
-  const [{ data: recipes, error }, { data: userData }] = await Promise.all([
+  const [{ data: recipes, error }, { data: tagColors }, { data: userData }] = await Promise.all([
     supabase.from("recipes").select("*").order("name"),
+    supabase.from("tag_colors").select("*"),
     supabase.auth.getUser(),
   ]);
 
@@ -41,7 +42,10 @@ export default async function RecipesPage() {
     ...(r as Recipe),
     rating: ratingsByRecipe[r.id] ?? null,
     queued: queuedRecipeIds.has(r.id),
+    editable: userData.user != null,
   }));
 
-  return <RecipesBrowser recipes={recipesWithRatings} />;
+  return (
+    <RecipesBrowser recipes={recipesWithRatings} tagColors={(tagColors ?? []) as TagColor[]} />
+  );
 }
