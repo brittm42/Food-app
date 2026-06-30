@@ -44,14 +44,14 @@ export type WeekQueueItem = {
   added_at: string;
 };
 
-export type MealType = "breakfast" | "lunch" | "snacks" | "dinner" | "salmon";
+export type MealType = "breakfast" | "lunch" | "snacks" | "dinner" | "solo";
 
 export const MEAL_TYPES: { id: MealType; label: string }[] = [
   { id: "breakfast", label: "Breakfast" },
   { id: "lunch", label: "Lunch" },
   { id: "snacks", label: "Snacks" },
   { id: "dinner", label: "Dinner" },
-  { id: "salmon", label: "Your Salmon" },
+  { id: "solo", label: "Just for Me" },
 ];
 
 // "oats" is not a recipe category in the `recipes` table — it's the
@@ -75,7 +75,7 @@ export const SUB_CATEGORIES: Record<MealType, { id: string; label: string }[]> =
     { id: "family", label: "Family Mains" },
     { id: "sides", label: "Better Sides" },
   ],
-  salmon: [{ id: "salmon", label: "Your Salmon" }],
+  solo: [{ id: "solo", label: "Just for Me" }],
 };
 
 export const CUISINE_LABELS: Record<string, string> = {

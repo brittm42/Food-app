@@ -71,7 +71,7 @@ My Polymarket app uses React + Vite + Node/Express + SQLite because it has a ser
 ### Feature 1: Recipe Library
 **Description**: A browsable library of recipes, organized by meal type and sub-category, with cuisine tags.
 **Structure**:
-- Top-level meal types: Breakfast, Lunch, Snacks, Dinner, Your Salmon
+- Top-level meal types: Breakfast, Lunch, Snacks, Dinner, Just for Me
 - Breakfast sub-categories: Overnight Oats, Smoothies, Hot Breakfasts, Quick Grabs, Guilty Pleasures
 - Lunch sub-categories: Bowls, Wraps, Soups, Quick Plates
 - Dinner sub-categories: Family Mains, Better Sides
@@ -121,13 +121,14 @@ My Polymarket app uses React + Vite + Node/Express + SQLite because it has a ser
 - The framing: "If Core Pantry is stocked, you can always make something." This is the Sunday-scan tool.
 **Acceptance Criteria**: Checkbox state persists across refresh and devices. Categories render correctly.
 
-### Feature 7: Add Your Own Recipe
-**Description**: A form to add new recipes to the library from inside the app.
+### Feature 7: Add / Edit Recipe, with AI-Assisted Generation
+**Description**: A form to add new recipes to the library from inside the app, edit any existing recipe (including seed recipes — I'm the curator, not just an owner of my own additions), and optionally have Claude draft a recipe for me to review before saving.
 **Behavior**:
-- Fields: name, category (dropdown of all sub-categories), cuisine (optional dropdown), emoji, hint line, recipe instructions (multi-line), protein (g), fiber (g), dietary tags (multi-select chips).
-- On save, the recipe is written to the database and immediately appears in the right category alongside the seed recipes.
-- Ideally also let me optionally add an ingredient list for shopping-list generation (can be a simple comma-separated input for v1).
-**Acceptance Criteria**: A recipe I add on my phone appears on my laptop. It behaves identically to seed recipes (ratable, queueable).
+- Fields: name, category (dropdown of all sub-categories), cuisines (multi-select chips, zero or more), emoji, hint line, recipe instructions (multi-line, light inline HTML like `<strong>` for emphasis), servings, protein (g), fiber (g), calories, dietary tags (multi-select chips, plus the ability to create a new tag with a chosen color), an optional source link, and a structured ingredient list (name + Fresh/Core toggle per row, not comma-separated text — Core vs. Fresh drives Shopping List generation, so it needs to be structured from the start).
+- A "Generate with AI" option: describe a recipe idea and Claude drafts the structured fields for review — never auto-saved, I stay in the loop. The AI is constrained to reuse existing tags (can't invent new ones) and existing ingredient names where applicable, since the Shopping List dedupes ingredients by exact name match.
+- The pencil/edit icon appears on every recipe when signed in, not just ones I added — any recipe can be tweaked at any point.
+- On save, the recipe is written to the database and immediately appears in the right category alongside the seed recipes. AI-drafted recipes are visibly marked (a badge), and that marker persists through later manual edits — it tracks where the recipe came from, not whether it's still untouched.
+**Acceptance Criteria**: A recipe I add or edit on my phone appears the same way on my laptop. Manually-added and AI-drafted recipes behave identically to seed recipes once saved (ratable, queueable, editable).
 
 ### Feature 8: Overnight Oats "Pick 2"
 **Description**: A special interactive module in the Overnight Oats section — pick 2 flavors for the week.
@@ -149,6 +150,9 @@ Document now so the architecture accounts for them. Do NOT build these in v1.
 | Recipe photos | Image upload per recipe | Nice-to-have; emoji icons are fine for v1 |
 | "What did I make" history/log | Track what I actually cooked over time | Explicitly didn't want a history log in v1 |
 | Macro targets / daily totals | Sum protein/fiber across the day | Out of scope; this is a planning tool, not a tracker |
+| Custom pantry staples | Let me add my own always-stock items (e.g. Nutella, pretzel sticks) that show up in Pantry/Shopping checklists without needing to be tied to any recipe — distinct from Core/Fresh ingredients, which are derived from what's queued in This Week | `CORE_PANTRY`/`WEEKLY_FRESH` are hardcoded config today, not user-editable; needs its own add/edit UI and storage |
+| Pantry-quantity reconciliation | Shopping List nets on-hand quantities against what queued recipes need (e.g. I have 4 cans of black beans, this week's recipes need 1 → don't tell me to buy more) | The v1 Shopping List is a flat checklist with no quantity tracking anywhere; this needs a quantity field per ingredient and per pantry item, plus a reconciliation pass — a bigger lift than the checklist model |
+| Account management | Build out account features beyond magic-link sign-in/out (e.g. profile, session management) | Login is intentionally minimal for v1; may overlap with the Multi-user (Jason) item above and should be scoped together |
 
 ---
 
@@ -157,21 +161,30 @@ Document now so the architecture accounts for them. Do NOT build these in v1.
 All tables scoped by `user_id` (uuid, FK to Supabase auth.users). RLS policies: a user can only read/write their own rows. Use `created_at` / `updated_at` timestamps on everything.
 
 ### `recipes`
-The library. Seed recipes are inserted for the user on first run (or shared as global rows with `user_id` null + user-owned rows for custom additions — your call, but simplest is to seed per-user on signup).
+The library. Seed recipes are shared global rows (`user_id` null); user-added/AI-drafted recipes are owned rows. Any signed-in user can edit any recipe, including seed rows — not just their own additions (the "curator" model, not strict per-user ownership for editing).
 - `id`: uuid (pk)
-- `user_id`: uuid (fk) — owner; null allowed if you choose a global-seed approach
+- `user_id`: uuid (fk) nullable — owner; null for shared seed recipes
 - `name`: text
-- `category`: text — enum-like: smoothie, hot, quick, guilty, bowls, wraps, soups, lquick, snacks, family, sides, salmon, oats
-- `cuisine`: text nullable — med, mex, asi, ind
-- `emoji`: text
-- `hint`: text — short description line
-- `recipe`: text — full instructions (may contain light HTML/markdown for bold)
+- `category`: text — enum-like: smoothie, hot, quick, guilty, bowls, wraps, soups, lquick, snacks, family, sides, solo, oats
+- `cuisines`: text[] — zero or more of: med, mex, asi, ind
+- `emoji`: text nullable
+- `hint`: text nullable — short description line
+- `recipe`: text — full instructions (may contain light HTML, e.g. `<strong>`, for emphasis)
+- `source`: text nullable — optional link/citation for where the recipe came from, settable manually or by AI generation
+- `servings`: int nullable
 - `protein`: int nullable
 - `fiber`: int nullable
 - `cal`: int nullable
-- `tags`: text[] — e.g. {High protein, High fiber, No-cook, Batch cook, Britt only}
+- `tags`: text[] — free-form, but constrained to names already present in `tag_colors` when set via AI generation
 - `ingredients`: jsonb nullable — array of { name: text, core: bool } for shopping-list generation
 - `is_seed`: bool — distinguishes seed content from user-added (useful for re-seeding logic)
+- `is_ai_generated`: bool — true if the recipe originated from "Generate with AI," persists through later manual edits (tracks provenance, not "currently unedited")
+
+### `tag_colors`
+Shared/global tag vocabulary — not user-scoped, unlike every other table (tags describe shared recipe vocabulary, same spirit as seed recipes being readable by any signed-in user). Lets a user create a new tag with a chosen color from the form, persisted so the color sticks app-wide.
+- `name`: text (pk)
+- `color`: text — one of the design-token keys (teal, coral, gold, plum, sage, red)
+- `created_at`: timestamp
 
 ### `ratings`
 - `id`: uuid (pk)
@@ -188,24 +201,19 @@ The This Week list.
 - `added_at`: timestamp
 
 ### `pantry_state`
-Tracks which pantry/fresh items are checked. The item catalog itself can be a static config in the codebase (it rarely changes); this table just stores checked state by item key.
+Shared by both the Shopping List's generated checkboxes and the Pantry tab's static-catalog checkboxes (no separate `shopping_state` table — same "checked state by item key" shape covers both, namespaced by a prefix so the two screens don't collide). A row's existence means "checked"; unchecking deletes the row rather than flipping a boolean.
 - `id`: uuid (pk)
 - `user_id`: uuid (fk)
-- `item_key`: text — stable key for the pantry/fresh item (e.g. 'core:Black beans (4 cans)')
-- `checked`: bool
-
-### `shopping_state`
-Persisted checkbox state for the generated shopping list.
-- `id`: uuid (pk)
-- `user_id`: uuid (fk)
-- `item_key`: text
-- `checked`: bool
+- `item_key`: text — prefixed by screen/section: `shopping:fresh:<name>`, `shopping:core:<name>`, `shopping:weekly:<label>`, `pantry:core:<category>:<item>`, `pantry:fresh:<label>`
+- `checked_at`: timestamp
+- unique constraint on (user_id, item_key)
 
 ### `oat_picks`
 - `id`: uuid (pk)
 - `user_id`: uuid (fk)
-- `oat_id`: text — e.g. 'pbj', 'choco'
+- `flavor_id`: text — e.g. 'pbj', 'choco'
 - `picked_at`: timestamp — used to evict the oldest when a 3rd is picked
+- unique constraint on (user_id, flavor_id)
 
 ### Storage Strategy
 Everything lives in Supabase Postgres. No local storage for persistent data (that was the whole reason for the rebuild — local storage doesn't cross devices). Optionally use optimistic UI updates so taps feel instant, then reconcile with the DB.
@@ -263,7 +271,7 @@ Preserve the prototype's design system exactly — it's already dialed in and I 
 - **Coconut flavor is fine, coconut flakes are not** (texture). No recipes that rely on coconut flakes as a featured element.
 - **No Asian-cuisine breakfasts.** Asian is great for lunch/dinner, never morning.
 - **Jackson (my son) has an egg allergy** — any egg-forward recipe is tagged "Britt only" and must never be framed as a family meal.
-- **Salmon is mine; the family doesn't eat it** — the salmon system is a "cook one fillet alongside the family's meal" pattern, not a separate dinner.
+- **The "Just for Me" tab is for anything only I eat — salmon is the example, not the rule.** The family doesn't eat salmon, so it lives there using a "cook one fillet alongside the family's meal" pattern; the tab isn't meant to become a wall of salmon variations, other solo-only foods belong there too.
 - Cuisine focus: Mediterranean, Mexican, Asian, occasional Indian/masala.
 - Keep the honest, warm, slightly funny copy voice from the prototype (e.g. "Bacon isn't the problem. Bacon + nothing else is.").
 
@@ -272,16 +280,16 @@ Preserve the prototype's design system exactly — it's already dialed in and I 
 ## Success Criteria
 
 ### MVP Is Done When:
-- [ ] I can open the app on my phone AND laptop and see the same data (ratings, queue, pantry, custom recipes all synced)
-- [ ] All seed recipes load from Supabase and display in correct categories
-- [ ] I can rate recipes 👍/👎 and favorites float to top + filter works
-- [ ] I can add meals to This Week and they persist
-- [ ] I can generate a shopping list from This Week, split into Fresh vs Core, with persistent checkboxes
-- [ ] I can check off Core Pantry / Weekly Fresh items and state persists
-- [ ] I can add my own recipe and it behaves like a seed recipe
-- [ ] Overnight Oats "Pick 2" works and persists
-- [ ] It's deployed live on Vercel at a URL I can bookmark on my phone
-- [ ] It's behind a simple login so my data isn't public
+- [x] I can open the app on my phone AND laptop and see the same data (ratings, queue, pantry, custom recipes all synced)
+- [x] All seed recipes load from Supabase and display in correct categories
+- [x] I can rate recipes 👍/👎 and favorites float to top + filter works
+- [x] I can add meals to This Week and they persist
+- [x] I can generate a shopping list from This Week, split into Fresh vs Core, with persistent checkboxes
+- [x] I can check off Core Pantry / Weekly Fresh items and state persists
+- [x] I can add my own recipe and it behaves like a seed recipe
+- [x] Overnight Oats "Pick 2" works and persists
+- [x] It's deployed live on Vercel at a URL I can bookmark on my phone
+- [x] It's behind a simple login so my data isn't public
 
 ### Most Important Thing to Get Right
 **Cross-device persistence.** The entire reason for this rebuild is that the prototype's data was trapped on one device. If ratings, queue, and pantry state sync cleanly between my phone and laptop, this is a success. Everything else is polish.

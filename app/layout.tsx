@@ -48,7 +48,7 @@ export default function RootLayout({
             want.
           </h1>
           <p className="text-xs text-[#706860]">
-            Mediterranean · Mexican · Asian · Indian · Your salmon · Real food
+            Mediterranean · Mexican · Asian · Indian · Just for me · Real food
           </p>
         </header>
         <TopNav />

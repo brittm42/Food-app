@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "Seed data for Britt's Food System web app. Import into Supabase. Recipe categories: smoothie, hot, quick, guilty (breakfast); bowls, wraps, soups, lquick (lunch); snacks; family, sides (dinner); salmon. Cuisines: med, mex, asi, ind. Tags are free-form chips.",
+    "description": "Seed data for Britt's Food System web app. Import into Supabase. Recipe categories: smoothie, hot, quick, guilty (breakfast); bowls, wraps, soups, lquick (lunch); snacks; family, sides (dinner); solo (Just for Me — salmon recipes are the example, not the rule). Cuisines: med, mex, asi, ind. Tags are free-form chips.",
     "cuisines": {
       "med": "Mediterranean",
       "mex": "Mexican",
@@ -28,8 +28,8 @@
         "family",
         "sides"
       ],
-      "salmon": [
-        "salmon"
+      "solo": [
+        "solo"
       ]
     }
   },
@@ -1361,7 +1361,7 @@
     },
     {
       "id": "sal1",
-      "cat": "salmon",
+      "cat": "solo",
       "emoji": "🫒",
       "name": "Mediterranean Salmon",
       "hint": "Lemon, garlic, oregano, olives",
@@ -1398,7 +1398,7 @@
     },
     {
       "id": "sal2",
-      "cat": "salmon",
+      "cat": "solo",
       "emoji": "🥢",
       "name": "Miso-Glazed Salmon",
       "hint": "Soy, miso, honey — the best one on the list",
@@ -1431,7 +1431,7 @@
     },
     {
       "id": "sal3",
-      "cat": "salmon",
+      "cat": "solo",
       "emoji": "🌶️",
       "name": "Chili Lime Salmon",
       "hint": "Bright, spicy, Mexican lane",
@@ -1472,7 +1472,7 @@
     },
     {
       "id": "sal4",
-      "cat": "salmon",
+      "cat": "solo",
       "emoji": "🍋",
       "name": "Simple Lemon-Dill",
       "hint": "The default · works with anything",
@@ -1501,7 +1501,7 @@
     },
     {
       "id": "sal5",
-      "cat": "salmon",
+      "cat": "solo",
       "emoji": "🧄",
       "name": "Garlic Herb Butter Salmon",
       "hint": "Rich, simple, crowd-pleaser",
