@@ -1,16 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentHousehold } from "@/lib/household";
 import ThisWeekView from "@/components/ThisWeekView";
 import type { Recipe } from "@/lib/types";
 
 export default async function ThisWeekPage() {
+  const household = await getCurrentHousehold();
+  if (!household) return null;
+
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
 
   const { data: queue, error } = await supabase
     .from("week_queue")
     .select("id, recipe:recipes(*)")
-    .eq("user_id", userData.user.id)
+    .eq("household_id", household.householdId)
     .order("added_at");
 
   if (error) {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentHousehold } from "@/lib/household";
 
 function revalidateAffectedPaths() {
   revalidatePath("/");
@@ -10,49 +11,56 @@ function revalidateAffectedPaths() {
 }
 
 export async function toggleThisWeek(recipeId: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return;
+
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
-  if (!user) return;
 
   const { data: existing } = await supabase
     .from("week_queue")
     .select("id")
-    .eq("user_id", user.id)
+    .eq("household_id", household.householdId)
     .eq("recipe_id", recipeId)
     .maybeSingle();
 
   if (existing) {
     await supabase.from("week_queue").delete().eq("id", existing.id);
   } else {
-    await supabase
-      .from("week_queue")
-      .insert({ user_id: user.id, recipe_id: recipeId });
+    await supabase.from("week_queue").insert({
+      household_id: household.householdId,
+      user_id: household.userId,
+      recipe_id: recipeId,
+    });
   }
 
   revalidateAffectedPaths();
 }
 
 export async function removeFromThisWeek(queueId: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return;
+
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return;
 
   await supabase
     .from("week_queue")
     .delete()
     .eq("id", queueId)
-    .eq("user_id", userData.user.id);
+    .eq("household_id", household.householdId);
 
   revalidateAffectedPaths();
 }
 
 export async function clearThisWeek() {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return;
+  const household = await getCurrentHousehold();
+  if (!household) return;
 
-  await supabase.from("week_queue").delete().eq("user_id", userData.user.id);
+  const supabase = await createClient();
+
+  await supabase
+    .from("week_queue")
+    .delete()
+    .eq("household_id", household.householdId);
 
   revalidateAffectedPaths();
 }

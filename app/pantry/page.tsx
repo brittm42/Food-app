@@ -1,20 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentHousehold } from "@/lib/household";
 import PantryView from "@/components/PantryView";
 
 export default async function PantryPage() {
+  const household = await getCurrentHousehold();
+  if (!household) return null;
+
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
 
   const [{ data: checkedRows, error }, { data: staples }] = await Promise.all([
     supabase
       .from("pantry_state")
       .select("item_key")
-      .eq("user_id", userData.user.id),
+      .eq("household_id", household.householdId),
     supabase
       .from("pantry_staples")
       .select("*")
-      .eq("user_id", userData.user.id)
+      .eq("household_id", household.householdId)
       .order("created_at", { ascending: true }),
   ]);
 

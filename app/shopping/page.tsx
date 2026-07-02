@@ -1,27 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentHousehold } from "@/lib/household";
 import ShoppingListView from "@/components/ShoppingListView";
 import { WEEKLY_FRESH } from "@/lib/types";
 import type { Recipe } from "@/lib/types";
 
 export default async function ShoppingPage() {
+  const household = await getCurrentHousehold();
+  if (!household) return null;
+
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
 
   const [{ data: queue, error }, { data: checkedRows }, { data: staplesRows }] =
     await Promise.all([
       supabase
         .from("week_queue")
         .select("recipe:recipes(ingredients)")
-        .eq("user_id", userData.user.id),
+        .eq("household_id", household.householdId),
       supabase
         .from("pantry_state")
         .select("item_key")
-        .eq("user_id", userData.user.id),
+        .eq("household_id", household.householdId),
       supabase
         .from("pantry_staples")
         .select("*")
-        .eq("user_id", userData.user.id)
+        .eq("household_id", household.householdId)
         .order("created_at", { ascending: true }),
     ]);
 

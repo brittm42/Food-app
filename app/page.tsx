@@ -1,15 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentHousehold } from "@/lib/household";
 import RecipesBrowser from "@/components/RecipesBrowser";
 import type { Recipe, RecipeWithRating, RatingValue, TagColor } from "@/lib/types";
 
 export default async function RecipesPage() {
   const supabase = await createClient();
 
-  const [{ data: recipes, error }, { data: tagColors }, { data: userData }] = await Promise.all([
-    supabase.from("recipes").select("*").order("name"),
-    supabase.from("tag_colors").select("*"),
-    supabase.auth.getUser(),
-  ]);
+  const [{ data: recipes, error }, { data: tagColors }, { data: userData }, household] =
+    await Promise.all([
+      supabase.from("recipes").select("*").order("name"),
+      supabase.from("tag_colors").select("*"),
+      supabase.auth.getUser(),
+      getCurrentHousehold(),
+    ]);
 
   if (error) {
     return (
@@ -28,10 +31,12 @@ export default async function RecipesPage() {
         .from("ratings")
         .select("recipe_id, rating")
         .eq("user_id", userData.user.id),
-      supabase
-        .from("week_queue")
-        .select("recipe_id")
-        .eq("user_id", userData.user.id),
+      household
+        ? supabase
+            .from("week_queue")
+            .select("recipe_id")
+            .eq("household_id", household.householdId)
+        : Promise.resolve({ data: [] as { recipe_id: string }[] }),
       supabase
         .from("oat_picks")
         .select("flavor_id")

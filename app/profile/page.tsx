@@ -1,0 +1,43 @@
+import { createClient } from "@/lib/supabase/server";
+import { listHouseholdMembers } from "@/app/actions/household";
+import HouseholdPanel from "@/components/HouseholdPanel";
+import SetPasswordForm from "@/components/SetPasswordForm";
+
+const PROVIDER_LABELS: Record<string, string> = {
+  email: "Email",
+  google: "Google",
+};
+
+export default async function ProfilePage() {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return null;
+
+  const { members, invites, role, householdName } = await listHouseholdMembers();
+
+  const providers = userData.user.app_metadata?.providers as string[] | undefined;
+  const signInMethods = (providers ?? [userData.user.app_metadata?.provider])
+    .filter((p): p is string => Boolean(p))
+    .map((p) => PROVIDER_LABELS[p] ?? p);
+
+  return (
+    <div className="max-w-md mx-auto py-8 px-4">
+      <h1 className="font-display text-xl font-light mb-1">Your account</h1>
+      <p className="text-sm text-ink-light">{userData.user.email}</p>
+      {signInMethods.length > 0 && (
+        <p className="text-xs text-ink-light mt-1">
+          Signed in via {signInMethods.join(", ")}
+        </p>
+      )}
+
+      <SetPasswordForm />
+
+      <HouseholdPanel
+        householdName={householdName ?? "Home"}
+        members={members}
+        invites={invites}
+        isOwner={role === "owner"}
+      />
+    </div>
+  );
+}
