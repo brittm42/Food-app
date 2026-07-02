@@ -24,8 +24,8 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Britt's Food System",
-  description: "A personal recipe library, pantry tracker, and shopping list.",
+  title: "WeeklyNom",
+  description: "A household recipe library, pantry tracker, and shopping list.",
 };
 
 export default function RootLayout({
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col font-body bg-bg text-ink">
         <header className="bg-ink px-5 py-7 text-center">
           <div className="font-mono text-[10px] uppercase tracking-widest text-teal-mid mb-2">
-            Britt&apos;s Food System
+            WeeklyNom
           </div>
           <h1 className="font-display text-2xl font-light text-white leading-tight mb-1">
             Eat what you <em className="italic text-teal-mid">actually</em>{" "}

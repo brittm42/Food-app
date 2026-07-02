@@ -12,7 +12,7 @@ const CUISINE_IDS = Object.keys(CUISINE_LABELS);
 function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropic.Tool {
   return {
     name: "draft_recipe",
-    description: "Draft a structured recipe for Britt's Food System recipe library.",
+    description: "Draft a structured recipe for the WeeklyNom recipe library.",
     input_schema: {
       type: "object",
       properties: {
@@ -92,7 +92,7 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
   };
 }
 
-const SYSTEM_PROMPT = `You are drafting a recipe for a personal household recipe library called Britt's Food System. The library's existing recipes share a consistent voice:
+const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library called WeeklyNom. The library's existing recipes share a consistent voice:
 - Casual, brief hint lines (not full sentences of marketing copy).
 - Protein- and fiber-forward home cooking, simple weeknight-friendly instructions.
 - Light inline HTML (just <strong> for emphasis) inside the recipe body, no other markup.
