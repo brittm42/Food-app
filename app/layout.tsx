@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import TopNav from "@/components/TopNav";
@@ -26,6 +26,15 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   title: "WeeklyNom",
   description: "A household recipe library, pantry tracker, and shopping list.",
+  appleWebApp: {
+    capable: true,
+    title: "WeeklyNom",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1e1b17",
 };
 
 export default function RootLayout({
