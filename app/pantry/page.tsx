@@ -8,17 +8,22 @@ export default async function PantryPage() {
 
   const supabase = await createClient();
 
-  const [{ data: checkedRows, error }, { data: staples }] = await Promise.all([
-    supabase
-      .from("pantry_state")
-      .select("item_key")
-      .eq("household_id", household.householdId),
-    supabase
-      .from("pantry_staples")
-      .select("*")
-      .eq("household_id", household.householdId)
-      .order("created_at", { ascending: true }),
-  ]);
+  const [{ data: checkedRows, error }, { data: staples }, { data: removedRows }] =
+    await Promise.all([
+      supabase
+        .from("pantry_state")
+        .select("item_key")
+        .eq("household_id", household.householdId),
+      supabase
+        .from("pantry_staples")
+        .select("*")
+        .eq("household_id", household.householdId)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("pantry_catalog_removed")
+        .select("item_key")
+        .eq("household_id", household.householdId),
+    ]);
 
   if (error) {
     return (
@@ -29,6 +34,9 @@ export default async function PantryPage() {
   }
 
   const checkedKeys = (checkedRows ?? []).map((r) => r.item_key);
+  const removedKeys = (removedRows ?? []).map((r) => r.item_key);
 
-  return <PantryView checkedKeys={checkedKeys} staples={staples ?? []} />;
+  return (
+    <PantryView checkedKeys={checkedKeys} staples={staples ?? []} removedKeys={removedKeys} />
+  );
 }

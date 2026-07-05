@@ -68,3 +68,36 @@ export async function deleteStaple(id: string) {
   revalidatePath("/pantry");
   revalidatePath("/shopping");
 }
+
+// Permanently hides a static Core Pantry / Weekly Fresh catalog entry for
+// this household (e.g. "we'll never keep Farro on hand"). The underlying
+// CORE_PANTRY/WEEKLY_FRESH config is untouched — this just records an
+// override so it stops rendering, and can be undone with restoreCatalogItem.
+export async function removeCatalogItem(catalogKey: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return;
+
+  const supabase = await createClient();
+
+  await supabase.from("pantry_catalog_removed").insert({
+    household_id: household.householdId,
+    item_key: catalogKey,
+  });
+
+  revalidatePath("/pantry");
+}
+
+export async function restoreCatalogItem(catalogKey: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return;
+
+  const supabase = await createClient();
+
+  await supabase
+    .from("pantry_catalog_removed")
+    .delete()
+    .eq("household_id", household.householdId)
+    .eq("item_key", catalogKey);
+
+  revalidatePath("/pantry");
+}
