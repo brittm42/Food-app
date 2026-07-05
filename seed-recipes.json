@@ -234,14 +234,14 @@
         {
           "name": "Granola",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Fresh strawberries",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -293,8 +293,8 @@
         {
           "name": "Hemp seeds",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -387,8 +387,8 @@
         {
           "name": "Whole grain bread",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "slice"
         }
       ],
       "steps": [
@@ -437,14 +437,14 @@
         {
           "name": "Avocados",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Tortillas",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "small"
         }
       ],
       "steps": [
@@ -476,8 +476,8 @@
         {
           "name": "Whole grain bread",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "slice"
         },
         {
           "name": "Avocados",
@@ -488,8 +488,8 @@
         {
           "name": "Lemons",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "whole"
         }
       ],
       "steps": [
@@ -524,14 +524,14 @@
         {
           "name": "Nut butter",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Hemp seeds",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -603,8 +603,8 @@
         {
           "name": "Waffle mix",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Vanilla protein powder",
@@ -615,8 +615,8 @@
         {
           "name": "Fresh berries",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -664,8 +664,8 @@
         {
           "name": "Farro or brown rice",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Chickpeas",
@@ -676,44 +676,44 @@
         {
           "name": "Sweet potato or zucchini",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "medium"
         },
         {
           "name": "Baby spinach",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "cup"
         },
         {
           "name": "Tahini",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "3",
+          "unit": "tbsp"
         },
         {
           "name": "Lemons",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Kalamata olives",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Feta cheese",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -746,44 +746,44 @@
         {
           "name": "Brown rice",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Black beans",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Frozen corn",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Avocados",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Salsa",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Shredded cheese",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Cilantro",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -816,14 +816,14 @@
         {
           "name": "Soba noodles",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "4",
+          "unit": "oz"
         },
         {
           "name": "Edamame",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Peanut butter",
@@ -846,14 +846,14 @@
         {
           "name": "Purple cabbage",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         }
       ],
       "steps": [
@@ -884,38 +884,38 @@
         {
           "name": "Red lentils",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/3",
+          "unit": "cup"
         },
         {
           "name": "Brown rice",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Diced tomatoes",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Veggie broth",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "cup"
         },
         {
           "name": "Cilantro",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -958,26 +958,26 @@
         {
           "name": "Baby spinach",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Cherry tomatoes",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "5-6",
+          "unit": "whole"
         },
         {
           "name": "Feta cheese",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2-3",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -1008,26 +1008,26 @@
         {
           "name": "Leftover salmon",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "cup"
         },
         {
           "name": "Butter lettuce",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "8",
+          "unit": "leaf"
         },
         {
           "name": "Soy sauce",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Sesame oil",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tsp"
         },
         {
           "name": "Purple cabbage",
@@ -1038,8 +1038,8 @@
         {
           "name": "Green onions",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "stalk"
         }
       ],
       "steps": [
@@ -1069,8 +1069,8 @@
         {
           "name": "Black beans",
           "core": true,
-          "quantity": null,
-          "unit": "can"
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Large tortillas",
@@ -1081,14 +1081,14 @@
         {
           "name": "Shredded cheese",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Avocados",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Salsa",
@@ -1193,8 +1193,8 @@
         {
           "name": "Rice noodles or ramen",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "oz"
         },
         {
           "name": "Mushrooms",
@@ -1205,8 +1205,8 @@
         {
           "name": "Baby spinach",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Soy sauce",
@@ -1217,8 +1217,8 @@
         {
           "name": "Green onions",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "stalk"
         }
       ],
       "steps": [
@@ -1247,26 +1247,26 @@
         {
           "name": "Hummus",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Crackers",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "8-10",
+          "unit": "whole"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Cherry tomatoes",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "8-10",
+          "unit": "whole"
         },
         {
           "name": "Mixed nuts",
@@ -1300,14 +1300,14 @@
         {
           "name": "Leftover salmon",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "4",
+          "unit": "oz"
         },
         {
           "name": "Brown rice",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Avocados",
@@ -1318,8 +1318,8 @@
         {
           "name": "Soy sauce",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -1380,14 +1380,14 @@
         {
           "name": "Nut butter",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Apples or bananas",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "whole"
         }
       ],
       "steps": [
@@ -1414,32 +1414,32 @@
         {
           "name": "Carrots",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "3",
+          "unit": "medium"
         },
         {
           "name": "Celery",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "3",
+          "unit": "stalk"
         },
         {
           "name": "Cucumber",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "medium"
         },
         {
           "name": "Bell pepper",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Hummus",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -1474,8 +1474,8 @@
         {
           "name": "Crackers",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "8",
+          "unit": "whole"
         },
         {
           "name": "Fruit",
@@ -1508,8 +1508,8 @@
         {
           "name": "Seaweed snack packs",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "pack"
         },
         {
           "name": "Mixed nuts",
@@ -1542,26 +1542,26 @@
         {
           "name": "Chicken thighs",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "8",
+          "unit": "whole"
         },
         {
           "name": "Lemons",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "whole"
         },
         {
           "name": "Garlic",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "3",
+          "unit": "clove"
         },
         {
           "name": "Dried oregano",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "tbsp"
         }
       ],
       "steps": [
@@ -1590,20 +1590,20 @@
         {
           "name": "Ground beef",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "lb"
         },
         {
           "name": "Tortillas",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "8",
+          "unit": "whole"
         },
         {
           "name": "Black beans",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Avocados",
@@ -1614,14 +1614,14 @@
         {
           "name": "Salsa",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Shredded cheese",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -1650,14 +1650,14 @@
         {
           "name": "Chicken thighs or breast",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1 to 1.5",
+          "unit": "lb"
         },
         {
           "name": "Brown rice",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Soy sauce",
@@ -1680,8 +1680,8 @@
         {
           "name": "Broccoli",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -1712,8 +1712,8 @@
         {
           "name": "Chicken (for family)",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "lb"
         },
         {
           "name": "Tikka masala sauce (jar)",
@@ -1730,8 +1730,8 @@
         {
           "name": "Coconut milk",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "can"
         }
       ],
       "steps": [
@@ -1760,8 +1760,8 @@
         {
           "name": "Pasta",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "12",
+          "unit": "oz"
         },
         {
           "name": "Cannellini beans",
@@ -1784,8 +1784,8 @@
         {
           "name": "Parmesan",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -1823,20 +1823,20 @@
         {
           "name": "Cherry tomatoes",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Parmesan",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Lemons",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "whole"
         }
       ],
       "steps": [
@@ -1871,14 +1871,14 @@
         {
           "name": "Cumin",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "tsp"
         },
         {
           "name": "Garlic powder",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/4",
+          "unit": "tsp"
         }
       ],
       "steps": [
@@ -1906,14 +1906,14 @@
         {
           "name": "Broccoli",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "large head"
         },
         {
           "name": "Garlic powder",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "tsp"
         }
       ],
       "steps": [
@@ -1940,8 +1940,8 @@
         {
           "name": "Salmon fillet",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "fillet (6 oz)"
         },
         {
           "name": "Lemons",
@@ -1952,8 +1952,8 @@
         {
           "name": "Dried oregano",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "tsp"
         },
         {
           "name": "Kalamata olives",
@@ -1964,8 +1964,8 @@
         {
           "name": "Cherry tomatoes",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "cup"
         }
       ],
       "steps": [
@@ -1994,8 +1994,8 @@
         {
           "name": "Salmon fillet",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "fillet (about 6 oz)"
         },
         {
           "name": "White miso",
@@ -2043,8 +2043,8 @@
         {
           "name": "Salmon fillet",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1.5",
+          "unit": "lb"
         },
         {
           "name": "Lemons",
@@ -2067,14 +2067,14 @@
         {
           "name": "Avocados",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "2",
+          "unit": "whole"
         },
         {
           "name": "Black beans",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "can (15 oz)"
         }
       ],
       "steps": [
@@ -2103,8 +2103,8 @@
         {
           "name": "Salmon fillet",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Lemons",
@@ -2115,8 +2115,8 @@
         {
           "name": "Dried dill",
           "core": true,
-          "quantity": null,
-          "unit": null
+          "quantity": "1/2",
+          "unit": "tsp"
         }
       ],
       "steps": [
@@ -2144,8 +2144,8 @@
         {
           "name": "Salmon fillet",
           "core": false,
-          "quantity": null,
-          "unit": null
+          "quantity": "1",
+          "unit": "whole (about 6 oz)"
         },
         {
           "name": "Butter",
