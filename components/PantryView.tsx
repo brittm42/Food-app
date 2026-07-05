@@ -106,13 +106,14 @@ export default function PantryView({
                           type="button"
                           disabled={isPending}
                           onClick={() => toggle(neededKey)}
-                          className={`font-mono text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-full cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
+                          aria-label={isNeeded ? `Remove ${item} from shopping list` : `Add ${item} to shopping list`}
+                          className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
                             isNeeded
                               ? "bg-gold text-white"
                               : "bg-surface-warm text-ink-light hover:bg-gold-light"
                           }`}
                         >
-                          {isNeeded ? "✓ On list" : "+ Add to list"}
+                          {isNeeded ? "✓" : "+"}
                         </button>
                         <button
                           type="button"
@@ -235,13 +236,14 @@ export default function PantryView({
                   type="button"
                   disabled={isPending}
                   onClick={() => toggle(neededKey)}
-                  className={`font-mono text-[10px] uppercase tracking-wide px-2.5 py-1 rounded-full cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
+                  aria-label={isNeeded ? `Remove ${staple.label} from shopping list` : `Add ${staple.label} to shopping list`}
+                  className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
                     isNeeded
                       ? "bg-gold text-white"
                       : "bg-surface-warm text-ink-light hover:bg-gold-light"
                   }`}
                 >
-                  {isNeeded ? "✓ On list" : "+ Add to list"}
+                  {isNeeded ? "✓" : "+"}
                 </button>
                 <button
                   type="button"
