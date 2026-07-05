@@ -35,7 +35,9 @@ export default function RecipeCard({
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const hasMacros = Boolean(recipe.protein || recipe.fiber || recipe.cal);
+  const hasMacros = Boolean(
+    recipe.protein || recipe.fiber || recipe.cal || recipe.prep_time_minutes
+  );
   const tagColorByName = Object.fromEntries(tagColors.map((t) => [t.name, t.color]));
 
   function rate(value: RatingValue) {
@@ -171,12 +173,43 @@ export default function RecipeCard({
           <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5">
             How to make it
           </div>
-          <div
-            className="text-[13.5px] leading-relaxed [&_strong]:font-semibold"
-            dangerouslySetInnerHTML={{ __html: recipe.recipe }}
-          />
+          {recipe.steps.length > 0 ? (
+            <ol className="text-[13.5px] leading-relaxed [&_strong]:font-semibold list-decimal list-inside flex flex-col gap-1.5">
+              {recipe.steps.map((step, i) => (
+                <li key={i} dangerouslySetInnerHTML={{ __html: step }} />
+              ))}
+            </ol>
+          ) : recipe.recipe ? (
+            <div
+              className="text-[13.5px] leading-relaxed [&_strong]:font-semibold"
+              dangerouslySetInnerHTML={{ __html: recipe.recipe }}
+            />
+          ) : null}
+          {recipe.ingredients && recipe.ingredients.length > 0 && (
+            <>
+              <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5 mt-3.5">
+                Ingredients
+              </div>
+              <ul className="text-[13.5px] leading-relaxed flex flex-col gap-1">
+                {recipe.ingredients.map((ing, i) => (
+                  <li key={i}>
+                    {ing.quantity && (
+                      <span className="text-ink-light">
+                        {ing.quantity}
+                        {ing.unit ? ` ${ing.unit}` : ""}{" "}
+                      </span>
+                    )}
+                    {ing.name}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {hasMacros && (
             <div className="flex gap-2 mt-3.5">
+              {recipe.prep_time_minutes ? (
+                <Macro value={`${recipe.prep_time_minutes}m`} label="Prep" />
+              ) : null}
               {recipe.protein ? (
                 <Macro value={`${recipe.protein}g`} label="Protein" />
               ) : null}

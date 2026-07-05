@@ -32,10 +32,16 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
           type: "string",
           description: "A short, casual one-line description (PRD voice: friendly, brief).",
         },
-        recipe: {
-          type: "string",
+        steps: {
+          type: "array",
+          items: { type: "string" },
           description:
-            "The recipe instructions. Light inline HTML like <strong> is OK for emphasis; no other markup.",
+            "Ordered list of instruction steps, one clear action per step (not a single paragraph). Light inline HTML like <strong> is OK for emphasis; no other markup.",
+        },
+        prep_time_minutes: {
+          type: "integer",
+          description:
+            "Estimated active prep time in minutes, only if you have a reasonable basis for estimating it from the ingredient list/step count. Omit if you'd just be guessing.",
         },
         source: {
           type: "string",
@@ -82,12 +88,22 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
                 description:
                   "true if this is a shelf-stable Core Pantry item, false if it's a Fresh/weekly-buy item.",
               },
+              quantity: {
+                type: "string",
+                description:
+                  'Amount as it would appear in a recipe, e.g. "1", "1/2", "2-3", "handful", "to taste". Free text, not strictly numeric. Omit if genuinely not quantifiable.',
+              },
+              unit: {
+                type: "string",
+                description:
+                  'Unit of measure, e.g. "cup", "tbsp", "clove", "can", "whole". Omit if quantity has no unit (e.g. "to taste").',
+              },
             },
             required: ["name", "core"],
           },
         },
       },
-      required: ["name", "category", "cuisines", "emoji", "hint", "recipe", "servings", "tags", "ingredients"],
+      required: ["name", "category", "cuisines", "emoji", "hint", "steps", "servings", "tags", "ingredients"],
     },
   };
 }
@@ -95,8 +111,9 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
 const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library called WeeklyNom. The library's existing recipes share a consistent voice:
 - Casual, brief hint lines (not full sentences of marketing copy).
 - Protein- and fiber-forward home cooking, simple weeknight-friendly instructions.
-- Light inline HTML (just <strong> for emphasis) inside the recipe body, no other markup.
-- Ingredients are split into "Fresh" (perishable, weekly-buy) vs "Core" (shelf-stable pantry staples) for shopping list generation. Ingredient names must be bare nouns with no quantity or brand, and should reuse an existing name when the same ingredient is already in the library — the Shopping List dedupes ingredients by exact name match across recipes, so inconsistent naming creates duplicate entries.
+- Instructions are an ordered list of discrete steps, not a single paragraph — one clear action per step. Light inline HTML (just <strong> for emphasis) inside a step is OK, no other markup.
+- Ingredients are split into "Fresh" (perishable, weekly-buy) vs "Core" (shelf-stable pantry staples) for shopping list generation. Ingredient names must be bare nouns with no quantity or brand, and should reuse an existing name when the same ingredient is already in the library — the Shopping List dedupes ingredients by exact name match across recipes, so inconsistent naming creates duplicate entries. Quantities and units belong in their own fields, using realistic everyday-recipe conventions (fractions, ranges, or words like "handful"/"to taste" are fine — quantity is a string, not strictly numeric).
+- Estimate prep_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
 Draft one recipe matching this voice based on the user's description. Always call the draft_recipe tool with your answer.`;
 
 export async function generateRecipeDraft(

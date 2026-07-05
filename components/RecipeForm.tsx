@@ -22,20 +22,23 @@ const INPUT_CLASS =
   "border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal w-full";
 const LABEL_CLASS = "block font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1";
 
+type FormIngredient = { name: string; core: boolean; quantity: string; unit: string };
+
 type FormState = {
   name: string;
   category: string;
   cuisines: string[];
   emoji: string;
   hint: string;
-  recipe: string;
+  steps: string[];
+  prepTimeMinutes: string;
   source: string;
   servings: string;
   protein: string;
   fiber: string;
   cal: string;
   tags: string[];
-  ingredients: { name: string; core: boolean }[];
+  ingredients: FormIngredient[];
 };
 
 function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
@@ -45,14 +48,20 @@ function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
     cuisines: recipe?.cuisines ?? [],
     emoji: recipe?.emoji ?? "",
     hint: recipe?.hint ?? "",
-    recipe: recipe?.recipe ?? "",
+    steps: recipe?.steps && recipe.steps.length > 0 ? recipe.steps : [""],
+    prepTimeMinutes: recipe?.prep_time_minutes != null ? String(recipe.prep_time_minutes) : "",
     source: recipe?.source ?? "",
     servings: recipe?.servings != null ? String(recipe.servings) : "",
     protein: recipe?.protein != null ? String(recipe.protein) : "",
     fiber: recipe?.fiber != null ? String(recipe.fiber) : "",
     cal: recipe?.cal != null ? String(recipe.cal) : "",
     tags: recipe?.tags ?? [],
-    ingredients: recipe?.ingredients ?? [],
+    ingredients: (recipe?.ingredients ?? []).map((ing) => ({
+      name: ing.name,
+      core: ing.core,
+      quantity: ing.quantity ?? "",
+      unit: ing.unit ?? "",
+    })),
   };
 }
 
@@ -63,14 +72,23 @@ function toRecipeInput(form: FormState, isAiGenerated: boolean): RecipeInput {
     cuisines: form.cuisines,
     emoji: form.emoji.trim() || null,
     hint: form.hint.trim() || null,
-    recipe: form.recipe.trim(),
+    recipe: null,
+    steps: form.steps.map((s) => s.trim()).filter(Boolean),
+    prep_time_minutes: form.prepTimeMinutes.trim() ? Number(form.prepTimeMinutes) : null,
     source: form.source.trim() || null,
     servings: form.servings.trim() ? Number(form.servings) : null,
     protein: form.protein.trim() ? Number(form.protein) : null,
     fiber: form.fiber.trim() ? Number(form.fiber) : null,
     cal: form.cal.trim() ? Number(form.cal) : null,
     tags: form.tags,
-    ingredients: form.ingredients.filter((i) => i.name.trim()),
+    ingredients: form.ingredients
+      .filter((i) => i.name.trim())
+      .map((i) => ({
+        name: i.name.trim(),
+        core: i.core,
+        quantity: i.quantity.trim() || null,
+        unit: i.unit.trim() || null,
+      })),
     is_ai_generated: isAiGenerated,
   };
 }
@@ -119,10 +137,13 @@ export default function RecipeForm({
   }
 
   function addIngredientRow() {
-    setForm((f) => ({ ...f, ingredients: [...f.ingredients, { name: "", core: false }] }));
+    setForm((f) => ({
+      ...f,
+      ingredients: [...f.ingredients, { name: "", core: false, quantity: "", unit: "" }],
+    }));
   }
 
-  function updateIngredientRow(index: number, patch: Partial<{ name: string; core: boolean }>) {
+  function updateIngredientRow(index: number, patch: Partial<FormIngredient>) {
     setForm((f) => ({
       ...f,
       ingredients: f.ingredients.map((ing, i) => (i === index ? { ...ing, ...patch } : ing)),
@@ -131,6 +152,28 @@ export default function RecipeForm({
 
   function removeIngredientRow(index: number) {
     setForm((f) => ({ ...f, ingredients: f.ingredients.filter((_, i) => i !== index) }));
+  }
+
+  function addStep() {
+    setForm((f) => ({ ...f, steps: [...f.steps, ""] }));
+  }
+
+  function updateStep(index: number, value: string) {
+    setForm((f) => ({ ...f, steps: f.steps.map((s, i) => (i === index ? value : s)) }));
+  }
+
+  function removeStep(index: number) {
+    setForm((f) => ({ ...f, steps: f.steps.filter((_, i) => i !== index) }));
+  }
+
+  function moveStep(index: number, direction: -1 | 1) {
+    setForm((f) => {
+      const target = index + direction;
+      if (target < 0 || target >= f.steps.length) return f;
+      const steps = [...f.steps];
+      [steps[index], steps[target]] = [steps[target], steps[index]];
+      return { ...f, steps };
+    });
   }
 
   function handleAddNewTag() {
@@ -161,8 +204,8 @@ export default function RecipeForm({
 
   function handleSave() {
     setSaveError(null);
-    if (!form.name.trim() || !form.recipe.trim() || !form.category) {
-      setSaveError("Name, category, and recipe instructions are required.");
+    if (!form.name.trim() || !form.steps.some((s) => s.trim()) || !form.category) {
+      setSaveError("Name, category, and at least one instruction step are required.");
       return;
     }
     startSaving(async () => {
@@ -278,15 +321,57 @@ export default function RecipeForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <label className={LABEL_CLASS}>Instructions</label>
-        <textarea
-          className={INPUT_CLASS}
-          rows={6}
-          value={form.recipe}
-          onChange={(e) => update("recipe", e.target.value)}
-          placeholder="Use <strong>...</strong> for emphasis if you'd like."
-        />
+        {form.steps.map((step, i) => (
+          <div key={i} className="flex gap-2 items-start">
+            <span className="font-mono text-[11px] text-ink-light pt-2.5 w-4 flex-shrink-0">
+              {i + 1}.
+            </span>
+            <textarea
+              className={`${INPUT_CLASS} flex-1`}
+              rows={2}
+              value={step}
+              onChange={(e) => updateStep(i, e.target.value)}
+              placeholder="Use <strong>...</strong> for emphasis if you'd like."
+            />
+            <div className="flex flex-col gap-1 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => moveStep(i, -1)}
+                disabled={i === 0}
+                aria-label="Move step up"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-ink-light hover:bg-surface-warm cursor-pointer disabled:opacity-30 disabled:cursor-default"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                onClick={() => moveStep(i, 1)}
+                disabled={i === form.steps.length - 1}
+                aria-label="Move step down"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-ink-light hover:bg-surface-warm cursor-pointer disabled:opacity-30 disabled:cursor-default"
+              >
+                ↓
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => removeStep(i)}
+              aria-label="Remove step"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-ink-light hover:bg-coral-light hover:text-coral cursor-pointer flex-shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addStep}
+          className="self-start font-mono text-[11px] text-teal cursor-pointer"
+        >
+          + Add step
+        </button>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -299,7 +384,7 @@ export default function RecipeForm({
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div className="flex flex-col gap-1">
           <label className={LABEL_CLASS}>Servings</label>
           <input
@@ -307,6 +392,24 @@ export default function RecipeForm({
             className={INPUT_CLASS}
             value={form.servings}
             onChange={(e) => update("servings", e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Prep time (min)</label>
+          <input
+            type="number"
+            className={INPUT_CLASS}
+            value={form.prepTimeMinutes}
+            onChange={(e) => update("prepTimeMinutes", e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Calories</label>
+          <input
+            type="number"
+            className={INPUT_CLASS}
+            value={form.cal}
+            onChange={(e) => update("cal", e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -325,15 +428,6 @@ export default function RecipeForm({
             className={INPUT_CLASS}
             value={form.fiber}
             onChange={(e) => update("fiber", e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Calories</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.cal}
-            onChange={(e) => update("cal", e.target.value)}
           />
         </div>
       </div>
@@ -388,6 +482,18 @@ export default function RecipeForm({
         <label className={LABEL_CLASS}>Ingredients</label>
         {form.ingredients.map((ing, i) => (
           <div key={i} className="flex gap-2 items-center">
+            <input
+              className={`${INPUT_CLASS} w-14 flex-shrink-0`}
+              value={ing.quantity}
+              onChange={(e) => updateIngredientRow(i, { quantity: e.target.value })}
+              placeholder="1"
+            />
+            <input
+              className={`${INPUT_CLASS} w-20 flex-shrink-0`}
+              value={ing.unit}
+              onChange={(e) => updateIngredientRow(i, { unit: e.target.value })}
+              placeholder="cup"
+            />
             <input
               className={`${INPUT_CLASS} flex-1`}
               value={ing.name}

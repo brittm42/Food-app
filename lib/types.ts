@@ -1,3 +1,10 @@
+export type Ingredient = {
+  name: string;
+  core: boolean;
+  quantity: string | null; // free text, e.g. "1", "1/2", "2-3", "handful", "to taste" — not numeric
+  unit: string | null; // e.g. "cup", "tbsp", "clove", "can", "whole" — null if quantity has no unit
+};
+
 export type Recipe = {
   id: string;
   user_id: string | null;
@@ -6,14 +13,16 @@ export type Recipe = {
   cuisines: string[];
   emoji: string | null;
   hint: string | null;
-  recipe: string;
+  recipe: string | null; // deprecated: legacy prose instructions, superseded by `steps`
+  steps: string[];
+  prep_time_minutes: number | null;
   source: string | null;
   servings: number | null;
   protein: number | null;
   fiber: number | null;
   cal: number | null;
   tags: string[];
-  ingredients: { name: string; core: boolean }[] | null;
+  ingredients: Ingredient[] | null;
   is_seed: boolean;
   is_ai_generated: boolean;
   created_at: string;

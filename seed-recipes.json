@@ -103,29 +103,47 @@
       "ingredients": [
         {
           "name": "Frozen wild blueberries",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Almond butter",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Oat milk",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Hemp seeds",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Frozen spinach",
-          "core": true
+          "core": true,
+          "quantity": "handful",
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Add 1 cup frozen wild blueberries, 1 frozen banana, 1 tbsp almond butter, 1 cup oat milk, 1 tbsp hemp seeds, and a big handful of frozen spinach to a blender (you won't taste it).",
+        "Optional: add a scoop of vanilla protein powder.",
+        "Blend until smooth."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "s2",
@@ -144,25 +162,41 @@
       "ingredients": [
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Peanut butter",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Cocoa powder",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Oat milk",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Chocolate protein powder",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "scoop"
         }
-      ]
+      ],
+      "steps": [
+        "Add the frozen banana, peanut butter, cocoa powder, oat milk, chocolate protein powder, and a handful of ice to a blender.",
+        "Blend until smooth.",
+        "Serve immediately — tastes like a Frosty!"
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "s3",
@@ -181,25 +215,41 @@
       "ingredients": [
         {
           "name": "Frozen strawberries",
-          "core": true
+          "core": true,
+          "quantity": "1.5",
+          "unit": "cups"
         },
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1/2",
+          "unit": "whole"
         },
         {
           "name": "Coconut milk",
-          "core": true
+          "core": true,
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Granola",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Fresh strawberries",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Blend together 1.5 cups frozen strawberries, 1/2 frozen banana, and 1/2 cup coconut milk — <strong>keep it thick</strong>.",
+        "Pour into a bowl.",
+        "Top with granola, sliced fresh strawberries, and a drizzle of honey. <strong>The toppings are the whole point.</strong>"
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "s4",
@@ -218,25 +268,40 @@
       "ingredients": [
         {
           "name": "Frozen mango",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Frozen spinach",
-          "core": true
+          "core": true,
+          "quantity": "2",
+          "unit": "big handfuls"
         },
         {
           "name": "Coconut milk",
-          "core": true
+          "core": true,
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Hemp seeds",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Blend thick: 1 cup frozen mango, 1 frozen banana, 2 big handfuls frozen spinach, and 1/2 cup coconut milk.",
+        "Top with: kiwi, hemp seeds, chia seeds, drizzle of almond butter, and granola."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "s5",
@@ -255,17 +320,29 @@
       "ingredients": [
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Peanut butter",
-          "core": true
+          "core": true,
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Oat milk",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "cup"
         }
-      ]
+      ],
+      "steps": [
+        "Add 1 frozen banana, 2 tbsp peanut butter, 1 cup oat milk, 1 tbsp honey, and a handful of ice to a blender.",
+        "Blend until smooth.",
+        "Add protein powder if you want more staying power."
+      ],
+      "prep_time_minutes": 3
     },
     {
       "id": "h1",
@@ -285,25 +362,42 @@
       "ingredients": [
         {
           "name": "Eggs",
-          "core": false
+          "core": false,
+          "quantity": "3",
+          "unit": null
         },
         {
           "name": "Baby spinach",
-          "core": false
+          "core": false,
+          "quantity": "handful",
+          "unit": null
         },
         {
           "name": "Feta cheese",
-          "core": false
+          "core": false,
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Sun-dried tomatoes",
-          "core": true
+          "core": true,
+          "quantity": "a few",
+          "unit": null
         },
         {
           "name": "Whole grain bread",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Heat olive oil in a pan over medium heat.",
+        "Add 3 eggs and scramble together with a handful of baby spinach, 2 tbsp crumbled feta, and a few sliced sun-dried tomatoes (oil-packed jar).",
+        "Season with oregano, salt, and pepper.",
+        "Serve with toasted whole grain bread."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "h2",
@@ -324,25 +418,44 @@
       "ingredients": [
         {
           "name": "Salsa",
-          "core": true
+          "core": true,
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": "1/2",
+          "unit": "cup"
         },
         {
           "name": "Eggs",
-          "core": false
+          "core": false,
+          "quantity": "2",
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Tortillas",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Heat 1/2 cup salsa in a small pan until bubbling.",
+        "Add 1/2 cup black beans, stir.",
+        "Make 2 small wells, crack an egg into each.",
+        "Cover, cook 4–5 min until whites are set.",
+        "Top with avocado, hot sauce.",
+        "Eat with tortillas."
+      ],
+      "prep_time_minutes": 12
     },
     {
       "id": "q1",
@@ -362,17 +475,29 @@
       "ingredients": [
         {
           "name": "Whole grain bread",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": "1/2",
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Toast whole grain bread.",
+        "Smash 1/2 avocado on top with salt + lemon.",
+        "Then pick a direction — <strong>Mediterranean</strong>: feta + cherry tomato + oregano. <strong>Mexican</strong>: hot sauce + cilantro + everything bagel. <strong>Rich</strong>: chili crisp + sesame seeds + soy drizzle."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "q2",
@@ -392,17 +517,30 @@
       "ingredients": [
         {
           "name": "Bananas",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Nut butter",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Hemp seeds",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Slice a banana.",
+        "Spread nut butter on each piece.",
+        "Sprinkle hemp seeds.",
+        "Eat while figuring out if you're actually hungry enough for a real breakfast."
+      ],
+      "prep_time_minutes": 1
     },
     {
       "id": "g1",
@@ -422,17 +560,30 @@
       "ingredients": [
         {
           "name": "Bacon",
-          "core": false
+          "core": false,
+          "quantity": "2-3",
+          "unit": "strips"
         },
         {
           "name": "Eggs",
-          "core": false
+          "core": false,
+          "quantity": "2",
+          "unit": "whole"
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": "1/2",
+          "unit": "whole"
         }
-      ]
+      ],
+      "steps": [
+        "Cook 2–3 strips of bacon until done to your liking.",
+        "Fry or scramble 2 eggs.",
+        "Slice 1/2 avocado and season with salt and a squeeze of lime.",
+        "Plate everything together with a handful of fruit on the side."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "g2",
@@ -451,17 +602,30 @@
       "ingredients": [
         {
           "name": "Waffle mix",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Vanilla protein powder",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "scoop"
         },
         {
           "name": "Fresh berries",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Use your normal waffle mix but add <strong>1 scoop vanilla protein powder</strong> to the batter and swap half the liquid for oat milk.",
+        "Cook waffles according to your mix's instructions.",
+        "Top with fresh berries + a small drizzle of maple syrup.",
+        "Serve alongside bacon — not a trade-off, an upgrade."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "g3",
@@ -475,7 +639,11 @@
       "protein": 0,
       "fiber": 0,
       "cal": 0,
-      "ingredients": []
+      "ingredients": [],
+      "steps": [
+        "No optimization needed. Cinnamon rolls on Saturday morning are a ritual, not a nutrition problem.",
+        "If you want, pair with a protein smoothie or some eggs alongside to balance the sugar spike — but don't over-engineer this one."
+      ]
     },
     {
       "id": "b1",
@@ -495,41 +663,69 @@
       "ingredients": [
         {
           "name": "Farro or brown rice",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Chickpeas",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Sweet potato or zucchini",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Baby spinach",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Tahini",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Kalamata olives",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Feta cheese",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Cook your base: prepare farro or brown rice according to package directions.",
+        "Prepare your protein: use chickpeas straight from the can, or use batch-roasted chickpeas if prepped on Sunday.",
+        "Roast the sweet potato until tender.",
+        "Build the bowl with the roasted sweet potato and a handful of baby spinach.",
+        "Make the tahini sauce: whisk together tahini, lemon juice, water, and garlic, thinning with additional water until it reaches a drizzle consistency.",
+        "Top the bowl with Kalamata olives, sliced cucumber, crumbled feta, and red onion.",
+        "Drizzle the tahini sauce over the assembled bowl and serve."
+      ],
+      "prep_time_minutes": 20
     },
     {
       "id": "b2",
@@ -549,33 +745,57 @@
       "ingredients": [
         {
           "name": "Brown rice",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Frozen corn",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Salsa",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Shredded cheese",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cilantro",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Cook brown rice according to package instructions and use as the base of the bowl.",
+        "Warm black beans with cumin and garlic powder.",
+        "Microwave frozen corn until heated through.",
+        "Halve cherry tomatoes and set aside.",
+        "Mix salsa with a squeeze of lime juice to make the sauce.",
+        "Assemble the bowl: start with the brown rice base, then top with black beans, corn, and cherry tomatoes.",
+        "Finish with avocado, shredded cheese, cilantro, and hot sauce. Add leftover chicken to make it more substantial."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "b3",
@@ -595,33 +815,55 @@
       "ingredients": [
         {
           "name": "Soba noodles",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Edamame",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Peanut butter",
-          "core": true
+          "core": true,
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Sesame oil",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tsp"
         },
         {
           "name": "Purple cabbage",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Cook soba noodles for 8 minutes, then rinse with cold water.",
+        "Make the sauce: combine 2 tbsp peanut butter, 1 tbsp soy sauce, 1 tsp sesame oil, 1 tsp rice vinegar, and a splash of water.",
+        "Toss the noodles in the sauce.",
+        "Top with edamame, purple cabbage, cucumber, green onion, and sesame seeds.",
+        "<strong>Better as leftovers.</strong>"
+      ],
+      "prep_time_minutes": 15
     },
     {
       "id": "b4",
@@ -641,29 +883,48 @@
       "ingredients": [
         {
           "name": "Red lentils",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Brown rice",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Diced tomatoes",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Veggie broth",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cilantro",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Reheat a portion of batch lentil soup.",
+        "Serve over rice.",
+        "Top with diced cucumber, a squeeze of lemon, and a pinch of cumin.",
+        "Add cilantro and a drizzle of chili oil."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "w1",
@@ -684,29 +945,49 @@
       "ingredients": [
         {
           "name": "Chickpeas",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Large tortillas",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Baby spinach",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cherry tomatoes",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Feta cheese",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Drain and rinse a can of chickpeas.",
+        "Smash roughly with a fork.",
+        "Mix in olive oil, lemon, cumin, salt, and pepper.",
+        "Spread on a large tortilla with baby spinach, sliced cucumber, cherry tomatoes, and feta.",
+        "Roll tight."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "w2",
@@ -726,29 +1007,48 @@
       "ingredients": [
         {
           "name": "Leftover salmon",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Butter lettuce",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Sesame oil",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Purple cabbage",
-          "core": false
+          "core": false,
+          "quantity": "shredded",
+          "unit": null
         },
         {
           "name": "Green onions",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Flake leftover baked salmon.",
+        "Toss with soy sauce, sesame oil, lime juice, and a little sriracha.",
+        "Spoon into butter lettuce leaves.",
+        "Top with: shredded purple cabbage, green onion, sesame seeds, and julienned carrot."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "w3",
@@ -768,25 +1068,43 @@
       "ingredients": [
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": "can"
         },
         {
           "name": "Large tortillas",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": null
         },
         {
           "name": "Shredded cheese",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Salsa",
-          "core": true
+          "core": true,
+          "quantity": "spoonful",
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Fill a large tortilla with: canned black beans (drained), shredded cheese, sliced avocado, and a spoonful of salsa.",
+        "Fold the tortilla in half.",
+        "Cook in a dry pan for 3 min per side until crispy.",
+        "Cut into wedges.",
+        "Add spinach for yourself."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "so1",
@@ -807,29 +1125,49 @@
       "ingredients": [
         {
           "name": "Red lentils",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "cup"
         },
         {
           "name": "Diced tomatoes",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Veggie broth",
-          "core": true
+          "core": true,
+          "quantity": "4",
+          "unit": "cups"
         },
         {
           "name": "Onion",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Garlic",
-          "core": false
+          "core": false,
+          "quantity": "3",
+          "unit": "cloves"
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "squeeze"
         }
-      ]
+      ],
+      "steps": [
+        "Sauté 1 diced onion and 3 garlic cloves in olive oil.",
+        "Add 1 cup red lentils, 1 can diced tomatoes, 4 cups veggie broth, 1 tsp cumin, 1 tsp smoked paprika, 1/2 tsp turmeric, and salt.",
+        "Simmer for 25 min.",
+        "Squeeze of lemon before serving.",
+        "Portion into 4 containers."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "so2",
@@ -848,29 +1186,48 @@
       "ingredients": [
         {
           "name": "White miso",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Rice noodles or ramen",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Mushrooms",
-          "core": false
+          "core": false,
+          "quantity": "sliced",
+          "unit": null
         },
         {
           "name": "Baby spinach",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tsp"
         },
         {
           "name": "Green onions",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Bring 2 cups broth to a simmer.",
+        "Stir in 1 tbsp white miso — <strong>don't boil after</strong>.",
+        "Add rice noodles, sliced mushrooms, baby spinach, and 1 tsp soy sauce.",
+        "Top with: soft-boiled egg (Britt only), green onion, a drizzle of sesame oil, and chili crisp."
+      ],
+      "prep_time_minutes": 15
     },
     {
       "id": "lq1",
@@ -889,25 +1246,40 @@
       "ingredients": [
         {
           "name": "Hummus",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Crackers",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cherry tomatoes",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Mixed nuts",
-          "core": true
+          "core": true,
+          "quantity": "handful",
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Arrange hummus, olives, pita or crackers, sliced cucumber, cherry tomatoes, a handful of nuts, and feta (if you have it) on a plate.",
+        "This is a real lunch, not a snack plate. The hummus (protein) + nuts (fat) + veg (fiber) combo keeps you full. Your nothing-in-the-fridge emergency lunch."
+      ],
+      "prep_time_minutes": 2
     },
     {
       "id": "lq2",
@@ -927,21 +1299,36 @@
       "ingredients": [
         {
           "name": "Leftover salmon",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Brown rice",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Reheat rice.",
+        "Flake salmon on top cold or warm — both work.",
+        "Add sliced avocado, drizzle of soy sauce or lemon, sesame seeds.",
+        "Done. This is why the cook-alongside system works: make extra so you always have this for the next day."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "sn1",
@@ -961,9 +1348,18 @@
       "ingredients": [
         {
           "name": "Edamame",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "cup"
         }
-      ]
+      ],
+      "steps": [
+        "Keep shelled frozen edamame in the freezer always.",
+        "Microwave 1 cup for 3 minutes.",
+        "Toss with sea salt.",
+        "Also good with: everything bagel seasoning, chili lime salt, or soy sauce + sesame oil drizzle."
+      ],
+      "prep_time_minutes": 3
     },
     {
       "id": "sn2",
@@ -983,13 +1379,22 @@
       "ingredients": [
         {
           "name": "Nut butter",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Apples or bananas",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Choose your nut butter — almond or peanut butter — and keep a jar accessible, not buried in the pantry.",
+        "Pair with an apple or banana and enjoy the fat + fiber + natural sugar combo, the most stabilizing snack combo there is."
+      ],
+      "prep_time_minutes": 1
     },
     {
       "id": "sn3",
@@ -1008,25 +1413,41 @@
       "ingredients": [
         {
           "name": "Carrots",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Celery",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cucumber",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Bell pepper",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Hummus",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Cut carrots, celery, cucumber, and bell pepper on Sunday.",
+        "Store in water in containers.",
+        "This snack only happens when the veg is already cut. It never happens when you have to cut it first. Cut the veg."
+      ],
+      "prep_time_minutes": 15
     },
     {
       "id": "sn4",
@@ -1046,17 +1467,28 @@
       "ingredients": [
         {
           "name": "Cheese",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "block"
         },
         {
           "name": "Crackers",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Fruit",
-          "core": false
+          "core": false,
+          "quantity": "handful",
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Slice a block of cheddar or pepper jack cheese.",
+        "Arrange on a plate with whole grain crackers and a handful of grapes or apple slices."
+      ],
+      "prep_time_minutes": 2
     },
     {
       "id": "sn5",
@@ -1075,13 +1507,22 @@
       "ingredients": [
         {
           "name": "Seaweed snack packs",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Mixed nuts",
-          "core": true
+          "core": true,
+          "quantity": "small handful",
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Grab roasted seaweed snack packs and a small handful of almonds or cashews.",
+        "Enjoy as a satisfying savory snack — no prep needed."
+      ],
+      "prep_time_minutes": 1
     },
     {
       "id": "f1",
@@ -1100,21 +1541,36 @@
       "ingredients": [
         {
           "name": "Chicken thighs",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Garlic",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Dried oregano",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Marinate chicken thighs in: olive oil, lemon juice + zest, garlic, dried oregano, salt, and pepper (even 30 min works).",
+        "Roast at 425° for 25–30 min skin-side up.",
+        "Serve with roasted potatoes or pita, cucumber, olives.",
+        "<strong>Your salmon:</strong> same seasoning on a fillet, same pan, pull it out 10 min earlier."
+      ],
+      "prep_time_minutes": 30
     },
     {
       "id": "f2",
@@ -1133,28 +1589,47 @@
       "ingredients": [
         {
           "name": "Ground beef",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Tortillas",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": "extra",
+          "unit": null
         },
         {
           "name": "Salsa",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Shredded cheese",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
+      ],
+      "steps": [
+        "Keep making these exactly how you do.",
+        "For yourself: add a side of spiced black beans + rice to bump fiber significantly.",
+        "Pile on extra avocado.",
+        "Add pickled red onion.",
+        "Family gets the tacos they love, you get a more complete meal. No extra cooking required."
       ]
     },
     {
@@ -1174,29 +1649,49 @@
       "ingredients": [
         {
           "name": "Chicken thighs or breast",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Brown rice",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": "3",
+          "unit": "tbsp"
         },
         {
           "name": "Honey",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Sesame oil",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tsp"
         },
         {
           "name": "Broccoli",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Pan-sear chicken thighs or breast.",
+        "Make quick teriyaki: combine 3 tbsp soy sauce + 1 tbsp honey + 1 tsp sesame oil + 1 tsp cornstarch.",
+        "Pour sauce over chicken in the last 5 minutes of cooking.",
+        "Serve over rice with steamed broccoli.",
+        "<strong>Your salmon:</strong> same sauce, bake at 400° for 12–15 min while chicken cooks."
+      ],
+      "prep_time_minutes": 25
     },
     {
       "id": "f4",
@@ -1216,21 +1711,35 @@
       "ingredients": [
         {
           "name": "Chicken (for family)",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Tikka masala sauce (jar)",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "jar"
         },
         {
           "name": "Chickpeas",
-          "core": true
+          "core": true,
+          "quantity": "2",
+          "unit": "can"
         },
         {
           "name": "Coconut milk",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Make your normal butter chicken for the family.",
+        "Separately: combine a jar of tikka masala sauce and 2 cans chickpeas and simmer for 15 minutes.",
+        "You eat more fiber, they eat what they love — same spice, same dinner table, different bowls."
+      ],
+      "prep_time_minutes": 20
     },
     {
       "id": "f5",
@@ -1250,25 +1759,44 @@
       "ingredients": [
         {
           "name": "Pasta",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Cannellini beans",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Diced tomatoes",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Baby spinach",
-          "core": false
+          "core": false,
+          "quantity": "handful",
+          "unit": null
         },
         {
           "name": "Parmesan",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Cook pasta, reserving a splash of pasta water before draining.",
+        "While the pasta cooks, sauté garlic in olive oil.",
+        "Add 1 can cannellini beans and 1 can diced tomatoes to the pan.",
+        "Add a big handful of spinach, then season with salt, pepper, and chili flake.",
+        "Toss the sauce with the cooked pasta and a splash of pasta water.",
+        "Top with parmesan."
+      ],
+      "prep_time_minutes": 20
     },
     {
       "id": "si1",
@@ -1288,21 +1816,35 @@
       "ingredients": [
         {
           "name": "Arugula",
-          "core": false
+          "core": false,
+          "quantity": "handful",
+          "unit": null
         },
         {
           "name": "Cherry tomatoes",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Parmesan",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Combine a handful of arugula, cherry tomatoes, and shaved parmesan in a bowl.",
+        "Squeeze lemon juice over the top and drizzle with olive oil.",
+        "Season with salt and toss to combine."
+      ],
+      "prep_time_minutes": 3
     },
     {
       "id": "si2",
@@ -1322,17 +1864,29 @@
       "ingredients": [
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "can"
         },
         {
           "name": "Cumin",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Garlic powder",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Drain and rinse a can of black beans.",
+        "Heat in a small saucepan with a splash of water, cumin, garlic powder, and salt for 5 minutes.",
+        "Add these as your personal side to any Mexican-ish dinner — adds 15g fiber to your plate without touching the family's food."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "si3",
@@ -1351,13 +1905,22 @@
       "ingredients": [
         {
           "name": "Broccoli",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Garlic powder",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Toss broccoli florets in olive oil, salt, and garlic powder.",
+        "Roast at 425° for 20 min until edges are <strong>dark and crispy</strong>."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "sal1",
@@ -1376,25 +1939,42 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Dried oregano",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Kalamata olives",
-          "core": false
+          "core": false,
+          "quantity": "a few",
+          "unit": "sliced"
         },
         {
           "name": "Cherry tomatoes",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Rub fillet with olive oil, minced garlic, dried oregano, lemon zest, salt, and pepper.",
+        "Top with a few sliced olives and cherry tomatoes.",
+        "Bake at 400° for 13 minutes.",
+        "Serve with roasted veg or a grain bowl."
+      ],
+      "prep_time_minutes": 10
     },
     {
       "id": "sal2",
@@ -1413,21 +1993,37 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "White miso",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Soy sauce",
-          "core": true
+          "core": true,
+          "quantity": "1",
+          "unit": "tbsp"
         },
         {
           "name": "Honey",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "tsp"
         }
-      ]
+      ],
+      "steps": [
+        "Mix together 1 tbsp white miso, 1 tbsp soy sauce, 1 tsp honey, and 1/2 tsp sesame oil.",
+        "Spread the glaze on the salmon fillet.",
+        "Bake at 400° for 12–14 minutes.",
+        "Broil for the last 2 minutes for a caramelized top.",
+        "Serve over rice with edamame."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "sal3",
@@ -1446,29 +2042,48 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "whole"
         },
         {
           "name": "Chili powder",
-          "core": true
+          "core": true,
+          "quantity": "to taste",
+          "unit": null
         },
         {
           "name": "Cumin",
-          "core": true
+          "core": true,
+          "quantity": "to taste",
+          "unit": null
         },
         {
           "name": "Avocados",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Black beans",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Rub the salmon fillet with olive oil, chili powder, cumin, garlic powder, salt, and cayenne.",
+        "Squeeze lime over the top.",
+        "Bake at 400° for 13 minutes.",
+        "Serve over rice with avocado and black beans."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "sal4",
@@ -1487,17 +2102,29 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Lemons",
-          "core": false
+          "core": false,
+          "quantity": "slices",
+          "unit": null
         },
         {
           "name": "Dried dill",
-          "core": true
+          "core": true,
+          "quantity": null,
+          "unit": null
         }
-      ]
+      ],
+      "steps": [
+        "Drizzle olive oil over the salmon fillet and season with salt and pepper.",
+        "Sprinkle dried dill on top, then lay lemon slices over the fish.",
+        "Bake at 400° for 13 minutes."
+      ],
+      "prep_time_minutes": 5
     },
     {
       "id": "sal5",
@@ -1516,21 +2143,36 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false
+          "core": false,
+          "quantity": null,
+          "unit": null
         },
         {
           "name": "Butter",
-          "core": false
+          "core": false,
+          "quantity": "2",
+          "unit": "tbsp"
         },
         {
           "name": "Garlic",
-          "core": false
+          "core": false,
+          "quantity": "2",
+          "unit": "clove"
         },
         {
           "name": "Fresh parsley",
-          "core": false
+          "core": false,
+          "quantity": "1",
+          "unit": "tbsp"
         }
-      ]
+      ],
+      "steps": [
+        "Mix 2 tbsp softened butter with 2 minced garlic cloves, 1 tbsp fresh or dried parsley, and a pinch of red chili flake.",
+        "Spread the garlic herb butter over the salmon fillet.",
+        "Bake at 400° for 13–15 min — the butter bastes the fish as it cooks.",
+        "Serve with roasted veg or crusty bread to scoop up the sauce."
+      ],
+      "prep_time_minutes": 5
     }
   ],
   "pantry": {
