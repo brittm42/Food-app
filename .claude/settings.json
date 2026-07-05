@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep *)",
+      "Bash(echo *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(ls *)",
+      "Bash(git status *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(npm run dev*)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"next dev\" *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(which *)",
+      "Bash(gh api repos/brittm42/Food-app/deployments*)",
+      "Bash(git remote *)",
+      "Bash(npx vercel ls*)",
+      "mcp__claude_ai_Gmail__get_thread",
+      "mcp__claude_ai_Gmail__search_threads"
+    ]
+  }
+}
