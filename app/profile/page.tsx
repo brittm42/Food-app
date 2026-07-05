@@ -8,6 +8,12 @@ const PROVIDER_LABELS: Record<string, string> = {
   google: "Google",
 };
 
+function joinWithAnd(items: string[]) {
+  if (items.length <= 1) return items.join("");
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
+
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
@@ -26,7 +32,7 @@ export default async function ProfilePage() {
       <p className="text-sm text-ink-light">{userData.user.email}</p>
       {signInMethods.length > 0 && (
         <p className="text-xs text-ink-light mt-1">
-          Signed in via {signInMethods.join(", ")}
+          Signed in via {joinWithAnd(signInMethods)}
         </p>
       )}
 
@@ -37,6 +43,7 @@ export default async function ProfilePage() {
         members={members}
         invites={invites}
         isOwner={role === "owner"}
+        currentUserId={userData.user.id}
       />
     </div>
   );

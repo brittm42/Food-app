@@ -83,6 +83,16 @@ export const CUISINE_LABELS: Record<string, string> = {
   mex: "Mexican",
   asi: "Asian",
   ind: "Indian",
+  ita: "Italian",
+  tha: "Thai",
+  chn: "Chinese",
+  jpn: "Japanese",
+  kor: "Korean",
+  viet: "Vietnamese",
+  mideast: "Middle Eastern",
+  gre: "Greek",
+  fre: "French",
+  amr: "American",
 };
 
 export type TagColor = { name: string; color: string };

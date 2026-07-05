@@ -145,6 +145,57 @@ export async function createInvite(email: string) {
   return {};
 }
 
+export async function updateHouseholdName(name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return { error: "Household name can't be blank." };
+
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (household.role !== "owner") {
+    return { error: "Only the household owner can rename it." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("households")
+    .update({ name: trimmed })
+    .eq("id", household.householdId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Could not rename the household. Try again." };
+
+  revalidatePath("/profile");
+  return {};
+}
+
+export async function removeMember(memberUserId: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (household.role !== "owner") {
+    return { error: "Only the household owner can remove members." };
+  }
+  if (memberUserId === household.userId) {
+    return { error: "You can't remove yourself." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("household_members")
+    .delete()
+    .eq("household_id", household.householdId)
+    .eq("user_id", memberUserId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Could not remove that member. Try again." };
+
+  revalidatePath("/profile");
+  return {};
+}
+
 export async function revokeInvite(inviteId: string) {
   const household = await getCurrentHousehold();
   if (!household || household.role !== "owner") return;

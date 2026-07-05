@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createInvite, revokeInvite } from "@/app/actions/household";
+import {
+  createInvite,
+  revokeInvite,
+  updateHouseholdName,
+  removeMember,
+} from "@/app/actions/household";
 
 type Member = {
   userId: string;
@@ -20,16 +25,22 @@ export default function HouseholdPanel({
   members,
   invites,
   isOwner,
+  currentUserId,
 }: {
   householdName: string;
   members: Member[];
   invites: Invite[];
   isOwner: boolean;
+  currentUserId: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState<string | null>(null);
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState(householdName);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   function handleInvite(e: React.FormEvent) {
     e.preventDefault();
@@ -54,14 +65,82 @@ export default function HouseholdPanel({
     });
   }
 
+  function handleSaveName(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = nameDraft.trim();
+    if (!trimmed) return;
+    setNameError(null);
+    startTransition(async () => {
+      const result = await updateHouseholdName(trimmed);
+      if (result?.error) {
+        setNameError(result.error);
+      } else {
+        setEditingName(false);
+      }
+    });
+  }
+
+  const [removeError, setRemoveError] = useState<string | null>(null);
+
+  function handleRemove(userId: string) {
+    setRemoveError(null);
+    startTransition(async () => {
+      const result = await removeMember(userId);
+      if (result?.error) setRemoveError(result.error);
+    });
+  }
+
   return (
     <section className="mt-8">
-      <h1 className="font-display text-xl font-light mb-1">{householdName}</h1>
+      {isOwner && editingName ? (
+        <form onSubmit={handleSaveName} className="flex gap-2 mb-1">
+          <input
+            type="text"
+            value={nameDraft}
+            onChange={(e) => setNameDraft(e.target.value)}
+            autoFocus
+            className="flex-1 border border-border rounded-lg px-3 py-1.5 text-sm bg-surface focus:outline-none focus:border-teal"
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="bg-ink text-white rounded-lg px-3 py-1.5 text-sm font-medium cursor-pointer disabled:opacity-50"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setEditingName(false);
+              setNameDraft(householdName);
+              setNameError(null);
+            }}
+            className="text-ink-light text-sm cursor-pointer px-2"
+          >
+            Cancel
+          </button>
+        </form>
+      ) : (
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="font-display text-xl font-light">{householdName}</h1>
+          {isOwner && (
+            <button
+              type="button"
+              onClick={() => setEditingName(true)}
+              className="text-ink-light hover:text-teal text-xs cursor-pointer"
+            >
+              Rename
+            </button>
+          )}
+        </div>
+      )}
+      {nameError && <p className="text-sm text-red mb-1">{nameError}</p>}
       <p className="text-sm text-ink-light mb-4">
         This Week, the pantry, and the shopping list are shared with everyone
         here. Recipes and ratings stay personal to each person.
       </p>
 
+      {removeError && <p className="text-sm text-red mb-2">{removeError}</p>}
       <div className="flex flex-col gap-1.5 mb-6">
         {members.map((m) => (
           <div
@@ -69,9 +148,21 @@ export default function HouseholdPanel({
             className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm"
           >
             <span>{m.email}</span>
-            <span className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
-              {m.role}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
+                {m.role}
+              </span>
+              {isOwner && m.userId !== currentUserId && m.role !== "owner" && (
+                <button
+                  type="button"
+                  onClick={() => handleRemove(m.userId)}
+                  disabled={isPending}
+                  className="text-ink-light hover:text-red text-xs cursor-pointer"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>

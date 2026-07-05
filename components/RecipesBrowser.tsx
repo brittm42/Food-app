@@ -50,6 +50,7 @@ export default function RecipesBrowser({
 
   const visibleSubCats = SUB_CATEGORIES[activeMeal];
   const showOats = activeMeal === "breakfast" && activeSub === "oats";
+  const showFilters = !showOats && activeMeal !== "solo";
   const visibleRecipes = (recipesByCategory[activeSub] ?? []).filter(
     (r) =>
       (!favoritesOnly || r.rating === "up") &&
@@ -86,7 +87,7 @@ export default function RecipesBrowser({
         </div>
       )}
 
-      {!showOats && (
+      {showFilters && (
         <div className="flex justify-end gap-2 mb-3">
           <button
             type="button"

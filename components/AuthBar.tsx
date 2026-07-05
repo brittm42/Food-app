@@ -11,7 +11,7 @@ export default async function AuthBar() {
   return (
     <div className="flex items-center justify-end gap-3 px-4 py-1.5 bg-surface-warm border-b border-border text-[11px] text-ink-light">
       <Link href="/profile" className="truncate hover:underline">
-        {data.user.email}
+        My Account
       </Link>
       <form action={signOut}>
         <button

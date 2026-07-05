@@ -12,6 +12,18 @@ const CUISINE_BADGE_CLASSES: Record<string, string> = {
   mex: "bg-cuisine-mex-light text-cuisine-mex",
   asi: "bg-cuisine-asi-light text-cuisine-asi",
   ind: "bg-cuisine-ind-light text-cuisine-ind",
+  // Newer cuisines reuse the existing generic tag palette instead of
+  // adding bespoke design tokens for each one.
+  ita: TAG_COLOR_CLASSES.gold,
+  tha: TAG_COLOR_CLASSES.coral,
+  chn: TAG_COLOR_CLASSES.red,
+  jpn: TAG_COLOR_CLASSES.plum,
+  kor: TAG_COLOR_CLASSES.sage,
+  viet: TAG_COLOR_CLASSES.teal,
+  mideast: TAG_COLOR_CLASSES.gold,
+  gre: TAG_COLOR_CLASSES.teal,
+  fre: TAG_COLOR_CLASSES.plum,
+  amr: TAG_COLOR_CLASSES.coral,
 };
 
 export default function RecipeCard({
@@ -96,32 +108,6 @@ export default function RecipeCard({
             <button
               type="button"
               disabled={isPending}
-              onClick={() => rate("up")}
-              aria-label="Mark as favorite"
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors disabled:opacity-50 ${
-                recipe.rating === "up"
-                  ? "bg-teal text-white"
-                  : "bg-surface-warm text-ink-light hover:bg-teal-light"
-              }`}
-            >
-              👍
-            </button>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => rate("down")}
-              aria-label="Mark as not for me"
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors disabled:opacity-50 ${
-                recipe.rating === "down"
-                  ? "bg-coral text-white"
-                  : "bg-surface-warm text-ink-light hover:bg-coral-light"
-              }`}
-            >
-              👎
-            </button>
-            <button
-              type="button"
-              disabled={isPending}
               onClick={queue}
               aria-label={recipe.queued ? "Remove from This Week" : "Add to This Week"}
               className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors disabled:opacity-50 ${
@@ -132,15 +118,6 @@ export default function RecipeCard({
             >
               📅
             </button>
-            {recipe.editable && (
-              <Link
-                href={`/recipes/${recipe.id}/edit`}
-                aria-label="Edit recipe"
-                className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] cursor-pointer transition-colors bg-surface-warm text-ink-light hover:bg-sage-light"
-              >
-                ✏️
-              </Link>
-            )}
           </div>
           <button
             type="button"
@@ -154,6 +131,43 @@ export default function RecipeCard({
       </div>
       {open && (
         <div className="border-t border-border px-3.5 py-4">
+          <div className="flex gap-1.5 mb-3.5">
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => rate("up")}
+              aria-label="Mark as favorite"
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors disabled:opacity-50 ${
+                recipe.rating === "up"
+                  ? "bg-teal text-white"
+                  : "bg-surface-warm text-ink-light hover:bg-teal-light"
+              }`}
+            >
+              👍
+            </button>
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => rate("down")}
+              aria-label="Mark as not for me"
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors disabled:opacity-50 ${
+                recipe.rating === "down"
+                  ? "bg-coral text-white"
+                  : "bg-surface-warm text-ink-light hover:bg-coral-light"
+              }`}
+            >
+              👎
+            </button>
+            {recipe.editable && (
+              <Link
+                href={`/recipes/${recipe.id}/edit`}
+                aria-label="Edit recipe"
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors bg-surface-warm text-ink-light hover:bg-sage-light"
+              >
+                ✏️
+              </Link>
+            )}
+          </div>
           <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5">
             How to make it
           </div>

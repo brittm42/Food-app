@@ -41,7 +41,7 @@ type FormState = {
 function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
   return {
     name: recipe?.name ?? "",
-    category: recipe?.category ?? SUB_CATEGORIES.breakfast[0].id,
+    category: recipe?.category ?? "",
     cuisines: recipe?.cuisines ?? [],
     emoji: recipe?.emoji ?? "",
     hint: recipe?.hint ?? "",
@@ -161,8 +161,8 @@ export default function RecipeForm({
 
   function handleSave() {
     setSaveError(null);
-    if (!form.name.trim() || !form.recipe.trim()) {
-      setSaveError("Name and recipe instructions are required.");
+    if (!form.name.trim() || !form.recipe.trim() || !form.category) {
+      setSaveError("Name, category, and recipe instructions are required.");
       return;
     }
     startSaving(async () => {
@@ -227,6 +227,9 @@ export default function RecipeForm({
           value={form.category}
           onChange={(e) => update("category", e.target.value)}
         >
+          <option value="" disabled>
+            Select a category…
+          </option>
           {MEAL_TYPES.map((meal) => (
             <optgroup key={meal.id} label={meal.label}>
               {SUB_CATEGORIES[meal.id].map((sub) => (
