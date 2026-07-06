@@ -12,6 +12,7 @@ type Member = {
   userId: string;
   role: "owner" | "member";
   email: string;
+  displayName: string | null;
 };
 
 type Invite = {
@@ -91,7 +92,7 @@ export default function HouseholdPanel({
   }
 
   return (
-    <section className="mt-8">
+    <section>
       {isOwner && editingName ? (
         <form onSubmit={handleSaveName} className="flex gap-2 mb-1">
           <input
@@ -147,7 +148,7 @@ export default function HouseholdPanel({
             key={m.userId}
             className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm"
           >
-            <span>{m.email}</span>
+            <span>{m.displayName || m.email}</span>
             <div className="flex items-center gap-2">
               <span className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
                 {m.role}

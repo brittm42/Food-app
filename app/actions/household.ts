@@ -33,6 +33,17 @@ export async function listHouseholdMembers() {
       .single(),
   ]);
 
+  const { data: profileRows } = await admin
+    .from("profiles")
+    .select("user_id, display_name")
+    .in(
+      "user_id",
+      (memberRows ?? []).map((row) => row.user_id)
+    );
+  const displayNamesByUserId = new Map(
+    (profileRows ?? []).map((p) => [p.user_id as string, p.display_name as string | null])
+  );
+
   const members = await Promise.all(
     (memberRows ?? []).map(async (row) => {
       const { data } = await admin.auth.admin.getUserById(row.user_id);
@@ -41,6 +52,7 @@ export async function listHouseholdMembers() {
         role: row.role as "owner" | "member",
         joinedAt: row.joined_at as string,
         email: data.user?.email ?? "(unknown)",
+        displayName: displayNamesByUserId.get(row.user_id) ?? null,
       };
     })
   );
@@ -141,7 +153,7 @@ export async function createInvite(email: string) {
     return { error: `Invite created, but the email failed to send: ${emailError.message}` };
   }
 
-  revalidatePath("/profile");
+  revalidatePath("/account/household");
   return {};
 }
 
@@ -166,7 +178,7 @@ export async function updateHouseholdName(name: string) {
   if (error) return { error: error.message };
   if (!data) return { error: "Could not rename the household. Try again." };
 
-  revalidatePath("/profile");
+  revalidatePath("/account/household");
   return {};
 }
 
@@ -192,7 +204,7 @@ export async function removeMember(memberUserId: string) {
   if (error) return { error: error.message };
   if (!data) return { error: "Could not remove that member. Try again." };
 
-  revalidatePath("/profile");
+  revalidatePath("/account/household");
   return {};
 }
 
@@ -207,7 +219,7 @@ export async function revokeInvite(inviteId: string) {
     .eq("id", inviteId)
     .eq("household_id", household.householdId);
 
-  revalidatePath("/profile");
+  revalidatePath("/account/household");
 }
 
 export async function resolveInvite(token: string) {
