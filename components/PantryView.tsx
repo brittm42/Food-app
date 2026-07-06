@@ -12,6 +12,7 @@ import {
 } from "@/app/actions/pantry";
 import Collapsible from "@/components/Collapsible";
 import QuickAddButton from "@/components/QuickAddButton";
+import SwipeableRow from "@/components/SwipeableRow";
 
 export default function PantryView({
   checkedKeys,
@@ -97,34 +98,38 @@ export default function PantryView({
                     const catalogKey = `catalog:core:${cat.category}:${item}`;
                     const isNeeded = checked.has(neededKey);
                     return (
-                      <div
+                      <SwipeableRow
                         key={catalogKey}
-                        className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2"
+                        disabled={isPending}
+                        deleteLabel={`Remove ${item} from Core Pantry`}
+                        onDelete={() => removeCatalog(catalogKey)}
                       >
-                        <span className="flex-1 text-sm min-w-0">{item}</span>
-                        <button
-                          type="button"
-                          disabled={isPending}
-                          onClick={() => toggle(neededKey)}
-                          aria-label={isNeeded ? `Remove ${item} from shopping list` : `Add ${item} to shopping list`}
-                          className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
-                            isNeeded
-                              ? "bg-gold text-white"
-                              : "bg-surface-warm text-ink-light hover:bg-gold-light"
-                          }`}
-                        >
-                          {isNeeded ? "✓" : "+"}
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isPending}
-                          aria-label={`Remove ${item} from Core Pantry`}
-                          onClick={() => removeCatalog(catalogKey)}
-                          className="text-ink-light hover:text-red text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
-                        >
-                          ✕
-                        </button>
-                      </div>
+                        <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
+                          <span className="flex-1 text-sm min-w-0">{item}</span>
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            onClick={() => toggle(neededKey)}
+                            aria-label={isNeeded ? `Remove ${item} from shopping list` : `Add ${item} to shopping list`}
+                            className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
+                              isNeeded
+                                ? "bg-gold text-white"
+                                : "bg-surface-warm text-ink-light hover:bg-gold-light"
+                            }`}
+                          >
+                            {isNeeded ? "✓" : "+"}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            aria-label={`Remove ${item} from Core Pantry`}
+                            onClick={() => removeCatalog(catalogKey)}
+                            className="hidden md:inline-flex items-center justify-center text-ink-light hover:text-red text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </SwipeableRow>
                     );
                   })}
                 </div>
@@ -227,38 +232,46 @@ export default function PantryView({
             const neededKey = `needed:staple:${staple.id}`;
             const isNeeded = checked.has(neededKey);
             return (
-              <div
+              <SwipeableRow
                 key={staple.id}
-                className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2"
+                disabled={isPending}
+                deleteLabel={`Delete ${staple.label}`}
+                onDelete={() =>
+                  startTransition(() => {
+                    deleteStaple(staple.id);
+                  })
+                }
               >
-                <span className="flex-1 text-sm min-w-0">{staple.label}</span>
-                <button
-                  type="button"
-                  disabled={isPending}
-                  onClick={() => toggle(neededKey)}
-                  aria-label={isNeeded ? `Remove ${staple.label} from shopping list` : `Add ${staple.label} to shopping list`}
-                  className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
-                    isNeeded
-                      ? "bg-gold text-white"
-                      : "bg-surface-warm text-ink-light hover:bg-gold-light"
-                  }`}
-                >
-                  {isNeeded ? "✓" : "+"}
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Delete ${staple.label}`}
-                  disabled={isPending}
-                  onClick={() =>
-                    startTransition(() => {
-                      deleteStaple(staple.id);
-                    })
-                  }
-                  className="text-ink-light hover:text-ink text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
+                <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
+                  <span className="flex-1 text-sm min-w-0">{staple.label}</span>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => toggle(neededKey)}
+                    aria-label={isNeeded ? `Remove ${staple.label} from shopping list` : `Add ${staple.label} to shopping list`}
+                    className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
+                      isNeeded
+                        ? "bg-gold text-white"
+                        : "bg-surface-warm text-ink-light hover:bg-gold-light"
+                    }`}
+                  >
+                    {isNeeded ? "✓" : "+"}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Delete ${staple.label}`}
+                    disabled={isPending}
+                    onClick={() =>
+                      startTransition(() => {
+                        deleteStaple(staple.id);
+                      })
+                    }
+                    className="hidden md:inline-flex items-center justify-center text-ink-light hover:text-ink text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </SwipeableRow>
             );
           })}
           {staples.length === 0 && (
