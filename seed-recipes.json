@@ -143,7 +143,8 @@
         "Optional: add a scoop of vanilla protein powder.",
         "Blend until smooth."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "s2",
@@ -196,7 +197,8 @@
         "Blend until smooth.",
         "Serve immediately — tastes like a Frosty!"
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "s3",
@@ -249,7 +251,8 @@
         "Pour into a bowl.",
         "Top with granola, sliced fresh strawberries, and a drizzle of honey. <strong>The toppings are the whole point.</strong>"
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "s4",
@@ -301,7 +304,8 @@
         "Blend thick: 1 cup frozen mango, 1 frozen banana, 2 big handfuls frozen spinach, and 1/2 cup coconut milk.",
         "Top with: kiwi, hemp seeds, chia seeds, drizzle of almond butter, and granola."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "s5",
@@ -342,7 +346,8 @@
         "Blend until smooth.",
         "Add protein powder if you want more staying power."
       ],
-      "prep_time_minutes": 3
+      "prep_time_minutes": 3,
+      "servings": 1
     },
     {
       "id": "h1",
@@ -397,7 +402,8 @@
         "Season with oregano, salt, and pepper.",
         "Serve with toasted whole grain bread."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 1
     },
     {
       "id": "h2",
@@ -455,7 +461,8 @@
         "Top with avocado, hot sauce.",
         "Eat with tortillas."
       ],
-      "prep_time_minutes": 12
+      "prep_time_minutes": 12,
+      "servings": 1
     },
     {
       "id": "q1",
@@ -497,7 +504,8 @@
         "Smash 1/2 avocado on top with salt + lemon.",
         "Then pick a direction — <strong>Mediterranean</strong>: feta + cherry tomato + oregano. <strong>Mexican</strong>: hot sauce + cilantro + everything bagel. <strong>Rich</strong>: chili crisp + sesame seeds + soy drizzle."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "q2",
@@ -540,7 +548,8 @@
         "Sprinkle hemp seeds.",
         "Eat while figuring out if you're actually hungry enough for a real breakfast."
       ],
-      "prep_time_minutes": 1
+      "prep_time_minutes": 1,
+      "servings": 1
     },
     {
       "id": "g1",
@@ -583,7 +592,8 @@
         "Slice 1/2 avocado and season with salt and a squeeze of lime.",
         "Plate everything together with a handful of fruit on the side."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 1
     },
     {
       "id": "g2",
@@ -625,7 +635,8 @@
         "Top with fresh berries + a small drizzle of maple syrup.",
         "Serve alongside bacon — not a trade-off, an upgrade."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 4
     },
     {
       "id": "g3",
@@ -643,7 +654,8 @@
       "steps": [
         "No optimization needed. Cinnamon rolls on Saturday morning are a ritual, not a nutrition problem.",
         "If you want, pair with a protein smoothie or some eggs alongside to balance the sugar spike — but don't over-engineer this one."
-      ]
+      ],
+      "servings": 8
     },
     {
       "id": "b1",
@@ -725,7 +737,8 @@
         "Top the bowl with Kalamata olives, sliced cucumber, crumbled feta, and red onion.",
         "Drizzle the tahini sauce over the assembled bowl and serve."
       ],
-      "prep_time_minutes": 20
+      "prep_time_minutes": 20,
+      "servings": 2
     },
     {
       "id": "b2",
@@ -795,7 +808,8 @@
         "Assemble the bowl: start with the brown rice base, then top with black beans, corn, and cherry tomatoes.",
         "Finish with avocado, shredded cheese, cilantro, and hot sauce. Add leftover chicken to make it more substantial."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 1
     },
     {
       "id": "b3",
@@ -863,7 +877,8 @@
         "Top with edamame, purple cabbage, cucumber, green onion, and sesame seeds.",
         "<strong>Better as leftovers.</strong>"
       ],
-      "prep_time_minutes": 15
+      "prep_time_minutes": 15,
+      "servings": 1
     },
     {
       "id": "b4",
@@ -924,7 +939,8 @@
         "Top with diced cucumber, a squeeze of lemon, and a pinch of cumin.",
         "Add cilantro and a drizzle of chili oil."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "w1",
@@ -987,7 +1003,8 @@
         "Spread on a large tortilla with baby spinach, sliced cucumber, cherry tomatoes, and feta.",
         "Roll tight."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "w2",
@@ -1048,7 +1065,8 @@
         "Spoon into butter lettuce leaves.",
         "Top with: shredded purple cabbage, green onion, sesame seeds, and julienned carrot."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 2
     },
     {
       "id": "w3",
@@ -1104,7 +1122,8 @@
         "Cut into wedges.",
         "Add spinach for yourself."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 1
     },
     {
       "id": "so1",
@@ -1167,7 +1186,8 @@
         "Squeeze of lemon before serving.",
         "Portion into 4 containers."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 4
     },
     {
       "id": "so2",
@@ -1227,7 +1247,8 @@
         "Add rice noodles, sliced mushrooms, baby spinach, and 1 tsp soy sauce.",
         "Top with: soft-boiled egg (Britt only), green onion, a drizzle of sesame oil, and chili crisp."
       ],
-      "prep_time_minutes": 15
+      "prep_time_minutes": 15,
+      "servings": 1
     },
     {
       "id": "lq1",
@@ -1279,7 +1300,8 @@
         "Arrange hummus, olives, pita or crackers, sliced cucumber, cherry tomatoes, a handful of nuts, and feta (if you have it) on a plate.",
         "This is a real lunch, not a snack plate. The hummus (protein) + nuts (fat) + veg (fiber) combo keeps you full. Your nothing-in-the-fridge emergency lunch."
       ],
-      "prep_time_minutes": 2
+      "prep_time_minutes": 2,
+      "servings": 1
     },
     {
       "id": "lq2",
@@ -1328,7 +1350,8 @@
         "Add sliced avocado, drizzle of soy sauce or lemon, sesame seeds.",
         "Done. This is why the cook-alongside system works: make extra so you always have this for the next day."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "sn1",
@@ -1359,7 +1382,8 @@
         "Toss with sea salt.",
         "Also good with: everything bagel seasoning, chili lime salt, or soy sauce + sesame oil drizzle."
       ],
-      "prep_time_minutes": 3
+      "prep_time_minutes": 3,
+      "servings": 1
     },
     {
       "id": "sn2",
@@ -1394,7 +1418,8 @@
         "Choose your nut butter — almond or peanut butter — and keep a jar accessible, not buried in the pantry.",
         "Pair with an apple or banana and enjoy the fat + fiber + natural sugar combo, the most stabilizing snack combo there is."
       ],
-      "prep_time_minutes": 1
+      "prep_time_minutes": 1,
+      "servings": 1
     },
     {
       "id": "sn3",
@@ -1447,7 +1472,8 @@
         "Store in water in containers.",
         "This snack only happens when the veg is already cut. It never happens when you have to cut it first. Cut the veg."
       ],
-      "prep_time_minutes": 15
+      "prep_time_minutes": 15,
+      "servings": 4
     },
     {
       "id": "sn4",
@@ -1488,7 +1514,8 @@
         "Slice a block of cheddar or pepper jack cheese.",
         "Arrange on a plate with whole grain crackers and a handful of grapes or apple slices."
       ],
-      "prep_time_minutes": 2
+      "prep_time_minutes": 2,
+      "servings": 1
     },
     {
       "id": "sn5",
@@ -1522,7 +1549,8 @@
         "Grab roasted seaweed snack packs and a small handful of almonds or cashews.",
         "Enjoy as a satisfying savory snack — no prep needed."
       ],
-      "prep_time_minutes": 1
+      "prep_time_minutes": 1,
+      "servings": 1
     },
     {
       "id": "f1",
@@ -1570,7 +1598,8 @@
         "Serve with roasted potatoes or pita, cucumber, olives.",
         "<strong>Your salmon:</strong> same seasoning on a fillet, same pan, pull it out 10 min earlier."
       ],
-      "prep_time_minutes": 30
+      "prep_time_minutes": 30,
+      "servings": 4
     },
     {
       "id": "f2",
@@ -1630,7 +1659,8 @@
         "Pile on extra avocado.",
         "Add pickled red onion.",
         "Family gets the tacos they love, you get a more complete meal. No extra cooking required."
-      ]
+      ],
+      "servings": 4
     },
     {
       "id": "f3",
@@ -1691,7 +1721,8 @@
         "Serve over rice with steamed broccoli.",
         "<strong>Your salmon:</strong> same sauce, bake at 400° for 12–15 min while chicken cooks."
       ],
-      "prep_time_minutes": 25
+      "prep_time_minutes": 25,
+      "servings": 4
     },
     {
       "id": "f4",
@@ -1739,7 +1770,8 @@
         "Separately: combine a jar of tikka masala sauce and 2 cans chickpeas and simmer for 15 minutes.",
         "You eat more fiber, they eat what they love — same spice, same dinner table, different bowls."
       ],
-      "prep_time_minutes": 20
+      "prep_time_minutes": 20,
+      "servings": 6
     },
     {
       "id": "f5",
@@ -1796,7 +1828,8 @@
         "Toss the sauce with the cooked pasta and a splash of pasta water.",
         "Top with parmesan."
       ],
-      "prep_time_minutes": 20
+      "prep_time_minutes": 20,
+      "servings": 4
     },
     {
       "id": "si1",
@@ -1844,7 +1877,8 @@
         "Squeeze lemon juice over the top and drizzle with olive oil.",
         "Season with salt and toss to combine."
       ],
-      "prep_time_minutes": 3
+      "prep_time_minutes": 3,
+      "servings": 1
     },
     {
       "id": "si2",
@@ -1886,7 +1920,8 @@
         "Heat in a small saucepan with a splash of water, cumin, garlic powder, and salt for 5 minutes.",
         "Add these as your personal side to any Mexican-ish dinner — adds 15g fiber to your plate without touching the family's food."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "si3",
@@ -1920,7 +1955,8 @@
         "Toss broccoli florets in olive oil, salt, and garlic powder.",
         "Roast at 425° for 20 min until edges are <strong>dark and crispy</strong>."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 4
     },
     {
       "id": "sal1",
@@ -1974,7 +2010,8 @@
         "Bake at 400° for 13 minutes.",
         "Serve with roasted veg or a grain bowl."
       ],
-      "prep_time_minutes": 10
+      "prep_time_minutes": 10,
+      "servings": 1
     },
     {
       "id": "sal2",
@@ -2023,7 +2060,8 @@
         "Broil for the last 2 minutes for a caramelized top.",
         "Serve over rice with edamame."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "sal3",
@@ -2083,7 +2121,8 @@
         "Bake at 400° for 13 minutes.",
         "Serve over rice with avocado and black beans."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 4
     },
     {
       "id": "sal4",
@@ -2124,7 +2163,8 @@
         "Sprinkle dried dill on top, then lay lemon slices over the fish.",
         "Bake at 400° for 13 minutes."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     },
     {
       "id": "sal5",
@@ -2172,7 +2212,8 @@
         "Bake at 400° for 13–15 min — the butter bastes the fish as it cooks.",
         "Serve with roasted veg or crusty bread to scoop up the sauce."
       ],
-      "prep_time_minutes": 5
+      "prep_time_minutes": 5,
+      "servings": 1
     }
   ],
   "pantry": {

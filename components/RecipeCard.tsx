@@ -6,6 +6,7 @@ import type { RecipeWithRating, TagColor, RatingValue } from "@/lib/types";
 import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
 import { toggleThisWeek } from "@/app/actions/week-queue";
+import RecipeStepsAndIngredients from "@/components/RecipeStepsAndIngredients";
 
 const CUISINE_BADGE_CLASSES: Record<string, string> = {
   med: "bg-cuisine-med-light text-cuisine-med",
@@ -170,41 +171,11 @@ export default function RecipeCard({
               </Link>
             )}
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5">
-            How to make it
-          </div>
-          {recipe.steps.length > 0 ? (
-            <ol className="text-[13.5px] leading-relaxed [&_strong]:font-semibold list-decimal list-inside flex flex-col gap-1.5">
-              {recipe.steps.map((step, i) => (
-                <li key={i} dangerouslySetInnerHTML={{ __html: step }} />
-              ))}
-            </ol>
-          ) : recipe.recipe ? (
-            <div
-              className="text-[13.5px] leading-relaxed [&_strong]:font-semibold"
-              dangerouslySetInnerHTML={{ __html: recipe.recipe }}
-            />
-          ) : null}
-          {recipe.ingredients && recipe.ingredients.length > 0 && (
-            <>
-              <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1.5 mt-3.5">
-                Ingredients
-              </div>
-              <ul className="text-[13.5px] leading-relaxed flex flex-col gap-1">
-                {recipe.ingredients.map((ing, i) => (
-                  <li key={i}>
-                    {ing.quantity && (
-                      <span className="text-ink-light">
-                        {ing.quantity}
-                        {ing.unit ? ` ${ing.unit}` : ""}{" "}
-                      </span>
-                    )}
-                    {ing.name}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+          <RecipeStepsAndIngredients
+            steps={recipe.steps}
+            legacyRecipe={recipe.recipe}
+            ingredients={recipe.ingredients}
+          />
           {hasMacros && (
             <div className="flex gap-2 mt-3.5">
               {recipe.prep_time_minutes ? (

@@ -11,7 +11,7 @@ export default async function ThisWeekPage() {
 
   const { data: queue, error } = await supabase
     .from("week_queue")
-    .select("id, recipe:recipes(*)")
+    .select("id, servings_override, recipe:recipes(*)")
     .eq("household_id", household.householdId)
     .order("added_at");
 
@@ -25,6 +25,7 @@ export default async function ThisWeekPage() {
 
   const items = (queue ?? []).map((q) => ({
     queueId: q.id as string,
+    servingsOverride: q.servings_override as number | null,
     recipe: q.recipe as unknown as Recipe,
   }));
 

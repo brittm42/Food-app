@@ -51,6 +51,21 @@ export async function removeFromThisWeek(queueId: string) {
   revalidateAffectedPaths();
 }
 
+export async function setServingsOverride(queueId: string, servings: number) {
+  const household = await getCurrentHousehold();
+  if (!household) return;
+
+  const supabase = await createClient();
+
+  await supabase
+    .from("week_queue")
+    .update({ servings_override: servings })
+    .eq("id", queueId)
+    .eq("household_id", household.householdId);
+
+  revalidateAffectedPaths();
+}
+
 export async function clearThisWeek() {
   const household = await getCurrentHousehold();
   if (!household) return;
