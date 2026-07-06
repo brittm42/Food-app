@@ -4,16 +4,25 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentHousehold } from "@/lib/household";
+import { getCurrentHousehold, isPrivileged, type HouseholdRole } from "@/lib/household";
 import { sendInviteEmail } from "@/lib/email";
+
+export type HouseholdMemberRow = {
+  id: string;
+  userId: string | null;
+  role: HouseholdRole;
+  joinedAt: string;
+  email: string | null;
+  displayName: string | null;
+};
 
 export async function listHouseholdMembers() {
   const household = await getCurrentHousehold();
   if (!household)
     return {
-      members: [],
+      members: [] as HouseholdMemberRow[],
       invites: [],
-      role: null as "owner" | "member" | null,
+      role: null as HouseholdRole | null,
       householdName: undefined as string | undefined,
     };
 
@@ -23,7 +32,7 @@ export async function listHouseholdMembers() {
   const [{ data: memberRows }, { data: householdRow }] = await Promise.all([
     supabase
       .from("household_members")
-      .select("user_id, role, joined_at")
+      .select("id, user_id, role, joined_at")
       .eq("household_id", household.householdId)
       .order("joined_at", { ascending: true }),
     supabase
@@ -33,26 +42,46 @@ export async function listHouseholdMembers() {
       .single(),
   ]);
 
-  const { data: profileRows } = await admin
-    .from("profiles")
-    .select("user_id, display_name")
-    .in(
-      "user_id",
-      (memberRows ?? []).map((row) => row.user_id)
-    );
+  const rows = memberRows ?? [];
+  const userIds = rows.map((r) => r.user_id).filter((id): id is string => id != null);
+  const memberIds = rows.filter((r) => r.user_id == null).map((r) => r.id);
+
+  const [{ data: userProfileRows }, { data: dependentProfileRows }] = await Promise.all([
+    userIds.length
+      ? admin.from("profiles").select("user_id, display_name").in("user_id", userIds)
+      : Promise.resolve({ data: [] as { user_id: string; display_name: string | null }[] }),
+    memberIds.length
+      ? admin.from("profiles").select("member_id, display_name").in("member_id", memberIds)
+      : Promise.resolve({ data: [] as { member_id: string; display_name: string | null }[] }),
+  ]);
+
   const displayNamesByUserId = new Map(
-    (profileRows ?? []).map((p) => [p.user_id as string, p.display_name as string | null])
+    (userProfileRows ?? []).map((p) => [p.user_id as string, p.display_name as string | null])
+  );
+  const displayNamesByMemberId = new Map(
+    (dependentProfileRows ?? []).map((p) => [p.member_id as string, p.display_name as string | null])
   );
 
-  const members = await Promise.all(
-    (memberRows ?? []).map(async (row) => {
+  const members: HouseholdMemberRow[] = await Promise.all(
+    rows.map(async (row) => {
+      if (row.user_id == null) {
+        return {
+          id: row.id as string,
+          userId: null,
+          role: row.role as HouseholdRole,
+          joinedAt: row.joined_at as string,
+          email: null,
+          displayName: displayNamesByMemberId.get(row.id as string) ?? null,
+        };
+      }
       const { data } = await admin.auth.admin.getUserById(row.user_id);
       return {
-        userId: row.user_id,
-        role: row.role as "owner" | "member",
+        id: row.id as string,
+        userId: row.user_id as string,
+        role: row.role as HouseholdRole,
         joinedAt: row.joined_at as string,
         email: data.user?.email ?? "(unknown)",
-        displayName: displayNamesByUserId.get(row.user_id) ?? null,
+        displayName: displayNamesByUserId.get(row.user_id as string) ?? null,
       };
     })
   );
@@ -64,7 +93,7 @@ export async function listHouseholdMembers() {
     expiresAt: string;
   }[] = [];
 
-  if (household.role === "owner") {
+  if (isPrivileged(household.role)) {
     const { data: inviteRows } = await admin
       .from("household_invites")
       .select("id, invited_email, status, expires_at")
@@ -96,8 +125,8 @@ export async function createInvite(email: string) {
 
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
-  if (household.role !== "owner") {
-    return { error: "Only the household owner can invite someone." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can invite someone." };
   }
 
   const admin = createAdminClient();
@@ -163,8 +192,8 @@ export async function updateHouseholdName(name: string) {
 
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
-  if (household.role !== "owner") {
-    return { error: "Only the household owner can rename it." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can rename it." };
   }
 
   const supabase = await createClient();
@@ -185,8 +214,8 @@ export async function updateHouseholdName(name: string) {
 export async function removeMember(memberUserId: string) {
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
-  if (household.role !== "owner") {
-    return { error: "Only the household owner can remove members." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can remove members." };
   }
   if (memberUserId === household.userId) {
     return { error: "You can't remove yourself." };
@@ -198,6 +227,7 @@ export async function removeMember(memberUserId: string) {
     .delete()
     .eq("household_id", household.householdId)
     .eq("user_id", memberUserId)
+    .neq("role", "owner")
     .select("id")
     .maybeSingle();
 
@@ -208,9 +238,90 @@ export async function removeMember(memberUserId: string) {
   return {};
 }
 
+export async function updateMemberRole(memberId: string, role: "member" | "manager") {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can change roles." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("household_members")
+    .update({ role })
+    .eq("id", memberId)
+    .eq("household_id", household.householdId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Could not update that member's role. Try again." };
+
+  revalidatePath("/account/household");
+  return {};
+}
+
+export async function createDependentProfile(displayName: string) {
+  const trimmed = displayName.trim();
+  if (!trimmed) return { error: "Enter a name." };
+
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can add a dependent profile." };
+  }
+
+  const supabase = await createClient();
+  const { data: member, error: memberError } = await supabase
+    .from("household_members")
+    .insert({ household_id: household.householdId, user_id: null, role: "dependent" })
+    .select("id")
+    .single();
+
+  if (memberError || !member) {
+    return { error: memberError?.message ?? "Could not add that profile. Try again." };
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({ member_id: member.id, display_name: trimmed });
+
+  if (profileError) {
+    await supabase.from("household_members").delete().eq("id", member.id);
+    return { error: profileError.message };
+  }
+
+  revalidatePath("/account/household");
+  return { memberId: member.id as string };
+}
+
+export async function removeDependent(memberId: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can remove a dependent profile." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("household_members")
+    .delete()
+    .eq("id", memberId)
+    .eq("household_id", household.householdId)
+    .eq("role", "dependent")
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Could not remove that profile. Try again." };
+
+  revalidatePath("/account/household");
+  return {};
+}
+
 export async function revokeInvite(inviteId: string) {
   const household = await getCurrentHousehold();
-  if (!household || household.role !== "owner") return;
+  if (!household || !isPrivileged(household.role)) return;
 
   const admin = createAdminClient();
   await admin

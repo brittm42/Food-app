@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { listHouseholdMembers } from "@/app/actions/household";
+import { isPrivileged } from "@/lib/household";
 import AccountBackLink from "@/components/AccountBackLink";
 import HouseholdPanel from "@/components/HouseholdPanel";
 
@@ -17,7 +18,7 @@ export default async function HouseholdSectionPage() {
         householdName={householdName ?? "Home"}
         members={members}
         invites={invites}
-        isOwner={role === "owner"}
+        isPrivileged={isPrivileged(role)}
         currentUserId={userData.user.id}
       />
     </div>

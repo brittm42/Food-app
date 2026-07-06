@@ -116,6 +116,29 @@ const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library 
 - Estimate prep_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
 Draft one recipe matching this voice based on the user's description. Always call the draft_recipe tool with your answer.`;
 
+function buildPreferencesNote(prefs: {
+  allergies: string[];
+  avoidFoods: string[];
+  cuisinePreferences: string[];
+} | null): string {
+  if (!prefs) return "";
+  const lines: string[] = [];
+  if (prefs.allergies.length) {
+    lines.push(
+      `The person this recipe is for has these allergies/dietary restrictions — never include these ingredients: ${prefs.allergies.join(", ")}.`
+    );
+  }
+  if (prefs.avoidFoods.length) {
+    lines.push(
+      `They'd also rather avoid (not an allergy, just a preference): ${prefs.avoidFoods.join(", ")}.`
+    );
+  }
+  if (prefs.cuisinePreferences.length) {
+    lines.push(`They especially enjoy these cuisines: ${prefs.cuisinePreferences.join(", ")}.`);
+  }
+  return lines.length ? `\n\n${lines.join(" ")}` : "";
+}
+
 export async function generateRecipeDraft(
   description: string
 ): Promise<{ recipe?: RecipeInput; error?: string }> {
@@ -124,9 +147,17 @@ export async function generateRecipeDraft(
   if (!description.trim()) return { error: "Describe the recipe idea first." };
 
   const supabase = await createClient();
-  const [{ data: tagColors }, { data: recipes }] = await Promise.all([
+  const { data: userData } = await supabase.auth.getUser();
+  const [{ data: tagColors }, { data: recipes }, { data: profile }] = await Promise.all([
     supabase.from("tag_colors").select("name"),
     supabase.from("recipes").select("ingredients"),
+    userData.user
+      ? supabase
+          .from("profiles")
+          .select("allergies, avoid_foods, cuisine_preferences")
+          .eq("user_id", userData.user.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
 
   const tagNames = (tagColors ?? []).map((t) => t.name as string);
@@ -140,11 +171,21 @@ export async function generateRecipeDraft(
 
   const client = new Anthropic({ apiKey });
 
+  const preferencesNote = buildPreferencesNote(
+    profile
+      ? {
+          allergies: profile.allergies ?? [],
+          avoidFoods: profile.avoid_foods ?? [],
+          cuisinePreferences: profile.cuisine_preferences ?? [],
+        }
+      : null
+  );
+
   try {
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + preferencesNote,
       tools: [buildTool(tagNames, knownIngredientNames)],
       tool_choice: { type: "tool", name: "draft_recipe" },
       messages: [{ role: "user", content: description }],

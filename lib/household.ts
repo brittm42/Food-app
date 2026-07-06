@@ -1,10 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 
+export type HouseholdRole = "owner" | "manager" | "member" | "dependent";
+
 export type CurrentHousehold = {
   userId: string;
   householdId: string;
-  role: "owner" | "member";
+  role: HouseholdRole;
 };
+
+export function isPrivileged(role: HouseholdRole | null | undefined): boolean {
+  return role === "owner" || role === "manager";
+}
 
 export async function getCurrentHousehold(): Promise<CurrentHousehold | null> {
   const supabase = await createClient();
@@ -22,6 +28,6 @@ export async function getCurrentHousehold(): Promise<CurrentHousehold | null> {
   return {
     userId: userData.user.id,
     householdId: membership.household_id,
-    role: membership.role as "owner" | "member",
+    role: membership.role as HouseholdRole,
   };
 }
