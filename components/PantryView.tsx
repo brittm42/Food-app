@@ -88,10 +88,7 @@ export default function PantryView({
             );
             if (visibleItems.length === 0) return null;
             return (
-              <div key={cat.category}>
-                <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">
-                  {cat.category}
-                </h2>
+              <Collapsible key={cat.category} title={cat.category}>
                 <div className="flex flex-col gap-1.5">
                   {visibleItems.map((item) => {
                     const neededKey = `needed:core:${cat.category}:${item}`;
@@ -133,7 +130,7 @@ export default function PantryView({
                     );
                   })}
                 </div>
-              </div>
+              </Collapsible>
             );
           })}
           {removedCoreItems.length > 0 && (

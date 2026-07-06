@@ -6,8 +6,9 @@ import { addShoppingItem, removeShoppingItem } from "@/app/actions/shopping";
 import Collapsible from "@/components/Collapsible";
 
 type Item = { key: string; label: string; note?: string; checked: boolean };
-type RestockItem = { key: string; label: string; note?: string };
+type RestockItem = { key: string; label: string };
 type OneOffItem = { id: string; label: string; isFood: boolean };
+type CategoryGroup<T> = { category: string; items: T[] };
 
 export default function ShoppingListView({
   fresh,
@@ -18,9 +19,9 @@ export default function ShoppingListView({
   hasQueue,
 }: {
   fresh: Item[];
-  core: Item[];
+  core: CategoryGroup<Item>[];
   weekly: Item[];
-  restock: RestockItem[];
+  restock: CategoryGroup<RestockItem>[];
   oneOff: OneOffItem[];
   hasQueue: boolean;
 }) {
@@ -68,7 +69,13 @@ export default function ShoppingListView({
       )}
       {core.length > 0 && (
         <Collapsible title="Check Core Pantry">
-          <ChecklistSection items={core} onToggle={toggle} disabled={isPending} />
+          <div className="flex flex-col gap-4">
+            {core.map((group) => (
+              <Collapsible key={group.category} title={group.category}>
+                <ChecklistSection items={group.items} onToggle={toggle} disabled={isPending} />
+              </Collapsible>
+            ))}
+          </div>
         </Collapsible>
       )}
       <Collapsible title="Weekly Fresh — Always Buy">
@@ -77,31 +84,34 @@ export default function ShoppingListView({
 
       {restock.length > 0 && (
         <Collapsible title="Restock">
-          <div className="flex flex-col gap-1.5">
-            {restock.map((item) => (
-              <label
-                key={item.key}
-                className="flex items-center gap-2.5 bg-surface border border-border rounded-lg px-3 py-2 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={false}
-                  disabled={isPending}
-                  onChange={() => checkOffRestock(item.key)}
-                  className="w-4 h-4 accent-gold cursor-pointer flex-shrink-0"
-                />
-                <span className="text-sm">
-                  {item.label}
-                  {item.note && <span className="text-ink-light text-xs"> — {item.note}</span>}
-                </span>
-              </label>
+          <div className="flex flex-col gap-4">
+            {restock.map((group) => (
+              <Collapsible key={group.category} title={group.category}>
+                <div className="flex flex-col gap-1.5">
+                  {group.items.map((item) => (
+                    <label
+                      key={item.key}
+                      className="flex items-center gap-2.5 bg-surface border border-border rounded-lg px-3 py-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        disabled={isPending}
+                        onChange={() => checkOffRestock(item.key)}
+                        className="w-4 h-4 accent-gold cursor-pointer flex-shrink-0"
+                      />
+                      <span className="text-sm">{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </Collapsible>
             ))}
           </div>
         </Collapsible>
       )}
 
       <Collapsible title="Shopping List">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-3">
           {foodItems.length === 0 && nonFoodItems.length === 0 && (
             <p className="text-xs text-ink-light">
               No one-off items yet — use the + button above to add something
@@ -116,14 +126,13 @@ export default function ShoppingListView({
             </div>
           )}
           {nonFoodItems.length > 0 && (
-            <div className="flex flex-col gap-1.5 mt-2">
-              <h3 className="font-mono text-[9px] uppercase tracking-wide text-ink-light">
-                Non-food
-              </h3>
-              {nonFoodItems.map((item) => (
-                <OneOffRow key={item.id} item={item} onCheckOff={checkOffOneOff} disabled={isPending} />
-              ))}
-            </div>
+            <Collapsible title="Non-food">
+              <div className="flex flex-col gap-1.5">
+                {nonFoodItems.map((item) => (
+                  <OneOffRow key={item.id} item={item} onCheckOff={checkOffOneOff} disabled={isPending} />
+                ))}
+              </div>
+            </Collapsible>
           )}
         </div>
       </Collapsible>
