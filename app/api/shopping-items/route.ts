@@ -43,6 +43,27 @@ export async function POST(request: NextRequest) {
   }
   const isFood = typeof body.isFood === "boolean" ? body.isFood : true;
 
+  // A voice add should behave like a real list: saying an item that's
+  // already sitting there unchecked is a no-op, not a second row. Unlike the
+  // manual UI (typing the same label twice does create a duplicate today),
+  // voice input has no visual feedback for "wait, is that already on
+  // there?", so silently skipping duplicates matters more here.
+  // Escape ilike's own wildcard characters so a literal label like
+  // "2% milk" or "family_size chips" doesn't get treated as a pattern.
+  const escapedLabel = label.replace(/[%_]/g, (char) => `\\${char}`);
+
+  const { data: existing } = await admin
+    .from("shopping_items")
+    .select("id")
+    .eq("household_id", tokenRow.household_id)
+    .ilike("label", escapedLabel)
+    .maybeSingle();
+
+  if (existing) {
+    revalidatePath("/shopping");
+    return NextResponse.json({ ok: true, label, duplicate: true });
+  }
+
   const { error } = await admin.from("shopping_items").insert({
     household_id: tokenRow.household_id,
     label,
