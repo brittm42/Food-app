@@ -29,6 +29,37 @@ function speech(text: string, shouldEndSession = true) {
   });
 }
 
+// ItemName is AMAZON.SearchQuery, which Alexa doesn't allow as a multi-value
+// slot (it's excluded specifically because it's meant for broad free-text
+// capture) — so "add milk, eggs, and bread" arrives as one raw string that
+// we split ourselves. Only split on commas, and only treat a trailing
+// "and X" as a separate item once a comma has already established we're in
+// a list — a bare "mac and cheese" (no comma) has no way to be
+// distinguished from a real two-item "milk and eggs", so it's left intact
+// rather than risk mangling a compound food name.
+function splitItems(raw: string): string[] {
+  const commaParts = raw
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (commaParts.length <= 1) return commaParts;
+
+  const last = commaParts.pop()!.replace(/^and\s+/i, "");
+  const lastParts = last
+    .split(/\s+and\s+/i)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return [...commaParts, ...lastParts];
+}
+
+function joinWithAnd(items: string[]): string {
+  if (items.length <= 1) return items.join("");
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
+
 // Alexa entry point for voice quick-add ("Alexa, tell weekly nom to add
 // milk"). Unlike the Shortcuts endpoint (app/api/shopping-items/route.ts),
 // this isn't Bearer-token authenticated — Amazon signs every request with a
@@ -141,19 +172,42 @@ export async function POST(request: NextRequest) {
   }
 
   const itemSlot = alexaRequest.intent?.slots?.ItemName?.value;
-  const label = typeof itemSlot === "string" ? itemSlot : "";
+  const rawLabel = typeof itemSlot === "string" ? itemSlot : "";
+  const items = splitItems(rawLabel);
 
-  const result = await addShoppingItemForHousehold(admin, membership.household_id, label);
-
-  if (!result.ok) {
+  if (items.length === 0) {
     return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
+  }
+
+  // Sequential, not Promise.all — if the same item is said twice in one
+  // sentence (or twice via imperfect speech recognition), each insert needs
+  // to see the previous one's dedup check land before the next runs.
+  const added: string[] = [];
+  const duplicates: string[] = [];
+  for (const item of items) {
+    const result = await addShoppingItemForHousehold(admin, membership.household_id, item);
+    if (!result.ok) continue;
+    if (result.duplicate) {
+      duplicates.push(result.label);
+    } else {
+      added.push(result.label);
+    }
   }
 
   revalidatePath("/shopping");
 
-  if (result.duplicate) {
-    return speech(`${result.label} is already on your shopping list.`);
+  if (added.length === 0 && duplicates.length === 0) {
+    return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
   }
 
-  return speech(`Added ${result.label} to your shopping list.`);
+  const parts: string[] = [];
+  if (added.length > 0) {
+    parts.push(`Added ${joinWithAnd(added)} to your shopping list.`);
+  }
+  if (duplicates.length > 0) {
+    const verb = duplicates.length === 1 ? "was" : "were";
+    parts.push(`${joinWithAnd(duplicates)} ${verb} already on the list.`);
+  }
+
+  return speech(parts.join(" "));
 }
