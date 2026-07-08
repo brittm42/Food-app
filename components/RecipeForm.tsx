@@ -528,14 +528,23 @@ export default function RecipeForm({
 
       {saveError && <p className="text-sm text-red">{saveError}</p>}
 
-      <button
-        type="button"
-        disabled={isSaving}
-        onClick={handleSave}
-        className="bg-ink text-white rounded-lg py-2.5 text-sm font-medium cursor-pointer disabled:opacity-50"
-      >
-        {isSaving ? "Saving…" : mode === "create" ? "Save Recipe" : "Save Changes"}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="flex-1 border border-border text-ink rounded-lg py-2.5 text-sm font-medium cursor-pointer hover:bg-surface-warm"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          disabled={isSaving}
+          onClick={handleSave}
+          className="flex-1 bg-ink text-white rounded-lg py-2.5 text-sm font-medium cursor-pointer disabled:opacity-50"
+        >
+          {isSaving ? "Saving…" : mode === "create" ? "Save Recipe" : "Save Changes"}
+        </button>
+      </div>
     </div>
   );
 }

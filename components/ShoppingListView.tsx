@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { toggleChecked } from "@/app/actions/pantry";
 import { addShoppingItem, removeShoppingItem } from "@/app/actions/shopping";
 import Collapsible from "@/components/Collapsible";
+import QuickAddModal from "@/components/QuickAddModal";
 
 type Item = { key: string; label: string; note?: string; checked: boolean };
 type RestockItem = { key: string; label: string };
@@ -164,13 +165,11 @@ function OneOffRow({
 }
 
 function AddOneOffButton() {
-  const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [isFood, setIsFood] = useState(true);
   const [isPending, startTransition] = useTransition();
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
+  function submit(close: () => void) {
     const trimmed = value.trim();
     if (!trimmed) return;
     startTransition(() => {
@@ -178,79 +177,44 @@ function AddOneOffButton() {
     });
     setValue("");
     setIsFood(true);
-    setOpen(false);
+    close();
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Add an item to the Shopping List"
-        className="w-9 h-9 rounded-full bg-ink text-white text-lg leading-none flex items-center justify-center cursor-pointer shadow-sm hover:opacity-90 flex-shrink-0"
-      >
-        +
-      </button>
-      {open && (
-        <div
-          className="fixed inset-0 bg-ink/40 flex items-center justify-center z-50 px-4"
-          onClick={() => setOpen(false)}
+    <QuickAddModal
+      triggerAriaLabel="Add an item to the Shopping List"
+      headerLabel="Add to Shopping List"
+      submitDisabled={isPending}
+      onSubmit={submit}
+    >
+      <input
+        autoFocus
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="e.g. paper towels"
+        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+      />
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          onClick={() => setIsFood(true)}
+          className={`flex-1 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-full cursor-pointer transition-colors ${
+            isFood ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
+          }`}
         >
-          <form
-            onSubmit={submit}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-surface rounded-xl p-4 w-full max-w-xs flex flex-col gap-3"
-          >
-            <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
-              Add to Shopping List
-            </div>
-            <input
-              autoFocus
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="e.g. paper towels"
-              className="border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal"
-            />
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                onClick={() => setIsFood(true)}
-                className={`flex-1 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-full cursor-pointer transition-colors ${
-                  isFood ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
-                }`}
-              >
-                Food
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsFood(false)}
-                className={`flex-1 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-full cursor-pointer transition-colors ${
-                  !isFood ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
-                }`}
-              >
-                Non-food
-              </button>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="text-ink-light text-sm px-3 py-2 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isPending}
-                className="bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
-              >
-                Add
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-    </>
+          Food
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsFood(false)}
+          className={`flex-1 font-mono text-[10px] uppercase tracking-wide px-2.5 py-1.5 rounded-full cursor-pointer transition-colors ${
+            !isFood ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
+          }`}
+        >
+          Non-food
+        </button>
+      </div>
+    </QuickAddModal>
   );
 }
 
