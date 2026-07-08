@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
   try {
     await alexaVerifier(certUrl, signature, rawBody);
   } catch (err) {
+    console.error("Alexa signature verification failed:", err, "certUrl:", certUrl);
     return NextResponse.json(
       { error: `Signature verification failed: ${String(err)}` },
       { status: 401 }
@@ -221,6 +222,7 @@ export async function POST(request: NextRequest) {
 
     return speech(parts.join(" "));
   } catch (err) {
+    console.error("Alexa intent handling failed:", err);
     return speech(`Something went wrong: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
