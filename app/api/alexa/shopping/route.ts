@@ -68,7 +68,13 @@ function joinWithAnd(items: string[]): string {
 // linking (Login with Amazon): Alexa hands back an LWA access token, which
 // is exchanged here for the linked email to resolve a household.
 export async function POST(request: NextRequest) {
-  const rawBody = await request.text();
+  // Buffer, not .text() — the signature is computed over Amazon's exact raw
+  // bytes. Decoding to a JS string and letting alexa-verifier re-encode it
+  // as UTF-8 is a well-known way to subtly corrupt those bytes and fail
+  // verification even for a genuine request; passing a Buffer straight
+  // through skips the string round-trip entirely (Node's crypto `.update()`
+  // hashes a Buffer's bytes directly, ignoring the encoding argument).
+  const rawBody = Buffer.from(await request.arrayBuffer());
 
   const certUrl = request.headers.get("signaturecertchainurl");
   const signature = request.headers.get("signature");
@@ -89,7 +95,7 @@ export async function POST(request: NextRequest) {
 
   let payload: AlexaRequestBody;
   try {
-    payload = JSON.parse(rawBody);
+    payload = JSON.parse(rawBody.toString("utf8"));
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
