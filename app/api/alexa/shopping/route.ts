@@ -92,6 +92,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing request timestamp." }, { status: 400 });
   }
 
+  const bodyText = rawBody.toString("utf8");
+  console.log("Alexa raw body inspection:", {
+    length: rawBody.length,
+    first120: bodyText.slice(0, 120),
+    last120: bodyText.slice(-120),
+    containsNewline: bodyText.includes("\n"),
+    containsCRLF: bodyText.includes("\r\n"),
+  });
+
   try {
     await verifyAlexaRequest(certUrl, signature, rawBody, requestTimestamp);
   } catch (err) {
