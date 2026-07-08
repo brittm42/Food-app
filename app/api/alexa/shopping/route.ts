@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
-import crypto from "crypto";
-import alexaVerifier from "alexa-verifier";
+import { verifyAlexaRequest } from "@/lib/alexa-verify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addShoppingItemForHousehold } from "@/lib/shopping";
 
@@ -64,17 +63,14 @@ function joinWithAnd(items: string[]): string {
 // Alexa entry point for voice quick-add ("Alexa, tell weekly nom to add
 // milk"). Unlike the Shortcuts endpoint (app/api/shopping-items/route.ts),
 // this isn't Bearer-token authenticated — Amazon signs every request with a
-// certificate chain instead, verified below via alexa-verifier before any
-// of the payload is trusted. The caller's identity comes from account
+// certificate chain instead, verified below via lib/alexa-verify.ts before
+// any of the payload is trusted. The caller's identity comes from account
 // linking (Login with Amazon): Alexa hands back an LWA access token, which
 // is exchanged here for the linked email to resolve a household.
 export async function POST(request: NextRequest) {
   // Buffer, not .text() — the signature is computed over Amazon's exact raw
-  // bytes. Decoding to a JS string and letting alexa-verifier re-encode it
-  // as UTF-8 is a well-known way to subtly corrupt those bytes and fail
-  // verification even for a genuine request; passing a Buffer straight
-  // through skips the string round-trip entirely (Node's crypto `.update()`
-  // hashes a Buffer's bytes directly, ignoring the encoding argument).
+  // bytes, and a Buffer skips any decode/re-encode round-trip that could
+  // alter them.
   const rawBody = Buffer.from(await request.arrayBuffer());
 
   const certUrl = request.headers.get("signaturecertchainurl");
@@ -84,31 +80,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing signature headers." }, { status: 400 });
   }
 
-  console.log("Alexa request diagnostics:", {
-    bodyLength: rawBody.length,
-    bodySha256: crypto.createHash("sha256").update(rawBody).digest("hex"),
-    contentLengthHeader: request.headers.get("content-length"),
-    contentTypeHeader: request.headers.get("content-type"),
-    signatureLength: signature.length,
-    signaturePreview: `${signature.slice(0, 16)}...${signature.slice(-16)}`,
-    certUrl,
-  });
+  let payload: AlexaRequestBody & { request?: { timestamp?: string } };
+  try {
+    payload = JSON.parse(rawBody.toString("utf8"));
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  const requestTimestamp = payload.request?.timestamp;
+  if (!requestTimestamp) {
+    return NextResponse.json({ error: "Missing request timestamp." }, { status: 400 });
+  }
 
   try {
-    await alexaVerifier(certUrl, signature, rawBody);
+    await verifyAlexaRequest(certUrl, signature, rawBody, requestTimestamp);
   } catch (err) {
     console.error("Alexa signature verification failed:", err, "certUrl:", certUrl);
     return NextResponse.json(
       { error: `Signature verification failed: ${String(err)}` },
       { status: 401 }
     );
-  }
-
-  let payload: AlexaRequestBody;
-  try {
-    payload = JSON.parse(rawBody.toString("utf8"));
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
   const alexaRequest = payload.request;
