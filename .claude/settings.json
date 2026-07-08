@@ -22,6 +22,9 @@
       "Bash(gh api repos/brittm42/Food-app/deployments*)",
       "Bash(git remote *)",
       "Bash(npx vercel ls*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\n\" *)",
+      "Bash(git check-ignore *)",
+      "Bash(nohup npm run dev *)",
       "mcp__claude_ai_Gmail__get_thread",
       "mcp__claude_ai_Gmail__search_threads"
     ]
