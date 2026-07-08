@@ -9,7 +9,7 @@ const initialState: LoginState = { status: "idle" };
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams?.get("next") ?? "/";
 
   const [passwordState, passwordAction, passwordPending] = useActionState(
     signInWithPassword,
