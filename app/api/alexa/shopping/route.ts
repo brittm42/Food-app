@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
+import crypto from "crypto";
 import alexaVerifier from "alexa-verifier";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addShoppingItemForHousehold } from "@/lib/shopping";
@@ -82,6 +83,16 @@ export async function POST(request: NextRequest) {
   if (!certUrl || !signature) {
     return NextResponse.json({ error: "Missing signature headers." }, { status: 400 });
   }
+
+  console.log("Alexa request diagnostics:", {
+    bodyLength: rawBody.length,
+    bodySha256: crypto.createHash("sha256").update(rawBody).digest("hex"),
+    contentLengthHeader: request.headers.get("content-length"),
+    contentTypeHeader: request.headers.get("content-type"),
+    signatureLength: signature.length,
+    signaturePreview: `${signature.slice(0, 16)}...${signature.slice(-16)}`,
+    certUrl,
+  });
 
   try {
     await alexaVerifier(certUrl, signature, rawBody);
