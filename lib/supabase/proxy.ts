@@ -1,10 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// /api is public here because its routes (e.g. voice quick-add) do their own
-// Bearer-token auth instead of relying on the cookie session — see
-// app/api/shopping-items/route.ts.
-const PUBLIC_PATHS = ["/login", "/auth", "/invite", "/api", "/privacy"];
+// /api isn't listed here — it's excluded from the middleware matcher
+// entirely (proxy.ts) rather than just marked public, so this function
+// never runs for those routes at all. See proxy.ts for why.
+const PUBLIC_PATHS = ["/login", "/auth", "/invite", "/privacy"];
 
 // Paths a signed-in user with unfinished onboarding can still reach without
 // being bounced to /onboarding — lets them go straight to /account/preferences
