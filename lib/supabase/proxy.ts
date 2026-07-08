@@ -46,6 +46,37 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (data.user && !isPublicPath) {
+    // Every signed-in user needs a household to use This Week/Pantry/
+    // Shopping (they're all household-scoped). Invited users get one via
+    // acceptInvite() before they ever reach a non-public path; anyone else
+    // (self-signup with no invite) falls through to here and gets a
+    // personal household created lazily on their first real page load.
+    const { data: membership } = await supabase
+      .from("household_members")
+      .select("household_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+
+    if (!membership) {
+      // Generate the id ourselves rather than using .select() to read it
+      // back after insert: households_select requires household_members
+      // membership, which doesn't exist yet for a brand-new household, so
+      // the RETURNING read gets filtered by RLS and Postgres reports the
+      // whole insert as a policy violation.
+      const householdId = crypto.randomUUID();
+      const { error: newHouseholdError } = await supabase
+        .from("households")
+        .insert({ id: householdId });
+
+      if (!newHouseholdError) {
+        await supabase.from("household_members").insert({
+          household_id: householdId,
+          user_id: data.user.id,
+          role: "owner",
+        });
+      }
+    }
+
     const isOnboardingExempt = ONBOARDING_EXEMPT_PATHS.some((path) =>
       pathname.startsWith(path)
     );
