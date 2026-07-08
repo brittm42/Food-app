@@ -1,18 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
-import { getDisplayName } from "@/app/actions/profile";
+import { getDisplayName, getMyPreferences } from "@/app/actions/profile";
 import { listHouseholdMembers } from "@/app/actions/household";
 import AccountSectionRow from "@/components/AccountSectionRow";
 import AvatarInitials from "@/components/AvatarInitials";
 
-const PROVIDER_LABELS: Record<string, string> = {
-  email: "Email",
-  google: "Google",
-};
-
-function joinWithAnd(items: string[]) {
-  if (items.length <= 1) return items.join("");
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+function preferencesSubtitle(prefs: Awaited<ReturnType<typeof getMyPreferences>>) {
+  if (!prefs) return undefined;
+  const count = prefs.allergies.length + prefs.avoidFoods.length + prefs.cuisinePreferences.length;
+  return count > 0 ? `${count} preference${count === 1 ? "" : "s"} saved` : "Add your food preferences";
 }
 
 export default async function AccountPage() {
@@ -20,15 +15,11 @@ export default async function AccountPage() {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return null;
 
-  const [displayName, { householdName }] = await Promise.all([
+  const [displayName, { householdName }, prefs] = await Promise.all([
     getDisplayName(),
     listHouseholdMembers(),
+    getMyPreferences(),
   ]);
-
-  const providers = userData.user.app_metadata?.providers as string[] | undefined;
-  const signInMethods = (providers ?? [userData.user.app_metadata?.provider])
-    .filter((p): p is string => Boolean(p))
-    .map((p) => PROVIDER_LABELS[p] ?? p);
 
   return (
     <div className="max-w-md mx-auto py-8 px-4">
@@ -56,18 +47,9 @@ export default async function AccountPage() {
           subtitle={householdName ?? "Not in a household yet"}
         />
         <AccountSectionRow
-          href="/account/security"
-          title="Security"
-          subtitle={
-            signInMethods.length > 0
-              ? `Signed in via ${joinWithAnd(signInMethods)}`
-              : undefined
-          }
-        />
-        <AccountSectionRow
           href="/account/preferences"
           title="Preferences"
-          subtitle="Coming soon"
+          subtitle={preferencesSubtitle(prefs)}
         />
       </div>
     </div>

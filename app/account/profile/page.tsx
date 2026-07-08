@@ -3,6 +3,18 @@ import { getDisplayName } from "@/app/actions/profile";
 import AccountBackLink from "@/components/AccountBackLink";
 import AvatarInitials from "@/components/AvatarInitials";
 import ProfileNameForm from "@/components/ProfileNameForm";
+import SetPasswordForm from "@/components/SetPasswordForm";
+
+const PROVIDER_LABELS: Record<string, string> = {
+  email: "Email",
+  google: "Google",
+};
+
+function joinWithAnd(items: string[]) {
+  if (items.length <= 1) return items.join("");
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
 
 export default async function ProfileSectionPage() {
   const supabase = await createClient();
@@ -10,6 +22,11 @@ export default async function ProfileSectionPage() {
   if (!userData.user) return null;
 
   const displayName = await getDisplayName();
+
+  const providers = userData.user.app_metadata?.providers as string[] | undefined;
+  const signInMethods = (providers ?? [userData.user.app_metadata?.provider])
+    .filter((p): p is string => Boolean(p))
+    .map((p) => PROVIDER_LABELS[p] ?? p);
 
   return (
     <div className="max-w-md mx-auto py-8 px-4">
@@ -28,6 +45,13 @@ export default async function ProfileSectionPage() {
         Shown to other household members instead of your email.
       </p>
       <ProfileNameForm initialName={displayName} />
+
+      {signInMethods.length > 0 && (
+        <p className="text-xs text-ink-light mt-6">
+          Signed in via {joinWithAnd(signInMethods)}
+        </p>
+      )}
+      <SetPasswordForm />
     </div>
   );
 }

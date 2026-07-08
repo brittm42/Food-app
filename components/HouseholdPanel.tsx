@@ -8,7 +8,6 @@ import {
   revokeInvite,
   updateHouseholdName,
   removeMember,
-  removeDependent,
   updateMemberRole,
   createDependentProfile,
 } from "@/app/actions/household";
@@ -105,10 +104,7 @@ export default function HouseholdPanel({
   function handleRemove(member: Member) {
     setRemoveError(null);
     startTransition(async () => {
-      const result =
-        member.role === "dependent"
-          ? await removeDependent(member.id)
-          : await removeMember(member.userId!);
+      const result = await removeMember(member.userId!);
       if (result?.error) setRemoveError(result.error);
     });
   }
@@ -204,9 +200,9 @@ export default function HouseholdPanel({
               {m.role === "dependent" && (
                 <Link
                   href={`/account/dependents/${m.id}`}
-                  className="text-ink-light hover:text-teal text-xs"
+                  className="border border-border rounded-full px-2.5 py-1 text-xs text-ink-light hover:border-teal hover:text-teal"
                 >
-                  Preferences
+                  View profile
                 </Link>
               )}
               {isPrivileged && (m.role === "member" || m.role === "manager") && (
@@ -221,7 +217,7 @@ export default function HouseholdPanel({
                   {m.role === "manager" ? "Make member" : "Make manager"}
                 </button>
               )}
-              {isPrivileged && m.role !== "owner" && m.userId !== currentUserId && (
+              {isPrivileged && m.role !== "owner" && m.role !== "dependent" && m.userId !== currentUserId && (
                 <button
                   type="button"
                   onClick={() => handleRemove(m)}

@@ -1,7 +1,9 @@
 import { getCurrentHousehold, isPrivileged } from "@/lib/household";
 import { getDependentProfile, updateDependentProfile } from "@/app/actions/profile";
+import { removeDependent } from "@/app/actions/household";
 import AccountBackLink from "@/components/AccountBackLink";
 import PreferencesForm from "@/components/PreferencesForm";
+import RemoveDependentButton from "@/components/RemoveDependentButton";
 
 export default async function DependentProfilePage({
   params,
@@ -47,6 +49,8 @@ export default async function DependentProfilePage({
         initialCuisinePreferences={profile.cuisinePreferences}
         onSave={saveDependentProfile}
       />
+
+      <RemoveDependentButton memberId={memberId} onRemove={removeDependent} />
     </div>
   );
 }
