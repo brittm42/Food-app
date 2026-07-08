@@ -92,6 +92,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing request timestamp." }, { status: 400 });
   }
 
+  // Full byte-exact snapshot (base64, so nothing gets mangled in log
+  // transport) for offline verification with openssl, independent of
+  // anything Node/Vercel might be doing — narrows whether this is a real
+  // byte mismatch or something specific to how this code calls into
+  // Node's crypto APIs.
+  console.log("Alexa full body base64:", rawBody.toString("base64"));
+  console.log("Alexa full signature:", signature);
+
   const bodyText = rawBody.toString("utf8");
   console.log("Alexa raw body inspection:", {
     length: rawBody.length,
