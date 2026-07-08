@@ -131,83 +131,96 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const profileResponse = await fetch("https://api.amazon.com/user/profile", {
-    headers: { Authorization: `bearer ${accessToken}` },
-  });
+  // Everything below makes external calls (LWA, Supabase) that can throw —
+  // an uncaught exception here means Next.js returns a generic 500 instead
+  // of a valid Alexa response shape, which Alexa reports back as a bare
+  // "INVALID_RESPONSE" with no detail. Catch broadly and speak back
+  // whatever went wrong so a failure is diagnosable without server log
+  // access.
+  try {
+    const profileResponse = await fetch("https://api.amazon.com/user/profile", {
+      headers: { Authorization: `bearer ${accessToken}` },
+    });
 
-  if (!profileResponse.ok) {
-    return speech("I couldn't verify your account. Please try linking it again in the Alexa app.");
-  }
-
-  const profile: { email?: string } = await profileResponse.json();
-  if (!profile.email) {
-    return speech("I couldn't find an email on your linked account.");
-  }
-  const linkedEmail = profile.email;
-
-  const admin = createAdminClient();
-
-  const { data: usersPage, error: listError } = await admin.auth.admin.listUsers({
-    perPage: 1000,
-  });
-  if (listError) {
-    return speech("Something went wrong looking up your account. Please try again.");
-  }
-
-  const matchedUser = usersPage.users.find(
-    (u) => u.email?.toLowerCase() === linkedEmail.toLowerCase()
-  );
-  if (!matchedUser) {
-    return speech("I couldn't find a WeeklyNom account for your linked email.");
-  }
-
-  const { data: membership } = await admin
-    .from("household_members")
-    .select("household_id")
-    .eq("user_id", matchedUser.id)
-    .maybeSingle();
-
-  if (!membership) {
-    return speech("I couldn't find a household for your WeeklyNom account.");
-  }
-
-  const itemSlot = alexaRequest.intent?.slots?.ItemName?.value;
-  const rawLabel = typeof itemSlot === "string" ? itemSlot : "";
-  const items = splitItems(rawLabel);
-
-  if (items.length === 0) {
-    return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
-  }
-
-  // Sequential, not Promise.all — if the same item is said twice in one
-  // sentence (or twice via imperfect speech recognition), each insert needs
-  // to see the previous one's dedup check land before the next runs.
-  const added: string[] = [];
-  const duplicates: string[] = [];
-  for (const item of items) {
-    const result = await addShoppingItemForHousehold(admin, membership.household_id, item);
-    if (!result.ok) continue;
-    if (result.duplicate) {
-      duplicates.push(result.label);
-    } else {
-      added.push(result.label);
+    if (!profileResponse.ok) {
+      return speech("I couldn't verify your account. Please try linking it again in the Alexa app.");
     }
-  }
 
-  revalidatePath("/shopping");
+    const profile: { email?: string } = await profileResponse.json();
+    if (!profile.email) {
+      return speech("I couldn't find an email on your linked account.");
+    }
+    const linkedEmail = profile.email;
 
-  if (added.length === 0 && duplicates.length === 0) {
-    return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
-  }
+    const admin = createAdminClient();
 
-  const parts: string[] = [];
-  if (added.length > 0) {
-    parts.push(`Added ${joinWithAnd(added)} to your shopping list.`);
-  }
-  if (duplicates.length > 0) {
-    const verb = duplicates.length === 1 ? "was" : "were";
-    parts.push(`${joinWithAnd(duplicates)} ${verb} already on the list.`);
-  }
+    const { data: usersPage, error: listError } = await admin.auth.admin.listUsers({
+      perPage: 1000,
+    });
+    if (listError) {
+      return speech(`Account lookup failed: ${listError.message}`);
+    }
 
-  return speech(parts.join(" "));
+    const matchedUser = usersPage.users.find(
+      (u) => u.email?.toLowerCase() === linkedEmail.toLowerCase()
+    );
+    if (!matchedUser) {
+      return speech("I couldn't find a WeeklyNom account for your linked email.");
+    }
+
+    const { data: membership, error: membershipError } = await admin
+      .from("household_members")
+      .select("household_id")
+      .eq("user_id", matchedUser.id)
+      .maybeSingle();
+
+    if (membershipError) {
+      return speech(`Household lookup failed: ${membershipError.message}`);
+    }
+    if (!membership) {
+      return speech("I couldn't find a household for your WeeklyNom account.");
+    }
+
+    const itemSlot = alexaRequest.intent?.slots?.ItemName?.value;
+    const rawLabel = typeof itemSlot === "string" ? itemSlot : "";
+    const items = splitItems(rawLabel);
+
+    if (items.length === 0) {
+      return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
+    }
+
+    // Sequential, not Promise.all — if the same item is said twice in one
+    // sentence (or twice via imperfect speech recognition), each insert
+    // needs to see the previous one's dedup check land before the next runs.
+    const added: string[] = [];
+    const duplicates: string[] = [];
+    for (const item of items) {
+      const result = await addShoppingItemForHousehold(admin, membership.household_id, item);
+      if (!result.ok) continue;
+      if (result.duplicate) {
+        duplicates.push(result.label);
+      } else {
+        added.push(result.label);
+      }
+    }
+
+    revalidatePath("/shopping");
+
+    if (added.length === 0 && duplicates.length === 0) {
+      return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
+    }
+
+    const parts: string[] = [];
+    if (added.length > 0) {
+      parts.push(`Added ${joinWithAnd(added)} to your shopping list.`);
+    }
+    if (duplicates.length > 0) {
+      const verb = duplicates.length === 1 ? "was" : "were";
+      parts.push(`${joinWithAnd(duplicates)} ${verb} already on the list.`);
+    }
+
+    return speech(parts.join(" "));
+  } catch (err) {
+    return speech(`Something went wrong: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
