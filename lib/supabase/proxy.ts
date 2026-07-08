@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/auth", "/invite"];
+// /api is public here because its routes (e.g. voice quick-add) do their own
+// Bearer-token auth instead of relying on the cookie session — see
+// app/api/shopping-items/route.ts.
+const PUBLIC_PATHS = ["/login", "/auth", "/invite", "/api"];
 
 // Paths a signed-in user with unfinished onboarding can still reach without
 // being bounced to /onboarding — lets them go straight to /account/preferences
