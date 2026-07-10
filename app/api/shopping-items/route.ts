@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid token." }, { status: 401 });
   }
 
-  let body: { label?: unknown; isFood?: unknown };
+  let body: { label?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -40,9 +40,8 @@ export async function POST(request: NextRequest) {
   }
 
   const label = typeof body.label === "string" ? body.label : "";
-  const isFood = typeof body.isFood === "boolean" ? body.isFood : true;
 
-  const result = await addShoppingItemForHousehold(admin, tokenRow.household_id, label, isFood);
+  const result = await addShoppingItemForHousehold(admin, tokenRow.household_id, label);
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 400 });

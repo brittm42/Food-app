@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { categorizeItem } from "@/lib/categorize";
 
 // Shared by both voice entry points (Shortcuts' /api/shopping-items and
 // Alexa's /api/alexa/shopping) — neither has a Supabase session, so both
@@ -7,8 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export async function addShoppingItemForHousehold(
   admin: SupabaseClient,
   householdId: string,
-  rawLabel: string,
-  isFood = true
+  rawLabel: string
 ): Promise<{ ok: true; label: string; duplicate?: boolean } | { ok: false; error: string }> {
   const label = rawLabel.trim();
   if (!label) {
@@ -32,10 +32,11 @@ export async function addShoppingItemForHousehold(
     return { ok: true, label, duplicate: true };
   }
 
+  const category = await categorizeItem(label);
   const { error } = await admin.from("shopping_items").insert({
     household_id: householdId,
     label,
-    is_food: isFood,
+    category,
   });
 
   if (error) {

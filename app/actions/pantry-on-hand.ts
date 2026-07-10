@@ -107,6 +107,17 @@ export async function toggleCoreItemChecked(
         },
         { onConflict: "household_id,ingredient_name" }
       );
+
+      // Mirror onto the matching Core Pantry pantry_items row (if this
+      // ingredient is also a catalog item) so the Pantry tab's own on-hand
+      // display doesn't drift from what Shopping List just recorded — see
+      // the same note in updatePantryOnHand (app/actions/pantry.ts).
+      await supabase
+        .from("pantry_items")
+        .update({ on_hand_qty: nextValue, on_hand_unit: neededUnit })
+        .eq("household_id", household.householdId)
+        .eq("item_type", "core")
+        .ilike("name", ingredientName.trim());
     }
   }
 

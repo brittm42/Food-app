@@ -3,21 +3,28 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
+import { categorizeItem } from "@/lib/categorize";
 
-export async function addShoppingItem(label: string, isFood: boolean, quantity: string | null = null) {
+export async function addShoppingItem(
+  label: string,
+  quantityValue: number | null = null,
+  quantityUnit: string | null = null
+) {
   const trimmed = label.trim();
   if (!trimmed) return { error: "Enter an item name." };
 
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
 
+  const category = await categorizeItem(trimmed);
   const supabase = await createClient();
 
   const { error } = await supabase.from("shopping_items").insert({
     household_id: household.householdId,
     label: trimmed,
-    is_food: isFood,
-    quantity: quantity?.trim() || null,
+    category,
+    quantity_value: quantityValue,
+    quantity_unit: quantityUnit,
   });
 
   if (error) return { error: error.message };

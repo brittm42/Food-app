@@ -1,36 +1,98 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CORE_PANTRY, WEEKLY_FRESH } from "@/lib/types";
-import type { PantryStaple } from "@/lib/types";
-import {
-  toggleChecked,
-  addStaple,
-  deleteStaple,
-  removeCatalogItem,
-  restoreCatalogItem,
-} from "@/app/actions/pantry";
+import { deletePantryItem, createPantryItem, addPantryItemToShoppingList } from "@/app/actions/pantry";
 import { setPantryOnHand } from "@/app/actions/pantry-on-hand";
 import { UNIT_OPTIONS } from "@/lib/units";
+import { CATEGORIES } from "@/lib/categories";
 import Collapsible from "@/components/Collapsible";
 import QuickAddModal from "@/components/QuickAddModal";
 import SwipeableRow from "@/components/SwipeableRow";
+import PantryItemSheet from "@/components/PantryItemSheet";
+
+type PantryItem = {
+  id: string;
+  name: string;
+  category: string;
+  item_type: "core" | "weekly_fresh" | "staple";
+  on_hand_qty: number | null;
+  on_hand_unit: string | null;
+  target_qty: number | null;
+  target_unit: string | null;
+  note: string | null;
+};
 
 type OnHandRow = { ingredient_name: string; quantity_value: number | null; quantity_unit: string | null };
 
-// Core Pantry catalog entries carry a parenthetical quantity note baked
-// into the item string (e.g. "Black beans (4 cans)") — strip it to get the
-// bare ingredient name pantry_on_hand/reconciliation actually key on
-// (matches the identical stripQty helper in app/shopping/page.tsx).
-const stripQty = (item: string) => item.replace(/\s*\(.*\)\s*$/, "").trim();
+function stockLine(item: PantryItem): string | null {
+  const parts: string[] = [];
+  if (item.item_type === "weekly_fresh") {
+    if (item.target_qty != null) parts.push(`usually ${item.target_qty}${item.target_unit ? ` ${item.target_unit}` : ""}`);
+  } else {
+    const { on_hand_qty: onHand, target_qty: target, on_hand_unit: onHandUnit, target_unit: targetUnit } = item;
+    if (onHand != null && target != null) {
+      parts.push(`${onHand} of ${target}${targetUnit ? ` ${targetUnit}` : ""}`);
+    } else if (onHand != null) {
+      parts.push(`have ${onHand}${onHandUnit ? ` ${onHandUnit}` : ""}`);
+    } else if (target != null) {
+      parts.push(`target ${target}${targetUnit ? ` ${targetUnit}` : ""}`);
+    }
+  }
+  if (item.note) parts.push(item.note);
+  return parts.length ? parts.join(" — ") : null;
+}
 
-function OnHandControl({
-  ingredientName,
-  initial,
-}: {
-  ingredientName: string;
-  initial: OnHandRow | undefined;
-}) {
+function groupByCategory(items: PantryItem[]) {
+  const byCategory = new Map<string, PantryItem[]>();
+  for (const item of items) {
+    if (!byCategory.has(item.category)) byCategory.set(item.category, []);
+    byCategory.get(item.category)!.push(item);
+  }
+  return CATEGORIES.filter((c) => byCategory.has(c)).map((category) => ({
+    category,
+    items: byCategory.get(category)!,
+  }));
+}
+
+function PantryItemRow({ item, isPending }: { item: PantryItem; isPending: boolean }) {
+  const [editing, setEditing] = useState(false);
+  const [rowPending, startTransition] = useTransition();
+  const line = stockLine(item);
+  const disabled = isPending || rowPending;
+
+  return (
+    <>
+      <SwipeableRow disabled={disabled} deleteLabel={`Delete ${item.name}`} onDelete={() => deletePantryItem(item.id)}>
+        <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="flex-1 text-left text-sm min-w-0 cursor-pointer"
+          >
+            {item.name}
+            {line && <span className="text-ink-light text-xs"> — {line}</span>}
+          </button>
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() =>
+              startTransition(() => {
+                addPantryItemToShoppingList(item.id);
+              })
+            }
+            aria-label={`Add ${item.name} to shopping list`}
+            className="w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 bg-surface-warm text-ink-light hover:bg-gold-light"
+          >
+            +
+          </button>
+        </div>
+      </SwipeableRow>
+      {editing && <PantryItemSheet item={item} onClose={() => setEditing(false)} />}
+    </>
+  );
+}
+
+function OnHandControl({ ingredientName, initial }: { ingredientName: string; initial: OnHandRow | undefined }) {
   const [value, setValue] = useState(initial?.quantity_value != null ? String(initial.quantity_value) : "");
   const [unit, setUnit] = useState(initial?.quantity_unit ?? "");
   const [isPending, startTransition] = useTransition();
@@ -78,18 +140,20 @@ function OnHandControl({
 }
 
 function AddStapleButton() {
-  const [label, setLabel] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [name, setName] = useState("");
+  const [qty, setQty] = useState("");
+  const [unit, setUnit] = useState("");
   const [isPending, startTransition] = useTransition();
 
   function submit(close: () => void) {
-    const trimmed = label.trim();
+    const trimmed = name.trim();
     if (!trimmed) return;
     startTransition(() => {
-      addStaple(trimmed, quantity.trim() || null);
+      createPantryItem(trimmed, qty.trim() ? Number(qty) : null, unit || null, null, null);
     });
-    setLabel("");
-    setQuantity("");
+    setName("");
+    setQty("");
+    setUnit("");
     close();
   }
 
@@ -102,72 +166,56 @@ function AddStapleButton() {
     >
       <input
         autoFocus
-        value={label}
-        onChange={(e) => setLabel(e.target.value)}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         placeholder="e.g. Nutella, pretzel sticks…"
         className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
       />
-      <input
-        value={quantity}
-        onChange={(e) => setQuantity(e.target.value)}
-        placeholder="Quantity (optional) — e.g. 2 jars"
-        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
-      />
+      <div className="flex gap-2">
+        <input
+          type="number"
+          min="0"
+          step="any"
+          value={qty}
+          onChange={(e) => setQty(e.target.value)}
+          placeholder="Qty on hand (optional)"
+          className="flex-1 border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+        />
+        <select
+          value={unit}
+          onChange={(e) => setUnit(e.target.value)}
+          className="border border-border rounded-lg px-2 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+        >
+          <option value="">unit</option>
+          {UNIT_OPTIONS.map((u) => (
+            <option key={u.value} value={u.value}>
+              {u.value}
+            </option>
+          ))}
+        </select>
+      </div>
     </QuickAddModal>
   );
 }
 
 export default function PantryView({
-  checkedKeys,
-  staples,
-  removedKeys,
-  onHand,
-  queuedCoreNames,
+  items,
+  otherCoreNames,
+  otherCoreOnHand,
 }: {
-  checkedKeys: string[];
-  staples: PantryStaple[];
-  removedKeys: string[];
-  onHand: OnHandRow[];
-  queuedCoreNames: string[];
+  items: PantryItem[];
+  otherCoreNames: string[];
+  otherCoreOnHand: OnHandRow[];
 }) {
-  const [isPending, startTransition] = useTransition();
-  const checked = new Set(checkedKeys);
-  const removed = new Set(removedKeys);
-  const onHandByName = new Map(onHand.map((row) => [row.ingredient_name, row]));
+  const [isPending] = useTransition();
+  const onHandByName = new Map(otherCoreOnHand.map((row) => [row.ingredient_name, row]));
 
-  const coreCatalogBareNames = new Set(
-    CORE_PANTRY.flatMap((cat) => cat.items.map((item) => stripQty(item).toLowerCase()))
-  );
-  const otherCoreNames = queuedCoreNames.filter(
-    (name) => !coreCatalogBareNames.has(name.trim().toLowerCase())
-  );
+  const core = items.filter((i) => i.item_type === "core");
+  const weeklyFresh = items.filter((i) => i.item_type === "weekly_fresh");
+  const staples = items.filter((i) => i.item_type === "staple");
 
-  function toggle(key: string) {
-    startTransition(() => {
-      toggleChecked(key);
-    });
-  }
-
-  function removeCatalog(catalogKey: string) {
-    startTransition(() => {
-      removeCatalogItem(catalogKey);
-    });
-  }
-
-  function restoreCatalog(catalogKey: string) {
-    startTransition(() => {
-      restoreCatalogItem(catalogKey);
-    });
-  }
-
-  const removedCoreItems = CORE_PANTRY.flatMap((cat) =>
-    cat.items
-      .map((item) => ({ category: cat.category, item, key: `catalog:core:${cat.category}:${item}` }))
-      .filter((row) => removed.has(row.key))
-  );
-  const removedFreshItems = WEEKLY_FRESH.filter((item) =>
-    removed.has(`catalog:fresh:${item.label}`)
-  );
+  const coreByCategory = groupByCategory(core);
+  const stapleByCategory = groupByCategory(staples);
 
   return (
     <div className="flex flex-col gap-7">
@@ -178,84 +226,16 @@ export default function PantryView({
 
       <Collapsible title="Core Pantry" subtitle="If this is stocked, you can always make something.">
         <div className="flex flex-col gap-5">
-          {CORE_PANTRY.map((cat) => {
-            const visibleItems = cat.items.filter(
-              (item) => !removed.has(`catalog:core:${cat.category}:${item}`)
-            );
-            if (visibleItems.length === 0) return null;
-            return (
-              <Collapsible key={cat.category} title={cat.category}>
-                <div className="flex flex-col gap-1.5">
-                  {visibleItems.map((item) => {
-                    const neededKey = `needed:core:${cat.category}:${item}`;
-                    const catalogKey = `catalog:core:${cat.category}:${item}`;
-                    const isNeeded = checked.has(neededKey);
-                    const bareName = stripQty(item);
-                    return (
-                      <SwipeableRow
-                        key={catalogKey}
-                        disabled={isPending}
-                        deleteLabel={`Remove ${item} from Core Pantry`}
-                        onDelete={() => removeCatalog(catalogKey)}
-                      >
-                        <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
-                          <span className="flex-1 text-sm min-w-0">{item}</span>
-                          <OnHandControl
-                            ingredientName={bareName}
-                            initial={onHandByName.get(bareName.toLowerCase())}
-                          />
-                          <button
-                            type="button"
-                            disabled={isPending}
-                            onClick={() => toggle(neededKey)}
-                            aria-label={isNeeded ? `Remove ${item} from shopping list` : `Add ${item} to shopping list`}
-                            className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
-                              isNeeded
-                                ? "bg-gold text-white"
-                                : "bg-surface-warm text-ink-light hover:bg-gold-light"
-                            }`}
-                          >
-                            {isNeeded ? "✓" : "+"}
-                          </button>
-                          <button
-                            type="button"
-                            disabled={isPending}
-                            aria-label={`Remove ${item} from Core Pantry`}
-                            onClick={() => removeCatalog(catalogKey)}
-                            className="hidden md:inline-flex items-center justify-center text-ink-light hover:text-red text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </SwipeableRow>
-                    );
-                  })}
-                </div>
-              </Collapsible>
-            );
-          })}
-          {removedCoreItems.length > 0 && (
-            <Collapsible title={`Removed items (${removedCoreItems.length})`} defaultOpen={false}>
+          {coreByCategory.map((group) => (
+            <Collapsible key={group.category} title={group.category}>
               <div className="flex flex-col gap-1.5">
-                {removedCoreItems.map((row) => (
-                  <div
-                    key={row.key}
-                    className="flex items-center justify-between bg-surface-warm border border-border rounded-lg px-3 py-2 text-sm text-ink-light"
-                  >
-                    <span>{row.item}</span>
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => restoreCatalog(row.key)}
-                      className="font-mono text-[10px] uppercase tracking-wide text-teal cursor-pointer"
-                    >
-                      Restore
-                    </button>
-                  </div>
+                {group.items.map((item) => (
+                  <PantryItemRow key={item.id} item={item} isPending={isPending} />
                 ))}
               </div>
             </Collapsible>
-          )}
+          ))}
+          {core.length === 0 && <p className="text-xs text-ink-light">No Core Pantry items yet.</p>}
         </div>
       </Collapsible>
 
@@ -266,10 +246,7 @@ export default function PantryView({
         >
           <div className="flex flex-col gap-1.5">
             {otherCoreNames.map((name) => (
-              <div
-                key={name}
-                className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2"
-              >
+              <div key={name} className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
                 <span className="flex-1 text-sm min-w-0">{name}</span>
                 <OnHandControl ingredientName={name} initial={onHandByName.get(name.trim().toLowerCase())} />
               </div>
@@ -280,124 +257,28 @@ export default function PantryView({
 
       <Collapsible title="Weekly Fresh">
         <div className="flex flex-col gap-1.5">
-          {WEEKLY_FRESH.filter((item) => !removed.has(`catalog:fresh:${item.label}`)).map(
-            (item) => {
-              const key = `pantry:fresh:${item.label}`;
-              const catalogKey = `catalog:fresh:${item.label}`;
-              const isChecked = checked.has(key);
-              return (
-                <div
-                  key={key}
-                  className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2"
-                >
-                  <label className="flex items-center gap-2.5 flex-1 cursor-pointer min-w-0">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      disabled={isPending}
-                      onChange={() => toggle(key)}
-                      className="w-4 h-4 accent-teal cursor-pointer flex-shrink-0"
-                    />
-                    <span className={`text-sm ${isChecked ? "line-through text-ink-light" : ""}`}>
-                      {item.label}
-                      {item.note && <span className="text-ink-light text-xs"> — {item.note}</span>}
-                    </span>
-                  </label>
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    aria-label={`Remove ${item.label} from Weekly Fresh`}
-                    onClick={() => removeCatalog(catalogKey)}
-                    className="text-ink-light hover:text-red text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-              );
-            }
-          )}
+          {weeklyFresh.map((item) => (
+            <PantryItemRow key={item.id} item={item} isPending={isPending} />
+          ))}
+          {weeklyFresh.length === 0 && <p className="text-xs text-ink-light">No Weekly Fresh items yet.</p>}
         </div>
-        {removedFreshItems.length > 0 && (
-          <div className="mt-4">
-            <Collapsible title={`Removed items (${removedFreshItems.length})`} defaultOpen={false}>
-              <div className="flex flex-col gap-1.5">
-                {removedFreshItems.map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between bg-surface-warm border border-border rounded-lg px-3 py-2 text-sm text-ink-light"
-                  >
-                    <span>{item.label}</span>
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => restoreCatalog(`catalog:fresh:${item.label}`)}
-                      className="font-mono text-[10px] uppercase tracking-wide text-teal cursor-pointer"
-                    >
-                      Restore
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </Collapsible>
-          </div>
-        )}
       </Collapsible>
 
       <Collapsible title="My Staples">
-        <div className="flex flex-col gap-1.5 mb-3">
-          {staples.map((staple) => {
-            const neededKey = `needed:staple:${staple.id}`;
-            const isNeeded = checked.has(neededKey);
-            return (
-              <SwipeableRow
-                key={staple.id}
-                disabled={isPending}
-                deleteLabel={`Delete ${staple.label}`}
-                onDelete={() =>
-                  startTransition(() => {
-                    deleteStaple(staple.id);
-                  })
-                }
-              >
-                <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
-                  <span className="flex-1 text-sm min-w-0">
-                    {staple.label}
-                    {staple.quantity && <span className="text-ink-light text-xs"> — {staple.quantity}</span>}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => toggle(neededKey)}
-                    aria-label={isNeeded ? `Remove ${staple.label} from shopping list` : `Add ${staple.label} to shopping list`}
-                    className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
-                      isNeeded
-                        ? "bg-gold text-white"
-                        : "bg-surface-warm text-ink-light hover:bg-gold-light"
-                    }`}
-                  >
-                    {isNeeded ? "✓" : "+"}
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Delete ${staple.label}`}
-                    disabled={isPending}
-                    onClick={() =>
-                      startTransition(() => {
-                        deleteStaple(staple.id);
-                      })
-                    }
-                    className="hidden md:inline-flex items-center justify-center text-ink-light hover:text-ink text-xs font-mono px-1 flex-shrink-0 cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </SwipeableRow>
-            );
-          })}
+        <div className="flex flex-col gap-5">
+          {stapleByCategory.map((group) => (
+            <Collapsible key={group.category} title={group.category}>
+              <div className="flex flex-col gap-1.5">
+                {group.items.map((item) => (
+                  <PantryItemRow key={item.id} item={item} isPending={isPending} />
+                ))}
+              </div>
+            </Collapsible>
+          ))}
           {staples.length === 0 && (
             <p className="text-xs text-ink-light">
-              No staples added yet — use the + button above for things like
-              Nutella or pretzel sticks that you always keep stocked.
+              No staples added yet — use the + button above for things like Nutella or pretzel sticks that you
+              always keep stocked.
             </p>
           )}
         </div>

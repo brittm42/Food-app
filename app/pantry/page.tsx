@@ -9,26 +9,12 @@ export default async function PantryPage() {
 
   const supabase = await createClient();
 
-  const [
-    { data: checkedRows, error },
-    { data: staples },
-    { data: removedRows },
-    { data: onHandRows },
-    { data: queue },
-  ] = await Promise.all([
+  const [{ data: items, error }, { data: onHandRows }, { data: queue }] = await Promise.all([
     supabase
-      .from("pantry_state")
-      .select("item_key")
-      .eq("household_id", household.householdId),
-    supabase
-      .from("pantry_staples")
+      .from("pantry_items")
       .select("*")
       .eq("household_id", household.householdId)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("pantry_catalog_removed")
-      .select("item_key")
-      .eq("household_id", household.householdId),
+      .order("name", { ascending: true }),
     supabase
       .from("pantry_on_hand")
       .select("ingredient_name, quantity_value, quantity_unit")
@@ -47,29 +33,23 @@ export default async function PantryPage() {
     );
   }
 
-  const checkedKeys = (checkedRows ?? []).map((r) => r.item_key);
-  const removedKeys = (removedRows ?? []).map((r) => r.item_key);
+  const coreCatalogNames = new Set(
+    (items ?? []).filter((i) => i.item_type === "core").map((i) => (i.name as string).trim().toLowerCase())
+  );
 
-  // Every core-tagged ingredient touched by a queued recipe this week, so
-  // Pantry can offer an on-hand control even for ingredients outside the
-  // fixed CORE_PANTRY catalog (PantryView sorts out which ones already
-  // have a catalog match vs. need the "Other core ingredients" section).
-  const queuedCoreNames = [
+  // Every core-tagged ingredient touched by a queued recipe this week that
+  // isn't already a Core Pantry catalog item, so Pantry can still offer an
+  // on-hand control for it (PantryView's "Other Core Ingredients" section).
+  const otherCoreNames = [
     ...new Set(
       (queue ?? []).flatMap((row) => {
         const recipe = row.recipe as unknown as Pick<Recipe, "ingredients"> | null;
-        return (recipe?.ingredients ?? []).filter((i) => i.core).map((i) => i.name);
+        return (recipe?.ingredients ?? [])
+          .filter((i) => i.core && !coreCatalogNames.has(i.name.trim().toLowerCase()))
+          .map((i) => i.name);
       })
     ),
   ].sort();
 
-  return (
-    <PantryView
-      checkedKeys={checkedKeys}
-      staples={staples ?? []}
-      removedKeys={removedKeys}
-      onHand={onHandRows ?? []}
-      queuedCoreNames={queuedCoreNames}
-    />
-  );
+  return <PantryView items={items ?? []} otherCoreNames={otherCoreNames} otherCoreOnHand={onHandRows ?? []} />;
 }
