@@ -1,14 +1,26 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { toggleChecked } from "@/app/actions/pantry";
+import { toggleCoreItemChecked } from "@/app/actions/pantry-on-hand";
 import { addShoppingItem, removeShoppingItem } from "@/app/actions/shopping";
 import Collapsible from "@/components/Collapsible";
 import QuickAddModal from "@/components/QuickAddModal";
 
-type Item = { key: string; label: string; note?: string; checked: boolean };
+// neededValue/neededUnit are only ever populated on Core-section items
+// (the seam that already computes a per-ingredient needed quantity for
+// reconciliation, app/shopping/page.tsx) — undefined for Fresh/Weekly,
+// which have no such concept and just use the plain toggle.
+type Item = {
+  key: string;
+  label: string;
+  note?: string;
+  checked: boolean;
+  neededValue?: number | null;
+  neededUnit?: string | null;
+};
 type RestockItem = { key: string; label: string };
-type OneOffItem = { id: string; label: string; isFood: boolean };
+type OneOffItem = { id: string; label: string; isFood: boolean; quantity: string | null };
 type CategoryGroup<T> = { category: string; items: T[] };
 
 export default function ShoppingListView({
@@ -27,10 +39,21 @@ export default function ShoppingListView({
   hasQueue: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [removedItem, setRemovedItem] = useState<OneOffItem | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function toggle(key: string) {
+  function toggle(item: Item) {
     startTransition(() => {
-      toggleChecked(key);
+      toggleChecked(item.key);
+    });
+  }
+
+  // Core items have a computed needed quantity (this week's queued
+  // recipes) — checking one on/off also adjusts on-hand by that amount.
+  // Fresh/Weekly have no such concept, so they use the plain toggle above.
+  function toggleCore(item: Item) {
+    startTransition(() => {
+      toggleCoreItemChecked(item.key, item.label, item.neededValue ?? null, item.neededUnit ?? null);
     });
   }
 
@@ -40,10 +63,25 @@ export default function ShoppingListView({
     });
   }
 
-  function checkOffOneOff(id: string) {
+  // Unlike everything else here, a one-off item is a hard delete — there's
+  // no toggle to flip back. Hold onto what was just removed for a few
+  // seconds so an accidental tap is recoverable via the Undo banner below.
+  function checkOffOneOff(item: OneOffItem) {
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    setRemovedItem(item);
+    undoTimer.current = setTimeout(() => setRemovedItem(null), 5000);
     startTransition(() => {
-      removeShoppingItem(id);
+      removeShoppingItem(item.id);
     });
+  }
+
+  function undoRemove() {
+    if (!removedItem) return;
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    startTransition(() => {
+      addShoppingItem(removedItem.label, removedItem.isFood, removedItem.quantity);
+    });
+    setRemovedItem(null);
   }
 
   const foodItems = oneOff.filter((i) => i.isFood);
@@ -73,7 +111,7 @@ export default function ShoppingListView({
           <div className="flex flex-col gap-4">
             {core.map((group) => (
               <Collapsible key={group.category} title={group.category}>
-                <ChecklistSection items={group.items} onToggle={toggle} disabled={isPending} />
+                <ChecklistSection items={group.items} onToggle={toggleCore} disabled={isPending} />
               </Collapsible>
             ))}
           </div>
@@ -109,6 +147,19 @@ export default function ShoppingListView({
             ))}
           </div>
         </Collapsible>
+      )}
+
+      {removedItem && (
+        <div className="flex items-center justify-between bg-ink text-white rounded-lg px-3 py-2 text-sm">
+          <span>Removed &ldquo;{removedItem.label}&rdquo;</span>
+          <button
+            type="button"
+            onClick={undoRemove}
+            className="font-mono text-[11px] uppercase tracking-wide text-teal-mid cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
       )}
 
       <Collapsible title="Shopping List">
@@ -147,7 +198,7 @@ function OneOffRow({
   disabled,
 }: {
   item: OneOffItem;
-  onCheckOff: (id: string) => void;
+  onCheckOff: (item: OneOffItem) => void;
   disabled: boolean;
 }) {
   return (
@@ -156,16 +207,20 @@ function OneOffRow({
         type="checkbox"
         checked={false}
         disabled={disabled}
-        onChange={() => onCheckOff(item.id)}
+        onChange={() => onCheckOff(item)}
         className="w-4 h-4 accent-teal cursor-pointer flex-shrink-0"
       />
-      <span className="text-sm">{item.label}</span>
+      <span className="text-sm">
+        {item.label}
+        {item.quantity && <span className="text-ink-light text-xs"> — {item.quantity}</span>}
+      </span>
     </label>
   );
 }
 
 function AddOneOffButton() {
   const [value, setValue] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [isFood, setIsFood] = useState(true);
   const [isPending, startTransition] = useTransition();
 
@@ -173,9 +228,10 @@ function AddOneOffButton() {
     const trimmed = value.trim();
     if (!trimmed) return;
     startTransition(() => {
-      addShoppingItem(trimmed, isFood);
+      addShoppingItem(trimmed, isFood, quantity.trim() || null);
     });
     setValue("");
+    setQuantity("");
     setIsFood(true);
     close();
   }
@@ -192,6 +248,12 @@ function AddOneOffButton() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="e.g. paper towels"
+        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+      />
+      <input
+        value={quantity}
+        onChange={(e) => setQuantity(e.target.value)}
+        placeholder="Quantity (optional) — e.g. 2 rolls"
         className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
       />
       <div className="flex gap-1.5">
@@ -224,7 +286,7 @@ function ChecklistSection({
   disabled,
 }: {
   items: Item[];
-  onToggle: (key: string) => void;
+  onToggle: (item: Item) => void;
   disabled: boolean;
 }) {
   return (
@@ -238,7 +300,7 @@ function ChecklistSection({
             type="checkbox"
             checked={item.checked}
             disabled={disabled}
-            onChange={() => onToggle(item.key)}
+            onChange={() => onToggle(item)}
             className="w-4 h-4 accent-teal cursor-pointer flex-shrink-0"
           />
           <span

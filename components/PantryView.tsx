@@ -10,37 +10,141 @@ import {
   removeCatalogItem,
   restoreCatalogItem,
 } from "@/app/actions/pantry";
+import { setPantryOnHand } from "@/app/actions/pantry-on-hand";
+import { UNIT_OPTIONS } from "@/lib/units";
 import Collapsible from "@/components/Collapsible";
-import QuickAddButton from "@/components/QuickAddButton";
+import QuickAddModal from "@/components/QuickAddModal";
 import SwipeableRow from "@/components/SwipeableRow";
+
+type OnHandRow = { ingredient_name: string; quantity_value: number | null; quantity_unit: string | null };
+
+// Core Pantry catalog entries carry a parenthetical quantity note baked
+// into the item string (e.g. "Black beans (4 cans)") — strip it to get the
+// bare ingredient name pantry_on_hand/reconciliation actually key on
+// (matches the identical stripQty helper in app/shopping/page.tsx).
+const stripQty = (item: string) => item.replace(/\s*\(.*\)\s*$/, "").trim();
+
+function OnHandControl({
+  ingredientName,
+  initial,
+}: {
+  ingredientName: string;
+  initial: OnHandRow | undefined;
+}) {
+  const [value, setValue] = useState(initial?.quantity_value != null ? String(initial.quantity_value) : "");
+  const [unit, setUnit] = useState(initial?.quantity_unit ?? "");
+  const [isPending, startTransition] = useTransition();
+
+  function save(nextValue: string, nextUnit: string) {
+    const parsedValue = nextValue.trim() ? Number(nextValue) : null;
+    startTransition(() => {
+      setPantryOnHand(ingredientName, parsedValue, nextUnit || null);
+    });
+  }
+
+  return (
+    <div className="flex items-center gap-1 flex-shrink-0">
+      <input
+        type="number"
+        min="0"
+        step="any"
+        value={value}
+        disabled={isPending}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => save(value, unit)}
+        placeholder="qty"
+        aria-label={`On-hand quantity for ${ingredientName}`}
+        className="w-16 border border-border rounded-lg px-2 py-1 text-xs bg-surface focus:outline-none focus:border-teal"
+      />
+      <select
+        value={unit}
+        disabled={isPending}
+        onChange={(e) => {
+          setUnit(e.target.value);
+          save(value, e.target.value);
+        }}
+        aria-label={`On-hand unit for ${ingredientName}`}
+        className="border border-border rounded-lg px-1 py-1 text-xs bg-surface focus:outline-none focus:border-teal"
+      >
+        <option value="">unit</option>
+        {UNIT_OPTIONS.map((u) => (
+          <option key={u.value} value={u.value}>
+            {u.value}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function AddStapleButton() {
+  const [label, setLabel] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  function submit(close: () => void) {
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    startTransition(() => {
+      addStaple(trimmed, quantity.trim() || null);
+    });
+    setLabel("");
+    setQuantity("");
+    close();
+  }
+
+  return (
+    <QuickAddModal
+      triggerAriaLabel="Add a Staple"
+      headerLabel="Add a Staple"
+      submitDisabled={isPending}
+      onSubmit={submit}
+    >
+      <input
+        autoFocus
+        value={label}
+        onChange={(e) => setLabel(e.target.value)}
+        placeholder="e.g. Nutella, pretzel sticks…"
+        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+      />
+      <input
+        value={quantity}
+        onChange={(e) => setQuantity(e.target.value)}
+        placeholder="Quantity (optional) — e.g. 2 jars"
+        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+      />
+    </QuickAddModal>
+  );
+}
 
 export default function PantryView({
   checkedKeys,
   staples,
   removedKeys,
+  onHand,
+  queuedCoreNames,
 }: {
   checkedKeys: string[];
   staples: PantryStaple[];
   removedKeys: string[];
+  onHand: OnHandRow[];
+  queuedCoreNames: string[];
 }) {
   const [isPending, startTransition] = useTransition();
-  const [newStaple, setNewStaple] = useState("");
   const checked = new Set(checkedKeys);
   const removed = new Set(removedKeys);
+  const onHandByName = new Map(onHand.map((row) => [row.ingredient_name, row]));
+
+  const coreCatalogBareNames = new Set(
+    CORE_PANTRY.flatMap((cat) => cat.items.map((item) => stripQty(item).toLowerCase()))
+  );
+  const otherCoreNames = queuedCoreNames.filter(
+    (name) => !coreCatalogBareNames.has(name.trim().toLowerCase())
+  );
 
   function toggle(key: string) {
     startTransition(() => {
       toggleChecked(key);
-    });
-  }
-
-  function handleAddStaple(e: React.FormEvent) {
-    e.preventDefault();
-    const label = newStaple.trim();
-    if (!label) return;
-    setNewStaple("");
-    startTransition(() => {
-      addStaple(label);
     });
   }
 
@@ -69,15 +173,7 @@ export default function PantryView({
     <div className="flex flex-col gap-7">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl font-light">Pantry</h1>
-        <QuickAddButton
-          label="Add a Staple"
-          placeholder="e.g. Nutella, pretzel sticks…"
-          onAdd={(label) =>
-            startTransition(() => {
-              addStaple(label);
-            })
-          }
-        />
+        <AddStapleButton />
       </div>
 
       <Collapsible title="Core Pantry" subtitle="If this is stocked, you can always make something.">
@@ -94,6 +190,7 @@ export default function PantryView({
                     const neededKey = `needed:core:${cat.category}:${item}`;
                     const catalogKey = `catalog:core:${cat.category}:${item}`;
                     const isNeeded = checked.has(neededKey);
+                    const bareName = stripQty(item);
                     return (
                       <SwipeableRow
                         key={catalogKey}
@@ -103,6 +200,10 @@ export default function PantryView({
                       >
                         <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
                           <span className="flex-1 text-sm min-w-0">{item}</span>
+                          <OnHandControl
+                            ingredientName={bareName}
+                            initial={onHandByName.get(bareName.toLowerCase())}
+                          />
                           <button
                             type="button"
                             disabled={isPending}
@@ -157,6 +258,25 @@ export default function PantryView({
           )}
         </div>
       </Collapsible>
+
+      {otherCoreNames.length > 0 && (
+        <Collapsible
+          title="Other Core Ingredients"
+          subtitle="Core ingredients this week's recipes use that aren't in the catalog above — set an on-hand amount so the Shopping List can skip them when you have enough."
+        >
+          <div className="flex flex-col gap-1.5">
+            {otherCoreNames.map((name) => (
+              <div
+                key={name}
+                className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2"
+              >
+                <span className="flex-1 text-sm min-w-0">{name}</span>
+                <OnHandControl ingredientName={name} initial={onHandByName.get(name.trim().toLowerCase())} />
+              </div>
+            ))}
+          </div>
+        </Collapsible>
+      )}
 
       <Collapsible title="Weekly Fresh">
         <div className="flex flex-col gap-1.5">
@@ -240,7 +360,10 @@ export default function PantryView({
                 }
               >
                 <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
-                  <span className="flex-1 text-sm min-w-0">{staple.label}</span>
+                  <span className="flex-1 text-sm min-w-0">
+                    {staple.label}
+                    {staple.quantity && <span className="text-ink-light text-xs"> — {staple.quantity}</span>}
+                  </span>
                   <button
                     type="button"
                     disabled={isPending}
@@ -273,28 +396,11 @@ export default function PantryView({
           })}
           {staples.length === 0 && (
             <p className="text-xs text-ink-light">
-              No staples added yet — things like Nutella or pretzel sticks
-              that you always keep stocked.
+              No staples added yet — use the + button above for things like
+              Nutella or pretzel sticks that you always keep stocked.
             </p>
           )}
         </div>
-        <form onSubmit={handleAddStaple} className="flex gap-2">
-          <input
-            type="text"
-            value={newStaple}
-            onChange={(e) => setNewStaple(e.target.value)}
-            placeholder="Add a staple…"
-            disabled={isPending}
-            className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal"
-          />
-          <button
-            type="submit"
-            disabled={isPending || !newStaple.trim()}
-            className="font-mono text-[11px] px-3 py-2 rounded-lg bg-ink text-white disabled:opacity-40"
-          >
-            Add
-          </button>
-        </form>
       </Collapsible>
     </div>
   );

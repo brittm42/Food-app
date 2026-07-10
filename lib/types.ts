@@ -3,6 +3,8 @@ export type Ingredient = {
   core: boolean;
   quantity: string | null; // free text, e.g. "1", "1/2", "2-3", "handful", "to taste" — not numeric
   unit: string | null; // e.g. "cup", "tbsp", "clove", "can", "whole" — null if quantity has no unit
+  quantity_value?: number | null; // canonical numeric amount, derived from `quantity`; null if not cleanly parseable ("to taste", ranges, etc.)
+  quantity_unit?: string | null; // canonical unit from lib/units.ts's fixed vocabulary, derived from `unit`; null if unmatched. Ingredients missing either field (including all pre-existing rows) are simply excluded from pantry reconciliation.
 };
 
 export type Recipe = {
@@ -136,6 +138,7 @@ export type PantryStaple = {
   id: string;
   user_id: string;
   label: string;
+  quantity: string | null; // free text, purely informational — not reconciled (staples have no computed "need")
   created_at: string;
 };
 

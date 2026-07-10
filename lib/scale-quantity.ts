@@ -15,7 +15,10 @@ function parseSimpleNumber(token: string): number | null {
   return null;
 }
 
-function parseQuantity(raw: string): number | null {
+// Exported for lib/units.ts, which needs the same "1", "1/2", "2 1/2"
+// parsing logic to turn a free-text quantity into a canonical number for
+// pantry reconciliation.
+export function parseQuantity(raw: string): number | null {
   const trimmed = raw.trim();
   const mixed = trimmed.match(/^(\d+)\s+(\d+\/\d+)$/);
   if (mixed) {

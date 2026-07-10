@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SUB_CATEGORIES, CUISINE_LABELS } from "@/lib/types";
 import type { Recipe } from "@/lib/types";
 import type { RecipeInput } from "@/app/actions/recipes";
+import { parseNumericQuantity } from "@/lib/units";
 
 const CATEGORY_IDS = Object.values(SUB_CATEGORIES).flatMap((subs) => subs.map((s) => s.id));
 const CUISINE_IDS = Object.keys(CUISINE_LABELS);
@@ -196,7 +197,18 @@ export async function generateRecipeDraft(
       return { error: "AI didn't return a structured recipe. Try again." };
     }
 
-    return { recipe: toolUse.input as RecipeInput };
+    const recipe = toolUse.input as RecipeInput;
+    // Deterministically derive canonical quantity_value/quantity_unit from
+    // the free-text quantity/unit the AI already wrote, rather than asking
+    // the AI to fill a second, redundant representation — one parser
+    // (lib/units.ts) stays the single source of truth, same as the manual
+    // RecipeForm save path and the backfill script use.
+    recipe.ingredients = (recipe.ingredients ?? []).map((ing) => {
+      const parsed = parseNumericQuantity(ing.quantity, ing.unit);
+      return { ...ing, quantity_value: parsed?.value ?? null, quantity_unit: parsed?.unit ?? null };
+    });
+
+    return { recipe };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "AI generation failed." };
   }

@@ -31,7 +31,7 @@ export async function toggleChecked(itemKey: string) {
   revalidatePath("/shopping");
 }
 
-export async function addStaple(label: string) {
+export async function addStaple(label: string, quantity: string | null = null) {
   const trimmed = label.trim();
   if (!trimmed) return { error: "Enter an item name." };
 
@@ -44,6 +44,7 @@ export async function addStaple(label: string) {
     household_id: household.householdId,
     user_id: household.userId,
     label: trimmed,
+    quantity: quantity?.trim() || null,
   });
 
   if (error) return { error: error.message };

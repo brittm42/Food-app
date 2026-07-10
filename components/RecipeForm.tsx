@@ -12,6 +12,7 @@ import {
 } from "@/lib/types";
 import { createRecipe, updateRecipe, createTagColor, type RecipeInput } from "@/app/actions/recipes";
 import { generateRecipeDraft } from "@/app/actions/generate-recipe";
+import { parseNumericQuantity } from "@/lib/units";
 
 const CHIP_BASE =
   "font-mono text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors";
@@ -83,12 +84,21 @@ function toRecipeInput(form: FormState, isAiGenerated: boolean): RecipeInput {
     tags: form.tags,
     ingredients: form.ingredients
       .filter((i) => i.name.trim())
-      .map((i) => ({
-        name: i.name.trim(),
-        core: i.core,
-        quantity: i.quantity.trim() || null,
-        unit: i.unit.trim() || null,
-      })),
+      .map((i) => {
+        const quantity = i.quantity.trim() || null;
+        const unit = i.unit.trim() || null;
+        // Derived automatically for pantry reconciliation — no new form
+        // fields, zero UX change for whoever's typing the recipe in.
+        const parsed = parseNumericQuantity(quantity, unit);
+        return {
+          name: i.name.trim(),
+          core: i.core,
+          quantity,
+          unit,
+          quantity_value: parsed?.value ?? null,
+          quantity_unit: parsed?.unit ?? null,
+        };
+      }),
     is_ai_generated: isAiGenerated,
   };
 }
