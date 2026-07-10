@@ -1,16 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 import RecipesBrowser from "@/components/RecipesBrowser";
+import LandingPage from "@/components/LandingPage";
 import type { Recipe, RecipeWithRating, RatingValue, TagColor } from "@/lib/types";
 
 export default async function RecipesPage() {
   const supabase = await createClient();
 
-  const [{ data: recipes, error }, { data: tagColors }, { data: userData }, household] =
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return <LandingPage />;
+  }
+
+  const [{ data: recipes, error }, { data: tagColors }, household] =
     await Promise.all([
       supabase.from("recipes").select("*").order("name"),
       supabase.from("tag_colors").select("*"),
-      supabase.auth.getUser(),
       getCurrentHousehold(),
     ]);
 

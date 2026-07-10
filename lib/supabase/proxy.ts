@@ -41,8 +41,12 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  // "/" is a special case: it's the signed-out marketing landing page, but
+  // also the signed-in recipes home — so it only skips the login redirect
+  // below, not the household/onboarding checks further down.
+  const isRoot = pathname === "/";
 
-  if (!data.user && !isPublicPath) {
+  if (!data.user && !isPublicPath && !isRoot) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
