@@ -36,23 +36,15 @@ export default function LandingPage() {
           weekly menus, pantry, and shopping — organized so eating well stops
           taking extra effort.
         </p>
-        <div className="flex gap-3 justify-center items-center flex-wrap">
-          <Link
-            href="/login"
-            className="bg-teal text-white rounded-lg px-7 py-3 text-[15px] font-medium hover:opacity-90"
-          >
-            Get started free
-          </Link>
-          <a
-            href="#features"
-            className="text-ink-mid text-sm font-medium underline underline-offset-4 hover:text-ink"
-          >
-            See how it works
-          </a>
-        </div>
+        <Link
+          href="/login"
+          className="bg-teal text-white rounded-lg px-7 py-3 text-[15px] font-medium hover:opacity-90 inline-block"
+        >
+          Get started free
+        </Link>
       </div>
 
-      <div id="features" className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-10">
         {FEATURES.map((f) => (
           <div
             key={f.title}
@@ -67,16 +59,6 @@ export default function LandingPage() {
             <p className="text-sm text-ink-mid leading-relaxed">{f.body}</p>
           </div>
         ))}
-      </div>
-
-      <div className="text-center py-10 border-t border-border">
-        <p className="text-ink-mid text-sm mb-5">Ready to plan your first week?</p>
-        <Link
-          href="/login"
-          className="bg-teal text-white rounded-lg px-7 py-3 text-[15px] font-medium hover:opacity-90 inline-block"
-        >
-          Get started free
-        </Link>
       </div>
     </div>
   );
