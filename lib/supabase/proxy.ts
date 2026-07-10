@@ -49,16 +49,31 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (data.user && !isPublicPath) {
-    // Every signed-in user needs a household to use This Week/Pantry/
-    // Shopping (they're all household-scoped). Invited users get one via
-    // acceptInvite() before they ever reach a non-public path; anyone else
-    // (self-signup with no invite) falls through to here and gets a
-    // personal household created lazily on their first real page load.
-    const { data: membership } = await supabase
-      .from("household_members")
-      .select("household_id")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
+    const isOnboardingExempt = ONBOARDING_EXEMPT_PATHS.some((path) =>
+      pathname.startsWith(path)
+    );
+
+    // Household membership and onboarding status don't depend on each
+    // other, so they run in parallel rather than as sequential round trips.
+    const [{ data: membership }, { data: profile }] = await Promise.all([
+      // Every signed-in user needs a household to use This Week/Pantry/
+      // Shopping (they're all household-scoped). Invited users get one via
+      // acceptInvite() before they ever reach a non-public path; anyone else
+      // (self-signup with no invite) falls through to here and gets a
+      // personal household created lazily on their first real page load.
+      supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", data.user.id)
+        .maybeSingle(),
+      isOnboardingExempt
+        ? Promise.resolve({ data: null })
+        : supabase
+            .from("profiles")
+            .select("onboarding_status")
+            .eq("user_id", data.user.id)
+            .maybeSingle(),
+    ]);
 
     if (!membership) {
       // Generate the id ourselves rather than using .select() to read it
@@ -80,16 +95,7 @@ export async function updateSession(request: NextRequest) {
       }
     }
 
-    const isOnboardingExempt = ONBOARDING_EXEMPT_PATHS.some((path) =>
-      pathname.startsWith(path)
-    );
     if (!isOnboardingExempt) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_status")
-        .eq("user_id", data.user.id)
-        .maybeSingle();
-
       if (!profile || profile.onboarding_status === "pending") {
         return NextResponse.redirect(new URL("/onboarding", request.url));
       }
