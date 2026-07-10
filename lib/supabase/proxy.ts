@@ -49,20 +49,29 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Revalidates the session with Supabase's Auth server rather than just
-  // reading the (possibly stale/forged) cookie — required for proxy-level checks.
-  const { data } = await supabase.auth.getUser();
+  // Verifies the JWT's signature rather than just trusting the (possibly
+  // forged) cookie — required for proxy-level checks. This project signs
+  // with an asymmetric key (ES256), so getClaims() verifies locally against
+  // a cached JWKS instead of making a network round trip to the Auth server
+  // on every request the way getUser() always does. Falls back to a
+  // getUser()-equivalent network check automatically if that ever changes.
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims.sub;
 
   const pathname = request.nextUrl.pathname;
   const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  // "/" is a special case: it's the signed-out marketing landing page, but
+  // also the signed-in recipes home — so it only skips the login redirect
+  // below, not the household/onboarding checks further down.
+  const isRoot = pathname === "/";
 
-  if (!data.user && !isPublicPath) {
+  if (!userId && !isPublicPath && !isRoot) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (data.user && !isPublicPath) {
+  if (userId && !isPublicPath) {
     const isOnboardingExempt = ONBOARDING_EXEMPT_PATHS.some((path) =>
       pathname.startsWith(path)
     );
@@ -86,14 +95,14 @@ export async function updateSession(request: NextRequest) {
         ? supabase
             .from("household_members")
             .select("household_id")
-            .eq("user_id", data.user.id)
+            .eq("user_id", userId)
             .maybeSingle()
         : Promise.resolve({ data: null }),
       needsProfileCheck
         ? supabase
             .from("profiles")
             .select("onboarding_status")
-            .eq("user_id", data.user.id)
+            .eq("user_id", userId)
             .maybeSingle()
         : Promise.resolve({ data: null }),
     ]);
@@ -113,7 +122,7 @@ export async function updateSession(request: NextRequest) {
         if (!newHouseholdError) {
           await supabase.from("household_members").insert({
             household_id: householdId,
-            user_id: data.user.id,
+            user_id: userId,
             role: "owner",
           });
         }
@@ -127,8 +136,9 @@ export async function updateSession(request: NextRequest) {
       if (!profile || profile.onboarding_status === "pending") {
         // Built from `response` rather than a bare NextResponse.redirect so
         // the household cache cookie just set above (and any auth cookie
-        // refreshed by getUser()) isn't silently dropped — this redirect
-        // fires on essentially every brand-new user's very first request.
+        // refreshed during getClaims()) isn't silently dropped — this
+        // redirect fires on essentially every brand-new user's very first
+        // request.
         const redirectResponse = NextResponse.redirect(
           new URL("/onboarding", request.url)
         );

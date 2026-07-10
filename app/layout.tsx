@@ -3,6 +3,7 @@ import { Fraunces, DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import TopNav from "@/components/TopNav";
 import AuthBar from "@/components/AuthBar";
+import { createClient } from "@/lib/supabase/server";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -37,11 +38,15 @@ export const viewport: Viewport = {
   themeColor: "#1e1b17",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const isSignedIn = data.user != null;
+
   return (
     <html
       lang="en"
@@ -53,14 +58,13 @@ export default function RootLayout({
             WeeklyNom
           </div>
           <h1 className="font-display text-2xl font-light text-white leading-tight mb-1">
-            Eat what you <em className="italic text-teal-mid">actually</em>{" "}
-            want.
+            Eat better <em className="italic text-teal-mid">without trying</em>.
           </h1>
           <p className="text-xs text-[#706860]">
-            Mediterranean · Mexican · Asian · Indian · Just for me · Real food
+            Recipes · Weekly planning · Pantry · Shopping list
           </p>
         </header>
-        <TopNav />
+        {isSignedIn && <TopNav />}
         <AuthBar />
         <main className="flex-1 px-4 pt-5 pb-16">{children}</main>
       </body>
