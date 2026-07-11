@@ -1,26 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { revalidatePath } from "next/cache";
-import { verifyAlexaRequest } from "@/lib/alexa-verify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addShoppingItemForHousehold } from "@/lib/shopping";
 
-// Pages Router API route, not an App Router Route Handler — deliberately.
-// App Router's Request/NextRequest wrapping was a live suspect for
-// corrupting Alexa's request bytes before signature verification could run
-// (confirmed via openssl, independent of any app code, that the bytes
-// captured in app/api/alexa/shopping/route.ts didn't match the signature
-// even though the certificate itself checked out). Pages API routes with
-// bodyParser disabled read the raw Node.js IncomingMessage stream directly,
-// with none of the App Router's request-object reconstruction in the way —
-// the same reason this style is the standard recommendation for Stripe
-// webhook signature verification, which has the identical byte-exact
-// requirement.
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
+// Not called directly by Alexa. Alexa's byte-exact signature requirement
+// couldn't be satisfied on Vercel (confirmed via three independent
+// verification implementations, including raw openssl, that Vercel's
+// platform layer alters the request body before any Node.js code sees
+// it — see git history on this file and lib/alexa-verify.ts, since
+// deleted). Trust now comes from an AWS Lambda function in front of this
+// route: Alexa invokes Lambda (trust via an IAM trigger restricted to the
+// skill ID, not a signature), and Lambda forwards here with a shared
+// secret, same Bearer pattern as app/api/shopping-items/route.ts.
 type AlexaRequestBody = {
   request?: {
     type: string;
@@ -36,15 +27,6 @@ type AlexaRequestBody = {
     };
   };
 };
-
-function readRawBody(req: NextApiRequest): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
-}
 
 function splitItems(raw: string): string[] {
   const commaParts = raw
@@ -75,37 +57,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const rawBody = await readRawBody(req);
+  const authHeader = req.headers.authorization;
+  const providedSecret = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : null;
 
-  const certUrl = req.headers["signaturecertchainurl"];
-  const signature = req.headers["signature"];
-
-  if (typeof certUrl !== "string" || typeof signature !== "string") {
-    res.status(400).json({ error: "Missing signature headers." });
+  if (!providedSecret || providedSecret !== process.env.ALEXA_LAMBDA_SHARED_SECRET) {
+    res.status(401).json({ error: "Invalid or missing shared secret." });
     return;
   }
 
-  let payload: AlexaRequestBody;
-  try {
-    payload = JSON.parse(rawBody.toString("utf8"));
-  } catch {
-    res.status(400).json({ error: "Invalid JSON body." });
-    return;
-  }
-
-  const requestTimestamp = payload.request?.timestamp;
-  if (!requestTimestamp) {
-    res.status(400).json({ error: "Missing request timestamp." });
-    return;
-  }
-
-  try {
-    await verifyAlexaRequest(certUrl, signature, rawBody, requestTimestamp);
-  } catch (err) {
-    console.error("Alexa signature verification failed:", err, "certUrl:", certUrl);
-    res.status(401).json({ error: `Signature verification failed: ${String(err)}` });
-    return;
-  }
+  const payload = req.body as AlexaRequestBody;
 
   function speech(text: string, shouldEndSession = true) {
     res.status(200).json({
