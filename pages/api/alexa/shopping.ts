@@ -140,38 +140,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       speech("I couldn't find an email on your linked account.");
       return;
     }
-    const linkedEmail = profile.email;
+    const linkedEmail = profile.email.toLowerCase();
 
     const admin = createAdminClient();
 
-    const { data: usersPage, error: listError } = await admin.auth.admin.listUsers({
-      perPage: 1000,
-    });
-    if (listError) {
-      speech(`Account lookup failed: ${listError.message}`);
-      return;
-    }
-
-    const matchedUser = usersPage.users.find(
-      (u) => u.email?.toLowerCase() === linkedEmail.toLowerCase()
-    );
-    if (!matchedUser) {
-      speech("I couldn't find a WeeklyNom account for your linked email.");
-      return;
-    }
-
-    const { data: membership, error: membershipError } = await admin
-      .from("household_members")
+    // Household-level lookup, not a WeeklyNom login — see
+    // supabase/alexa-linked-accounts.sql. The Amazon account that owns the
+    // household's Echo devices doesn't need its own WeeklyNom account; a
+    // privileged household member links its email once from
+    // /account/household.
+    const { data: link, error: linkError } = await admin
+      .from("alexa_linked_accounts")
       .select("household_id")
-      .eq("user_id", matchedUser.id)
+      .eq("linked_email", linkedEmail)
       .maybeSingle();
 
-    if (membershipError) {
-      speech(`Household lookup failed: ${membershipError.message}`);
+    if (linkError) {
+      speech(`Household lookup failed: ${linkError.message}`);
       return;
     }
-    if (!membership) {
-      speech("I couldn't find a household for your WeeklyNom account.");
+    if (!link) {
+      speech(
+        "This Amazon account isn't linked to a WeeklyNom household yet. Ask an owner or manager to link it from account settings."
+      );
       return;
     }
 
@@ -187,7 +178,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const added: string[] = [];
     const duplicates: string[] = [];
     for (const item of items) {
-      const result = await addShoppingItemForHousehold(admin, membership.household_id, item);
+      const result = await addShoppingItemForHousehold(admin, link.household_id, item);
       if (!result.ok) continue;
       if (result.duplicate) {
         duplicates.push(result.label);
