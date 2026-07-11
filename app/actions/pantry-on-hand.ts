@@ -41,7 +41,7 @@ export async function setPantryOnHand(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/pantry");
+  revalidatePath("/kitchen");
   revalidatePath("/shopping");
   return {};
 }
@@ -108,19 +108,22 @@ export async function toggleCoreItemChecked(
         { onConflict: "household_id,ingredient_name" }
       );
 
-      // Mirror onto the matching Core Pantry pantry_items row (if this
-      // ingredient is also a catalog item) so the Pantry tab's own on-hand
+      // Mirror onto the matching Kitchen pantry_items row (if this
+      // ingredient is also a catalog item) so the Kitchen tab's own on-hand
       // display doesn't drift from what Shopping List just recorded — see
-      // the same note in updatePantryOnHand (app/actions/pantry.ts).
+      // the same note in updatePantryOnHand (app/actions/pantry.ts). Not
+      // filtered by category: a core-tagged recipe ingredient is by
+      // definition shelf-stable, so it should never actually match a Fresh
+      // pantry_items row, but if it somehow did, writing an unused on-hand
+      // value there is harmless (Fresh rows don't display it).
       await supabase
         .from("pantry_items")
         .update({ on_hand_qty: nextValue, on_hand_unit: neededUnit })
         .eq("household_id", household.householdId)
-        .eq("item_type", "core")
         .ilike("name", ingredientName.trim());
     }
   }
 
-  revalidatePath("/pantry");
+  revalidatePath("/kitchen");
   revalidatePath("/shopping");
 }

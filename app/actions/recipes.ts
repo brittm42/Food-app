@@ -3,11 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/lib/types";
+import { categorizeItem } from "@/lib/categorize";
 
 export type RecipeInput = Omit<
   Recipe,
   "id" | "user_id" | "is_seed" | "created_at" | "updated_at"
 >;
+
+// AI generation already assigns a category per ingredient; manual entry via
+// RecipeForm has no category input, so fill it in here the same way one-off
+// Shopping List/Staple adds get auto-categorized.
+async function withIngredientCategories(input: RecipeInput): Promise<RecipeInput> {
+  const ingredients = await Promise.all(
+    (input.ingredients ?? []).map(async (ing) =>
+      ing.category ? ing : { ...ing, category: await categorizeItem(ing.name) }
+    )
+  );
+  return { ...input, ingredients };
+}
 
 export async function createRecipe(input: RecipeInput) {
   const supabase = await createClient();
@@ -17,7 +30,7 @@ export async function createRecipe(input: RecipeInput) {
 
   const { data, error } = await supabase
     .from("recipes")
-    .insert({ ...input, user_id: user.id, is_seed: false })
+    .insert({ ...(await withIngredientCategories(input)), user_id: user.id, is_seed: false })
     .select("id")
     .single();
 
@@ -35,7 +48,7 @@ export async function updateRecipe(id: string, input: RecipeInput) {
   // Any signed-in user can edit any recipe, including seed library recipes
   // (not just their own additions) — enforced by the recipes_update RLS
   // policy, which permits user_id is null or user_id = auth.uid().
-  const { error } = await supabase.from("recipes").update(input).eq("id", id);
+  const { error } = await supabase.from("recipes").update(await withIngredientCategories(input)).eq("id", id);
 
   if (error) return { error: error.message };
 

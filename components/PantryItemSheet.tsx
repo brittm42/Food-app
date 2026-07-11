@@ -2,35 +2,39 @@
 
 import { useState, useTransition } from "react";
 import { UNIT_OPTIONS } from "@/lib/units";
-import { updatePantryOnHand, updatePantryTarget } from "@/app/actions/pantry";
+import { updatePantryOnHand, updatePantryTarget, updatePantryNote } from "@/app/actions/pantry";
 
-// Tap-to-edit bottom sheet for a Core Pantry/Staple item's on-hand + target
-// quantities, or a Weekly Fresh item's single "usual amount to buy" target.
-// Replaces the old cramped inline number input + unit <select> pair
-// (OnHandControl) that lived directly in the list row.
+// Tap-to-edit bottom sheet for a Kitchen item: a Pantry-category item's
+// on-hand + target quantities, or a Fresh-category item's single "usual
+// amount to buy" target — plus a freeform note (brand/store preference,
+// dietary note) either way. Replaces the old cramped inline number input +
+// unit <select> pair (OnHandControl) that lived directly in the list row.
 export default function PantryItemSheet({
   item,
+  fresh,
   onClose,
 }: {
   item: {
     id: string;
     name: string;
-    item_type: "core" | "weekly_fresh" | "staple";
     on_hand_qty: number | null;
     on_hand_unit: string | null;
     target_qty: number | null;
     target_unit: string | null;
+    note: string | null;
   };
+  fresh: boolean;
   onClose: () => void;
 }) {
   const [onHandValue, setOnHandValue] = useState(item.on_hand_qty != null ? String(item.on_hand_qty) : "");
   const [onHandUnit, setOnHandUnit] = useState(item.on_hand_unit ?? "");
   const [targetValue, setTargetValue] = useState(item.target_qty != null ? String(item.target_qty) : "");
   const [targetUnit, setTargetUnit] = useState(item.target_unit ?? "");
+  const [note, setNote] = useState(item.note ?? "");
   const [isPending, startTransition] = useTransition();
 
-  const showOnHand = item.item_type !== "weekly_fresh";
-  const targetLabel = item.item_type === "weekly_fresh" ? "Usual amount to buy" : "Target (restock to)";
+  const showOnHand = !fresh;
+  const targetLabel = fresh ? "Usual amount to buy" : "Target (restock to)";
 
   function save() {
     const nextOnHandValue = onHandValue.trim() ? Number(onHandValue) : null;
@@ -38,6 +42,7 @@ export default function PantryItemSheet({
     startTransition(async () => {
       if (showOnHand) await updatePantryOnHand(item.id, nextOnHandValue, onHandUnit || null);
       await updatePantryTarget(item.id, nextTargetValue, targetUnit || null);
+      if (note !== (item.note ?? "")) await updatePantryNote(item.id, note || null);
       onClose();
     });
   }
@@ -104,6 +109,17 @@ export default function PantryItemSheet({
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-ink-light">Note (brand, store, dietary…)</label>
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="e.g. Kroger brand, the big bag"
+            className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+          />
         </div>
 
         <div className="flex gap-2 justify-end">

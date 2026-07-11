@@ -6,6 +6,7 @@ import { SUB_CATEGORIES, CUISINE_LABELS } from "@/lib/types";
 import type { Recipe } from "@/lib/types";
 import type { RecipeInput } from "@/app/actions/recipes";
 import { parseNumericQuantity } from "@/lib/units";
+import { CATEGORIES } from "@/lib/categories";
 
 const CATEGORY_IDS = Object.values(SUB_CATEGORIES).flatMap((subs) => subs.map((s) => s.id));
 const CUISINE_IDS = Object.keys(CUISINE_LABELS);
@@ -89,6 +90,11 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
                 description:
                   "true if this is a shelf-stable Core Pantry item, false if it's a Fresh/weekly-buy item.",
               },
+              category: {
+                type: "string",
+                enum: CATEGORIES as unknown as string[],
+                description: "The single best-fit grocery-aisle category for this ingredient.",
+              },
               quantity: {
                 type: "string",
                 description:
@@ -100,7 +106,7 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
                   'Unit of measure, e.g. "cup", "tbsp", "clove", "can", "whole". Omit if quantity has no unit (e.g. "to taste").',
               },
             },
-            required: ["name", "core"],
+            required: ["name", "core", "category"],
           },
         },
       },
@@ -113,7 +119,7 @@ const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library 
 - Casual, brief hint lines (not full sentences of marketing copy).
 - Protein- and fiber-forward home cooking, simple weeknight-friendly instructions.
 - Instructions are an ordered list of discrete steps, not a single paragraph — one clear action per step. Light inline HTML (just <strong> for emphasis) inside a step is OK, no other markup.
-- Ingredients are split into "Fresh" (perishable, weekly-buy) vs "Core" (shelf-stable pantry staples) for shopping list generation. Ingredient names must be bare nouns with no quantity or brand, and should reuse an existing name when the same ingredient is already in the library — the Shopping List dedupes ingredients by exact name match across recipes, so inconsistent naming creates duplicate entries. Quantities and units belong in their own fields, using realistic everyday-recipe conventions (fractions, ranges, or words like "handful"/"to taste" are fine — quantity is a string, not strictly numeric).
+- Ingredients are split into "Fresh" (perishable, weekly-buy) vs "Core" (shelf-stable pantry staples) for shopping list generation, and each also gets a grocery-aisle category (Produce, Dairy & Eggs, Meat & Seafood, Frozen, Bakery, Canned Goods, Grains & Dried, Sauces & Condiments, Spices, Beverages, Snacks, Household & Non-food, Other) used to group the Shopping List by aisle. Ingredient names must be bare nouns with no quantity or brand, and should reuse an existing name when the same ingredient is already in the library — the Shopping List dedupes ingredients by exact name match across recipes, so inconsistent naming creates duplicate entries. Quantities and units belong in their own fields, using realistic everyday-recipe conventions (fractions, ranges, or words like "handful"/"to taste" are fine — quantity is a string, not strictly numeric).
 - Estimate prep_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
 Draft one recipe matching this voice based on the user's description. Always call the draft_recipe tool with your answer.`;
 

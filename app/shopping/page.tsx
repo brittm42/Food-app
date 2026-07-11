@@ -1,9 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 import ShoppingListView from "@/components/ShoppingListView";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, isFreshCategory } from "@/lib/categories";
 import type { Recipe } from "@/lib/types";
 import { reconcile } from "@/lib/units";
+
+type ChecklistItem = {
+  key: string;
+  label: string;
+  checked: boolean;
+  neededValue?: number | null;
+  neededUnit?: string | null;
+};
+type ShoppingRow = {
+  id: string;
+  label: string;
+  category: string;
+  quantityValue: number | null;
+  quantityUnit: string | null;
+  note: string | null;
+};
+type CategoryGroup = { category: string; checklist: ChecklistItem[]; shoppingItems: ShoppingRow[] };
 
 export default async function ShoppingPage() {
   const household = await getCurrentHousehold();
@@ -14,7 +31,7 @@ export default async function ShoppingPage() {
   const [
     { data: queue, error },
     { data: checkedRows },
-    { data: coreCatalog },
+    { data: kitchenItems },
     { data: shoppingRows },
     { data: onHandRows },
   ] = await Promise.all([
@@ -26,11 +43,7 @@ export default async function ShoppingPage() {
       .from("pantry_state")
       .select("item_key")
       .eq("household_id", household.householdId),
-    supabase
-      .from("pantry_items")
-      .select("name, category")
-      .eq("household_id", household.householdId)
-      .eq("item_type", "core"),
+    supabase.from("pantry_items").select("name, category").eq("household_id", household.householdId),
     supabase
       .from("shopping_items")
       .select("*")
@@ -56,18 +69,17 @@ export default async function ShoppingPage() {
     (onHandRows ?? []).map((r) => [r.ingredient_name as string, r as { quantity_value: number | null; quantity_unit: string | null }])
   );
 
-  const freshNames = new Set<string>();
+  // Every Kitchen item (any provenance) supplies a name -> aisle-category
+  // lookup for recipe-driven ingredients that happen to match a catalog
+  // item, whether or not that ingredient is core.
+  const categoryByKitchenName = new Map<string, string>();
+  for (const row of kitchenItems ?? []) {
+    categoryByKitchenName.set((row.name as string).trim().toLowerCase(), row.category as string);
+  }
+
+  const freshEntries = new Map<string, { category: string }>();
   const coreNames = new Set<string>();
 
-  // Summed needed quantity per core ingredient this week, keyed by
-  // normalized (trim+lowercase) name to match pantry_on_hand's storage
-  // convention — kept separate from coreNames (which stays exact-case, the
-  // existing display/dedup key) so reconciliation never changes what the
-  // list actually shows, only whether an item is included at all. A
-  // "poisoned" entry (unreconcilable: true) means some contributing
-  // ingredient lacked a clean quantity_value/quantity_unit, or two recipes
-  // needed it in incompatible units this week — reconciliation fails open
-  // for that ingredient rather than guessing.
   type CoreNeed = { value: number; unit: string } | { unreconcilable: true };
   const coreNeeds = new Map<string, CoreNeed>();
 
@@ -79,7 +91,7 @@ export default async function ShoppingPage() {
 
     for (const ing of recipe?.ingredients ?? []) {
       if (!ing.core) {
-        freshNames.add(ing.name);
+        freshEntries.set(ing.name, { category: ing.category ?? categoryByKitchenName.get(ing.name.trim().toLowerCase()) ?? "Other" });
         continue;
       }
       coreNames.add(ing.name);
@@ -94,8 +106,6 @@ export default async function ShoppingPage() {
       }
       const scaledValue = ing.quantity_value * ratio;
       if (existing && existing.unit !== ing.quantity_unit) {
-        // Same ingredient needed in incompatible units by two recipes this
-        // week — can't sum them, fail open rather than guess.
         coreNeeds.set(key, { unreconcilable: true });
         continue;
       }
@@ -103,88 +113,69 @@ export default async function ShoppingPage() {
     }
   }
 
-  const toItems = (names: Set<string>, prefix: string) =>
-    [...names].sort().map((name) => ({
-      key: `shopping:${prefix}:${name}`,
-      label: name,
-      checked: checkedKeys.has(`shopping:${prefix}:${name}`),
-    }));
-
-  const fresh = toItems(freshNames, "fresh");
-
-  // Core Pantry catalog now lives in `pantry_items` (item_type: "core") —
-  // clean names, real categories, no more parenthetical-quantity stripping
-  // needed to match a queued recipe's "core" ingredient back to its
-  // category. Anything with no match (a core-tagged ingredient not in the
-  // catalog) falls into "Other" rather than being dropped.
-  const coreCategoryByName = new Map<string, string>();
-  for (const row of coreCatalog ?? []) {
-    coreCategoryByName.set((row.name as string).trim().toLowerCase(), row.category as string);
+  // Recipe-driven Fresh checklist entries, grouped by aisle category.
+  const freshGroups = new Map<string, ChecklistItem[]>();
+  for (const [name, { category }] of freshEntries) {
+    const key = `shopping:fresh:${name}`;
+    if (!freshGroups.has(category)) freshGroups.set(category, []);
+    freshGroups.get(category)!.push({ key, label: name, checked: checkedKeys.has(key) });
   }
-  const categoryForCoreName = (name: string) => coreCategoryByName.get(name.trim().toLowerCase()) ?? "Other";
 
+  // Recipe-driven Core reconciliation entries, grouped by aisle category.
   // Pantry reconciliation: drop a core item entirely once on-hand covers
-  // what this week's queued recipes need — Pantry is where you go to check
-  // "what do I have," Shopping List only answers "what do I need to buy."
-  // Anything ambiguous (reconcile() returning "unknown") stays listed,
-  // same as an item with no on-hand data at all — this feature only ever
-  // removes work, never invents false confidence. neededValue/neededUnit
-  // ride along on each surviving item so checking it off (toggleCoreItemChecked)
-  // knows how much to add back to on-hand.
-  const coreItems = toItems(coreNames, "core")
-    .map((item) => {
-      const need = coreNeeds.get(item.label.trim().toLowerCase());
-      const reconcilable = need && !("unreconcilable" in need);
-      return {
-        ...item,
-        neededValue: reconcilable ? (need as { value: number; unit: string }).value : null,
-        neededUnit: reconcilable ? (need as { value: number; unit: string }).unit : null,
-      };
-    })
-    .filter((item) => {
-      if (item.neededValue == null || item.neededUnit == null) return true;
-      const onHand = onHandByName.get(item.label.trim().toLowerCase());
-      const result = reconcile(item.neededValue, item.neededUnit, onHand?.quantity_value ?? null, onHand?.quantity_unit ?? null);
-      return result !== "have-enough";
-    });
-  const coreByCategory = new Map<string, typeof coreItems>();
-  for (const item of coreItems) {
-    const cat = categoryForCoreName(item.label);
-    if (!coreByCategory.has(cat)) coreByCategory.set(cat, []);
-    coreByCategory.get(cat)!.push(item);
-  }
-  const core = CATEGORIES.filter((cat) => coreByCategory.has(cat)).map((category) => ({
-    category,
-    items: coreByCategory.get(category)!,
-  }));
+  // what this week's queued recipes need — Shopping List only answers
+  // "what do I need to buy," Kitchen answers "what do I have."
+  const coreGroups = new Map<string, ChecklistItem[]>();
+  for (const name of coreNames) {
+    const need = coreNeeds.get(name.trim().toLowerCase());
+    const reconcilable = need && !("unreconcilable" in need);
+    const neededValue = reconcilable ? (need as { value: number; unit: string }).value : null;
+    const neededUnit = reconcilable ? (need as { value: number; unit: string }).unit : null;
 
-  // Everything else on the list — one-off adds and Pantry restock/add-to-
-  // list taps are indistinguishable here, both are just shopping_items
-  // rows — grouped by their auto-assigned aisle category instead of a
-  // single bottom catch-all section.
-  const itemsByCategory = new Map<string, { id: string; label: string; category: string; quantityValue: number | null; quantityUnit: string | null }[]>();
+    if (neededValue != null && neededUnit != null) {
+      const onHand = onHandByName.get(name.trim().toLowerCase());
+      const result = reconcile(neededValue, neededUnit, onHand?.quantity_value ?? null, onHand?.quantity_unit ?? null);
+      if (result === "have-enough") continue;
+    }
+
+    const category = categoryByKitchenName.get(name.trim().toLowerCase()) ?? "Other";
+    const key = `shopping:core:${name}`;
+    if (!coreGroups.has(category)) coreGroups.set(category, []);
+    coreGroups.get(category)!.push({ key, label: name, checked: checkedKeys.has(key), neededValue, neededUnit });
+  }
+
+  // shopping_items rows (one-off adds, Kitchen restock/flag pushes) split
+  // into Fresh vs. Pantry by their own category, same split as Kitchen.
+  const freshShoppingItems = new Map<string, ShoppingRow[]>();
+  const pantryShoppingItems = new Map<string, ShoppingRow[]>();
   for (const row of shoppingRows ?? []) {
     const cat = row.category as string;
-    if (!itemsByCategory.has(cat)) itemsByCategory.set(cat, []);
-    itemsByCategory.get(cat)!.push({
+    const bucket = isFreshCategory(cat) ? freshShoppingItems : pantryShoppingItems;
+    if (!bucket.has(cat)) bucket.set(cat, []);
+    bucket.get(cat)!.push({
       id: row.id as string,
       label: row.label as string,
       category: cat,
       quantityValue: row.quantity_value as number | null,
       quantityUnit: row.quantity_unit as string | null,
+      note: row.note as string | null,
     });
   }
-  const items = CATEGORIES.filter((cat) => itemsByCategory.has(cat)).map((category) => ({
-    category,
-    items: itemsByCategory.get(category)!,
-  }));
 
-  return (
-    <ShoppingListView
-      fresh={fresh}
-      core={core}
-      items={items}
-      hasQueue={(queue?.length ?? 0) > 0}
-    />
-  );
+  const buildSection = (
+    checklistByCategory: Map<string, ChecklistItem[]>,
+    shoppingByCategory: Map<string, ShoppingRow[]>
+  ): CategoryGroup[] => {
+    const categories = new Set([...checklistByCategory.keys(), ...shoppingByCategory.keys()]);
+    return CATEGORIES.filter((c) => categories.has(c)).map((category) => ({
+      category,
+      checklist: (checklistByCategory.get(category) ?? []).sort((a, b) => a.label.localeCompare(b.label)),
+      shoppingItems: shoppingByCategory.get(category) ?? [],
+    }));
+  };
+
+  const fresh = buildSection(freshGroups, freshShoppingItems);
+  const pantry = buildSection(coreGroups, pantryShoppingItems);
+
+  return <ShoppingListView fresh={fresh} pantry={pantry} hasQueue={(queue?.length ?? 0) > 0} />;
 }

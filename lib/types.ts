@@ -5,6 +5,7 @@ export type Ingredient = {
   unit: string | null; // e.g. "cup", "tbsp", "clove", "can", "whole" — null if quantity has no unit
   quantity_value?: number | null; // canonical numeric amount, derived from `quantity`; null if not cleanly parseable ("to taste", ranges, etc.)
   quantity_unit?: string | null; // canonical unit from lib/units.ts's fixed vocabulary, derived from `unit`; null if unmatched. Ingredients missing either field (including all pre-existing rows) are simply excluded from pantry reconciliation.
+  category?: string | null; // grocery-aisle category (lib/categories.ts's CATEGORIES) — drives Shopping List's "Buy Fresh" aisle grouping. Assigned by AI (generate-recipe.ts) or auto-categorized server-side on manual save; null only for not-yet-backfilled rows.
 };
 
 export type Recipe = {
