@@ -60,12 +60,15 @@ export default function KrogerConnectionPanel({
           </div>
 
           {hasLocation ? (
-            <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm">
-              <span>Default location: {locationName}</span>
+            <div className="flex items-start justify-between gap-2 bg-surface border border-border rounded-lg px-3 py-2 text-sm">
+              <div>
+                <div className="text-ink-light text-xs mb-0.5">Default location</div>
+                <div>{locationName}</div>
+              </div>
               {isPrivileged && (
                 <a
                   href="/account/kroger-location?returnTo=/account/household"
-                  className="text-ink-light hover:text-teal text-xs"
+                  className="text-ink-light hover:text-teal text-xs shrink-0"
                 >
                   Change
                 </a>
