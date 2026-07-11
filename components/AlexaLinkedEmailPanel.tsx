@@ -14,7 +14,8 @@ export default function AlexaLinkedEmailPanel({
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function handleAdd() {
+  function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
     startTransition(async () => {
       const result = await addAlexaLinkedEmail(email);
@@ -72,31 +73,28 @@ export default function AlexaLinkedEmailPanel({
       )}
 
       {isPrivileged ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm text-ink-light">
-            Add the email on any Amazon account your Echo devices use. That&apos;s
-            what Alexa hands back when someone says &quot;add milk&quot; — link it here
-            so voice add works for the whole household, no separate WeeklyNom
-            login required. You can link more than one account.
+        <>
+          <p className="text-sm text-ink-light mb-2">
+            Link the Amazon account(s) your Echo devices use so Alexa can add
+            to your list.
           </p>
-          <div className="flex gap-2">
+          <form onSubmit={handleAdd} className="flex gap-2">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-sm"
+              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal"
             />
             <button
-              type="button"
-              onClick={handleAdd}
+              type="submit"
               disabled={isPending || !email.trim()}
-              className="bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
             >
               Add
             </button>
-          </div>
-        </div>
+          </form>
+        </>
       ) : accounts.length === 0 ? (
         <p className="text-sm text-ink-light">
           Ask an owner or manager to link your household&apos;s Amazon account for
