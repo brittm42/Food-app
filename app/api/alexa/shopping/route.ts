@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addShoppingItemForHousehold } from "@/lib/shopping";
@@ -7,11 +7,19 @@ import { addShoppingItemForHousehold } from "@/lib/shopping";
 // couldn't be satisfied on Vercel (confirmed via three independent
 // verification implementations, including raw openssl, that Vercel's
 // platform layer alters the request body before any Node.js code sees
-// it — see git history on this file and lib/alexa-verify.ts, since
+// it — see git history on this file's old location,
+// app/api/alexa/shopping/route.ts, and lib/alexa-verify.ts, since
 // deleted). Trust now comes from an AWS Lambda function in front of this
 // route: Alexa invokes Lambda (trust via an IAM trigger restricted to the
 // skill ID, not a signature), and Lambda forwards here with a shared
 // secret, same Bearer pattern as app/api/shopping-items/route.ts.
+//
+// Briefly lived at pages/api/alexa/shopping.ts (a Pages Router route) —
+// that was only needed for the old raw-byte signature verification, which
+// no longer exists. Moved back here because revalidatePath() throws
+// ("Static generation store missing") when called from a Pages Router API
+// route; it's only supported in Server Functions and Route Handlers (see
+// node_modules/next/dist/docs/01-app/03-api-reference/04-functions/revalidatePath.md).
 type AlexaRequestBody = {
   request?: {
     type: string;
@@ -51,78 +59,69 @@ function joinWithAnd(items: string[]): string {
   return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method not allowed." });
-    return;
-  }
+function speech(text: string, shouldEndSession = true) {
+  return NextResponse.json({
+    version: "1.0",
+    response: {
+      outputSpeech: { type: "PlainText", text },
+      shouldEndSession,
+    },
+  });
+}
 
-  const authHeader = req.headers.authorization;
+export async function POST(request: NextRequest) {
+  const authHeader = request.headers.get("authorization");
   const providedSecret = authHeader?.startsWith("Bearer ")
     ? authHeader.slice("Bearer ".length).trim()
     : null;
 
   if (!providedSecret || providedSecret !== process.env.ALEXA_LAMBDA_SHARED_SECRET) {
-    res.status(401).json({ error: "Invalid or missing shared secret." });
-    return;
+    return NextResponse.json({ error: "Invalid or missing shared secret." }, { status: 401 });
   }
 
-  const payload = req.body as AlexaRequestBody;
-
-  function speech(text: string, shouldEndSession = true) {
-    res.status(200).json({
-      version: "1.0",
-      response: {
-        outputSpeech: { type: "PlainText", text },
-        shouldEndSession,
-      },
-    });
+  let payload: AlexaRequestBody;
+  try {
+    payload = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
   const alexaRequest = payload.request;
   if (!alexaRequest) {
-    res.status(400).json({ error: "Missing request field." });
-    return;
+    return NextResponse.json({ error: "Missing request field." }, { status: 400 });
   }
 
   if (alexaRequest.type === "SessionEndedRequest") {
-    res.status(200).json({ version: "1.0", response: {} });
-    return;
+    return NextResponse.json({ version: "1.0", response: {} });
   }
 
   if (alexaRequest.type === "LaunchRequest") {
-    speech("You can say, add milk, to add something to your shopping list.", false);
-    return;
+    return speech("You can say, add milk, to add something to your shopping list.", false);
   }
 
   if (alexaRequest.type !== "IntentRequest") {
-    speech("Sorry, I didn't understand that.");
-    return;
+    return speech("Sorry, I didn't understand that.");
   }
 
   const intentName = alexaRequest.intent?.name;
 
   if (intentName === "AMAZON.HelpIntent") {
-    speech("Say something like, add milk, and I'll add it to your shopping list.", false);
-    return;
+    return speech("Say something like, add milk, and I'll add it to your shopping list.", false);
   }
 
   if (intentName === "AMAZON.CancelIntent" || intentName === "AMAZON.StopIntent") {
-    speech("Okay.");
-    return;
+    return speech("Okay.");
   }
 
   if (intentName !== "AddShoppingItemIntent") {
-    speech("Sorry, I didn't understand that. Try saying, add milk.");
-    return;
+    return speech("Sorry, I didn't understand that. Try saying, add milk.");
   }
 
   const accessToken = payload.context?.System?.user?.accessToken;
   if (!accessToken) {
-    speech(
+    return speech(
       "Your WeeklyNom account isn't linked yet. Please open the Alexa app and link your account for this skill."
     );
-    return;
   }
 
   try {
@@ -131,14 +130,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!profileResponse.ok) {
-      speech("I couldn't verify your account. Please try linking it again in the Alexa app.");
-      return;
+      return speech("I couldn't verify your account. Please try linking it again in the Alexa app.");
     }
 
     const profile: { email?: string } = await profileResponse.json();
     if (!profile.email) {
-      speech("I couldn't find an email on your linked account.");
-      return;
+      return speech("I couldn't find an email on your linked account.");
     }
     const linkedEmail = profile.email.toLowerCase();
 
@@ -156,14 +153,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .maybeSingle();
 
     if (linkError) {
-      speech(`Household lookup failed: ${linkError.message}`);
-      return;
+      return speech(`Household lookup failed: ${linkError.message}`);
     }
     if (!link) {
-      speech(
+      return speech(
         "This Amazon account isn't linked to a WeeklyNom household yet. Ask an owner or manager to link it from account settings."
       );
-      return;
     }
 
     const itemSlot = alexaRequest.intent?.slots?.ItemName?.value;
@@ -171,8 +166,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const items = splitItems(rawLabel);
 
     if (items.length === 0) {
-      speech("Sorry, I didn't catch what to add. Try saying, add milk.");
-      return;
+      return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
     }
 
     const added: string[] = [];
@@ -190,8 +184,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     revalidatePath("/shopping");
 
     if (added.length === 0 && duplicates.length === 0) {
-      speech("Sorry, I didn't catch what to add. Try saying, add milk.");
-      return;
+      return speech("Sorry, I didn't catch what to add. Try saying, add milk.");
     }
 
     const parts: string[] = [];
@@ -203,9 +196,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       parts.push(`${joinWithAnd(duplicates)} ${verb} already on the list.`);
     }
 
-    speech(parts.join(" "));
+    return speech(parts.join(" "));
   } catch (err) {
     console.error("Alexa intent handling failed:", err);
-    speech(`Something went wrong: ${err instanceof Error ? err.message : String(err)}`);
+    return speech(`Something went wrong: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
