@@ -4,55 +4,63 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentHousehold, isPrivileged } from "@/lib/household";
 
-export type AlexaLinkStatus =
-  | { linked: false }
-  | { linked: true; linkedEmail: string; connectedByName: string | null; connectedAt: string };
+export type AlexaLinkedAccount = {
+  id: string;
+  linkedEmail: string;
+  connectedByName: string | null;
+  connectedAt: string;
+};
 
 // alexa_linked_accounts has no RLS policies (see
 // supabase/alexa-linked-accounts.sql), so every read/write goes through the
 // admin client even though the caller here does have a normal session — the
 // household scoping is enforced in application code instead of by RLS.
-export async function getAlexaLinkStatus(): Promise<AlexaLinkStatus> {
+//
+// A household can link more than one Amazon account (separate Echo devices
+// on different logins are common) — they're all just adding to the same
+// shared list, so this returns a list rather than a single connection.
+export async function listAlexaLinkedAccounts(): Promise<AlexaLinkedAccount[]> {
   const household = await getCurrentHousehold();
-  if (!household) return { linked: false };
+  if (!household) return [];
 
   const admin = createAdminClient();
-  const { data: link } = await admin
+  const { data: links } = await admin
     .from("alexa_linked_accounts")
-    .select("linked_email, connected_by, created_at")
+    .select("id, linked_email, connected_by, created_at")
     .eq("household_id", household.householdId)
-    .maybeSingle();
+    .order("created_at", { ascending: true });
 
-  if (!link) return { linked: false };
+  if (!links || links.length === 0) return [];
 
-  let connectedByName: string | null = null;
-  if (link.connected_by) {
+  const connectorIds = [...new Set(links.map((l) => l.connected_by).filter((id): id is string => !!id))];
+  const names = new Map<string, string | null>();
+  for (const userId of connectorIds) {
     const { data: profile } = await admin
       .from("profiles")
       .select("display_name")
-      .eq("user_id", link.connected_by)
+      .eq("user_id", userId)
       .maybeSingle();
     if (profile?.display_name) {
-      connectedByName = profile.display_name;
+      names.set(userId, profile.display_name);
     } else {
-      const { data } = await admin.auth.admin.getUserById(link.connected_by);
-      connectedByName = data.user?.email ?? null;
+      const { data } = await admin.auth.admin.getUserById(userId);
+      names.set(userId, data.user?.email ?? null);
     }
   }
 
-  return {
-    linked: true,
+  return links.map((link) => ({
+    id: link.id,
     linkedEmail: link.linked_email,
-    connectedByName,
+    connectedByName: link.connected_by ? (names.get(link.connected_by) ?? null) : null,
     connectedAt: link.created_at,
-  };
+  }));
 }
 
-export async function setAlexaLinkedEmail(email: string) {
+export async function addAlexaLinkedEmail(email: string) {
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
   if (!isPrivileged(household.role)) {
-    return { error: "Only the household owner or a manager can set this." };
+    return { error: "Only the household owner or a manager can add this." };
   }
 
   const trimmed = email.trim().toLowerCase();
@@ -61,23 +69,24 @@ export async function setAlexaLinkedEmail(email: string) {
   }
 
   const admin = createAdminClient();
-  const { error } = await admin.from("alexa_linked_accounts").upsert(
-    {
-      household_id: household.householdId,
-      linked_email: trimmed,
-      connected_by: household.userId,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "household_id" }
-  );
+  const { error } = await admin.from("alexa_linked_accounts").insert({
+    household_id: household.householdId,
+    linked_email: trimmed,
+    connected_by: household.userId,
+  });
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "That email is already linked to a household." };
+    }
+    return { error: error.message };
+  }
 
   revalidatePath("/account/household");
   return {};
 }
 
-export async function removeAlexaLinkedEmail() {
+export async function removeAlexaLinkedEmail(id: string) {
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
   if (!isPrivileged(household.role)) {
@@ -88,6 +97,7 @@ export async function removeAlexaLinkedEmail() {
   const { error } = await admin
     .from("alexa_linked_accounts")
     .delete()
+    .eq("id", id)
     .eq("household_id", household.householdId);
 
   if (error) return { error: error.message };

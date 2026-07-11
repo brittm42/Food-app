@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { listHouseholdMembers } from "@/app/actions/household";
 import { getKrogerConnectionStatus } from "@/app/actions/kroger";
-import { getAlexaLinkStatus } from "@/app/actions/alexa";
+import { listAlexaLinkedAccounts } from "@/app/actions/alexa";
 import { isPrivileged } from "@/lib/household";
 import AccountBackLink from "@/components/AccountBackLink";
 import HouseholdPanel from "@/components/HouseholdPanel";
@@ -17,11 +17,11 @@ export default async function HouseholdSectionPage({
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return null;
 
-  const [{ members, invites, role, householdName }, krogerStatus, alexaStatus, params] =
+  const [{ members, invites, role, householdName }, krogerStatus, alexaAccounts, params] =
     await Promise.all([
       listHouseholdMembers(),
       getKrogerConnectionStatus(),
-      getAlexaLinkStatus(),
+      listAlexaLinkedAccounts(),
       searchParams,
     ]);
 
@@ -53,12 +53,7 @@ export default async function HouseholdSectionPage({
         isPrivileged={isPrivileged(role)}
         notice={notice}
       />
-      <AlexaLinkedEmailPanel
-        linked={alexaStatus.linked}
-        linkedEmail={alexaStatus.linked ? alexaStatus.linkedEmail : null}
-        connectedByName={alexaStatus.linked ? alexaStatus.connectedByName : null}
-        isPrivileged={isPrivileged(role)}
-      />
+      <AlexaLinkedEmailPanel accounts={alexaAccounts} isPrivileged={isPrivileged(role)} />
     </div>
   );
 }
