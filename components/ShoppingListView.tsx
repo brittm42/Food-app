@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { toggleChecked } from "@/app/actions/pantry";
 import { toggleCoreItemChecked } from "@/app/actions/pantry-on-hand";
 import { addShoppingItem, removeShoppingItem, updateShoppingItem } from "@/app/actions/shopping";
+import { markOrderPickedUp } from "@/app/actions/kroger-send";
 import { UNIT_OPTIONS } from "@/lib/units";
 import Collapsible from "@/components/Collapsible";
 import QuickAddModal from "@/components/QuickAddModal";
@@ -15,17 +17,33 @@ type ChecklistItem = {
   neededValue?: number | null;
   neededUnit?: string | null;
 };
-type ShoppingItem = { id: string; label: string; category: string; quantityValue: number | null; quantityUnit: string | null; note: string | null };
+type ShoppingItem = {
+  id: string;
+  label: string;
+  category: string;
+  quantityValue: number | null;
+  quantityUnit: string | null;
+  note: string | null;
+  sentAt: string | null;
+  krogerProductDescription: string | null;
+  krogerQuantity: number | null;
+};
 type CategoryGroup = { category: string; checklist: ChecklistItem[]; shoppingItems: ShoppingItem[] };
 
 export default function ShoppingListView({
   fresh,
   pantry,
   hasQueue,
+  krogerConnected,
+  hasEligibleItems,
+  hasSentItems,
 }: {
   fresh: CategoryGroup[];
   pantry: CategoryGroup[];
   hasQueue: boolean;
+  krogerConnected: boolean;
+  hasEligibleItems: boolean;
+  hasSentItems: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [removedItem, setRemovedItem] = useState<ShoppingItem | null>(null);
@@ -69,6 +87,12 @@ export default function ShoppingListView({
     setRemovedItem(null);
   }
 
+  function handlePickedUp() {
+    startTransition(() => {
+      markOrderPickedUp();
+    });
+  }
+
   const hasFresh = fresh.some((g) => g.checklist.length || g.shoppingItems.length);
   const hasPantry = pantry.some((g) => g.checklist.length || g.shoppingItems.length);
 
@@ -78,6 +102,29 @@ export default function ShoppingListView({
         <h1 className="font-display text-xl font-light">Shopping List</h1>
         <AddOneOffButton />
       </div>
+
+      {(hasEligibleItems || hasSentItems) && (
+        <div className="flex gap-2">
+          {hasEligibleItems && (
+            <Link
+              href={krogerConnected ? "/shopping/send-to-kroger" : "/api/kroger/connect?returnTo=/shopping/send-to-kroger"}
+              className="flex-1 text-center bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium"
+            >
+              Send to Kroger
+            </Link>
+          )}
+          {hasSentItems && (
+            <button
+              type="button"
+              onClick={handlePickedUp}
+              disabled={isPending}
+              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
+            >
+              Mark order picked up
+            </button>
+          )}
+        </div>
+      )}
 
       {!hasQueue && (
         <p className="text-sm text-ink-light text-center py-4">
@@ -148,6 +195,25 @@ function ShoppingItemRow({
   disabled: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+
+  // Sent-to-Kroger rows aren't checked/edited like a normal item — they're
+  // awaiting real-world pickup, not a tap. "Mark order picked up" (the
+  // header button) is what completes them, all at once.
+  if (item.sentAt) {
+    return (
+      <div className="flex items-center gap-2.5 bg-surface border border-border rounded-lg px-3 py-2 opacity-70">
+        <span className="font-mono text-[9px] uppercase tracking-wide text-teal border border-teal rounded-full px-1.5 py-0.5 flex-shrink-0">
+          Sent
+        </span>
+        <span className="flex-1 text-left text-sm min-w-0">
+          {item.krogerProductDescription ?? item.label}
+          {item.krogerQuantity != null && (
+            <span className="text-ink-light text-xs"> — qty {item.krogerQuantity}</span>
+          )}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <>
