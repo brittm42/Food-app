@@ -8,7 +8,13 @@ import type { ReviewItem } from "@/lib/kroger/review";
 
 type LocalItem = ReviewItem & { included: boolean };
 
-export default function KrogerReviewView({ items }: { items: ReviewItem[] }) {
+export default function KrogerReviewView({
+  items,
+  bannerName,
+}: {
+  items: ReviewItem[];
+  bannerName: string;
+}) {
   const router = useRouter();
   const [rows, setRows] = useState<LocalItem[]>(
     items.map((item) => ({ ...item, included: item.candidates.length > 0 }))
@@ -59,9 +65,9 @@ export default function KrogerReviewView({ items }: { items: ReviewItem[] }) {
 
   return (
     <div className="flex flex-col gap-6 pb-20">
-      <h1 className="font-display text-xl font-light">Send to Kroger</h1>
+      <h1 className="font-display text-xl font-light">Send to {bannerName}</h1>
       <p className="text-sm text-ink-light -mt-4">
-        Review the matched products and quantities before sending to your real King Soopers cart.
+        Review the matched products and quantities before sending to your real {bannerName} cart.
       </p>
 
       {error && <p className="text-sm text-red">{error}</p>}
@@ -175,6 +181,10 @@ function ReviewRow({
             </button>
           </div>
         </div>
+      ) : row.searchFailed ? (
+        <p className="text-xs text-red pl-6">
+          Couldn&apos;t search Kroger for this item right now — won&apos;t be sent. Try reloading this page.
+        </p>
       ) : (
         <p className="text-xs text-ink-light pl-6">No Kroger match found — won&apos;t be sent.</p>
       )}

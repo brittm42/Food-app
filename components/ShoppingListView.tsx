@@ -35,6 +35,7 @@ export default function ShoppingListView({
   pantry,
   hasQueue,
   krogerConnected,
+  krogerBannerName,
   hasEligibleItems,
   hasSentItems,
 }: {
@@ -42,6 +43,7 @@ export default function ShoppingListView({
   pantry: CategoryGroup[];
   hasQueue: boolean;
   krogerConnected: boolean;
+  krogerBannerName: string;
   hasEligibleItems: boolean;
   hasSentItems: boolean;
 }) {
@@ -110,7 +112,7 @@ export default function ShoppingListView({
               href={krogerConnected ? "/shopping/send-to-kroger" : "/api/kroger/connect?returnTo=/shopping/send-to-kroger"}
               className="flex-1 text-center bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium"
             >
-              Send to Kroger
+              Send to {krogerBannerName}
             </Link>
           )}
           {hasSentItems && (

@@ -33,6 +33,8 @@
       "Bash(npx vercel logs *)",
       "Bash(npm ls*)",
       "Bash(openssl rand *)",
+      "WebFetch",
+      "WebSearch",
       "mcp__claude_ai_Gmail__get_thread",
       "mcp__claude_ai_Gmail__search_threads"
     ]

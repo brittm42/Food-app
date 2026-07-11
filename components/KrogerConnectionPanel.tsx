@@ -6,11 +6,17 @@ import { disconnectKroger } from "@/app/actions/kroger";
 export default function KrogerConnectionPanel({
   connected,
   connectedByName,
+  hasLocation,
+  locationName,
+  bannerName,
   isPrivileged,
   notice,
 }: {
   connected: boolean;
   connectedByName: string | null;
+  hasLocation: boolean;
+  locationName: string | null;
+  bannerName: string;
   isPrivileged: boolean;
   notice: { kind: "connected" | "error"; message: string } | null;
 }) {
@@ -25,7 +31,7 @@ export default function KrogerConnectionPanel({
   return (
     <section className="mt-8 pt-6 border-t border-border">
       <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">
-        Kroger / King Soopers
+        {connected ? bannerName : "Kroger"}
       </h2>
 
       {notice && (
@@ -35,19 +41,47 @@ export default function KrogerConnectionPanel({
       )}
 
       {connected ? (
-        <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm">
-          <span>
-            Connected{connectedByName ? ` by ${connectedByName}` : ""}
-          </span>
-          {isPrivileged && (
-            <button
-              type="button"
-              onClick={handleDisconnect}
-              disabled={isPending}
-              className="text-ink-light hover:text-red text-xs cursor-pointer disabled:opacity-50"
-            >
-              Disconnect
-            </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm">
+            <span>Connected{connectedByName ? ` by ${connectedByName}` : ""}</span>
+            {isPrivileged && (
+              <button
+                type="button"
+                onClick={handleDisconnect}
+                disabled={isPending}
+                className="text-ink-light hover:text-red text-xs cursor-pointer disabled:opacity-50"
+              >
+                Disconnect
+              </button>
+            )}
+          </div>
+
+          {hasLocation ? (
+            <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm">
+              <span>Store: {locationName}</span>
+              {isPrivileged && (
+                <a
+                  href="/account/kroger-location?returnTo=/account/household"
+                  className="text-ink-light hover:text-teal text-xs"
+                >
+                  Change
+                </a>
+              )}
+            </div>
+          ) : isPrivileged ? (
+            <div className="flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2 text-sm">
+              <span className="text-ink-light">No store selected yet</span>
+              <a
+                href="/account/kroger-location?returnTo=/account/household"
+                className="text-teal text-xs font-medium"
+              >
+                Choose store
+              </a>
+            </div>
+          ) : (
+            <p className="text-sm text-ink-light">
+              No store selected yet — ask an owner or manager to finish setup.
+            </p>
           )}
         </div>
       ) : isPrivileged ? (

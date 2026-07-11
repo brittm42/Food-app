@@ -6,6 +6,11 @@ const KROGER_TOKEN_URL = "https://api.kroger.com/v1/connect/oauth2/token";
 // process-wide token is fine here since it isn't tied to any household;
 // cached in memory only, nothing to persist.
 let cached: { accessToken: string; expiresAt: number } | null = null;
+// The review screen fires many concurrent searchProduct calls, each of
+// which asks for a token — without sharing the in-flight request, a cold
+// cache would fire a dozen-plus simultaneous token requests, which is both
+// wasteful and risks tripping Kroger's rate limiting/bot-mitigation edge.
+let inFlight: Promise<string> | null = null;
 
 function getClientCredentials(): { clientId: string; clientSecret: string } {
   const clientId = process.env.KROGER_CLIENT_ID;
@@ -20,28 +25,37 @@ export async function getProductsAccessToken(): Promise<string> {
   if (cached && cached.expiresAt - Date.now() > 60_000) {
     return cached.accessToken;
   }
+  if (inFlight) return inFlight;
 
-  const { clientId, clientSecret } = getClientCredentials();
-  const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  inFlight = (async () => {
+    const { clientId, clientSecret } = getClientCredentials();
+    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-  const response = await fetch(KROGER_TOKEN_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "client_credentials",
-      scope: "product.compact",
-    }).toString(),
-  });
+    const response = await fetch(KROGER_TOKEN_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+        scope: "product.compact",
+      }).toString(),
+    });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Kroger products token request failed (${response.status}): ${text}`);
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Kroger products token request failed (${response.status}): ${text}`);
+    }
+
+    const data: { access_token: string; expires_in: number } = await response.json();
+    cached = { accessToken: data.access_token, expiresAt: Date.now() + data.expires_in * 1000 };
+    return cached.accessToken;
+  })();
+
+  try {
+    return await inFlight;
+  } finally {
+    inFlight = null;
   }
-
-  const data: { access_token: string; expires_in: number } = await response.json();
-  cached = { accessToken: data.access_token, expiresAt: Date.now() + data.expires_in * 1000 };
-  return cached.accessToken;
 }

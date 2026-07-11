@@ -12,6 +12,7 @@ export type ReviewItem = {
   neededUnit: string | null;
   note: string | null;
   candidates: KrogerProductMatch[];
+  searchFailed: boolean;
   selectedUpc: string | null;
   quantity: number;
   sourceChecklistKey: string | null;
@@ -25,12 +26,13 @@ export type ReviewItem = {
 // Action, since nothing here is triggered by a client-side event.
 export async function buildReviewItems(
   supabase: SupabaseClient,
-  householdId: string
+  householdId: string,
+  locationId: string | null
 ): Promise<{ items: ReviewItem[] } | { error: string }> {
   const data = await getShoppingListData(supabase, householdId);
   if ("error" in data) return { error: data.error };
 
-  type Eligible = Omit<ReviewItem, "reviewId" | "candidates" | "selectedUpc" | "quantity">;
+  type Eligible = Omit<ReviewItem, "reviewId" | "candidates" | "searchFailed" | "selectedUpc" | "quantity">;
   const eligible: Eligible[] = [];
 
   for (const [section, groups] of [
@@ -70,15 +72,24 @@ export async function buildReviewItems(
   if (eligible.length === 0) return { items: [] };
 
   const candidatesByIndex = await Promise.all(
-    eligible.map((item) =>
-      searchProduct(item.label, 3).catch(() => [] as KrogerProductMatch[])
-    )
+    eligible.map(async (item) => {
+      try {
+        return { candidates: await searchProduct(item.label, 3, locationId), searchFailed: false };
+      } catch (err) {
+        // A real API/network failure is a different situation from Kroger
+        // genuinely having no match — logged so it's visible in server
+        // logs instead of silently looking identical to "no product exists."
+        console.error(`Kroger product search failed for "${item.label}":`, err);
+        return { candidates: [] as KrogerProductMatch[], searchFailed: true };
+      }
+    })
   );
 
   const withIds = eligible.map((item, i) => ({
     ...item,
     reviewId: `item-${i}`,
-    candidates: candidatesByIndex[i],
+    candidates: candidatesByIndex[i].candidates,
+    searchFailed: candidatesByIndex[i].searchFailed,
   }));
 
   const quantities = await estimateQuantities(

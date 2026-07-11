@@ -48,9 +48,13 @@ export async function GET(request: NextRequest) {
     return redirectWithError(request, returnTo, "Kroger connection failed. Please try again.");
   }
 
-  const url = new URL(returnTo, request.url);
-  url.searchParams.set("kroger", "connected");
-  const response = NextResponse.redirect(url);
+  // Picking a store is mandatory, not optional — without it, Products
+  // search only returns generic catalog data with no real price or
+  // availability (confirmed live). Route through choose-store first; it
+  // redirects to the original returnTo once a location's picked.
+  const locationUrl = new URL("/account/kroger-location", request.url);
+  locationUrl.searchParams.set("returnTo", `${returnTo}${returnTo.includes("?") ? "&" : "?"}kroger=connected`);
+  const response = NextResponse.redirect(locationUrl);
   response.cookies.delete(STATE_COOKIE);
   return response;
 }

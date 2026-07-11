@@ -63,15 +63,44 @@ function buildPrompt(items: QuantityEstimateInput[]): string {
   ].join("\n");
 }
 
+// The review screen re-estimates the same recurring items on every load —
+// cache by content (not by the caller's ephemeral reviewId, which changes
+// every call) so a repeat load with the same ingredient/match skips the AI
+// call entirely, same reasoning as lib/kroger/products.ts's search cache.
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const cache = new Map<string, { quantity: number; expiresAt: number }>();
+
+function cacheKeyFor(item: QuantityEstimateInput): string {
+  return JSON.stringify([
+    item.label.trim().toLowerCase(),
+    item.neededValue,
+    item.neededUnit,
+    item.note,
+    item.matchedProductDescription,
+  ]);
+}
+
 // Fails open to quantity 1 for every item on any error — a safe, always-
 // reviewable default beats blocking the whole review screen on an AI call.
 export async function estimateQuantities(
   items: QuantityEstimateInput[]
 ): Promise<Record<string, number>> {
-  const fallback = Object.fromEntries(items.map((item) => [item.id, 1]));
+  const result: Record<string, number> = Object.fromEntries(items.map((item) => [item.id, 1]));
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || items.length === 0) return fallback;
+  if (!apiKey || items.length === 0) return result;
+
+  const now = Date.now();
+  const uncached: QuantityEstimateInput[] = [];
+  for (const item of items) {
+    const hit = cache.get(cacheKeyFor(item));
+    if (hit && hit.expiresAt > now) {
+      result[item.id] = hit.quantity;
+    } else {
+      uncached.push(item);
+    }
+  }
+  if (uncached.length === 0) return result;
 
   try {
     const client = new Anthropic({ apiKey });
@@ -80,24 +109,28 @@ export async function estimateQuantities(
       max_tokens: 1024,
       tools: [buildTool()],
       tool_choice: { type: "tool", name: "estimate_kroger_quantities" },
-      messages: [{ role: "user", content: buildPrompt(items) }],
+      messages: [{ role: "user", content: buildPrompt(uncached) }],
     });
 
     const toolUse = message.content.find((block) => block.type === "tool_use");
-    if (!toolUse || toolUse.type !== "tool_use") return fallback;
+    if (!toolUse || toolUse.type !== "tool_use") return result;
 
     const estimates = (toolUse.input as { estimates?: { id: string; quantity: number }[] })
       .estimates;
-    if (!Array.isArray(estimates)) return fallback;
+    if (!Array.isArray(estimates)) return result;
 
-    const result = { ...fallback };
+    const uncachedById = new Map(uncached.map((item) => [item.id, item]));
     for (const estimate of estimates) {
       if (typeof estimate.id === "string" && Number.isInteger(estimate.quantity) && estimate.quantity > 0) {
         result[estimate.id] = estimate.quantity;
+        const item = uncachedById.get(estimate.id);
+        if (item) {
+          cache.set(cacheKeyFor(item), { quantity: estimate.quantity, expiresAt: now + CACHE_TTL_MS });
+        }
       }
     }
     return result;
   } catch {
-    return fallback;
+    return result;
   }
 }

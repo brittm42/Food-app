@@ -24,7 +24,10 @@ export default async function HouseholdSectionPage({
   const notice = params.kroger_error
     ? ({ kind: "error", message: params.kroger_error } as const)
     : params.kroger === "connected"
-      ? ({ kind: "connected", message: "Kroger connected." } as const)
+      ? ({
+          kind: "connected",
+          message: `${krogerStatus.connected ? krogerStatus.bannerName : "Kroger"} connected.`,
+        } as const)
       : null;
 
   return (
@@ -40,6 +43,9 @@ export default async function HouseholdSectionPage({
       <KrogerConnectionPanel
         connected={krogerStatus.connected}
         connectedByName={krogerStatus.connected ? krogerStatus.connectedByName : null}
+        hasLocation={krogerStatus.connected ? krogerStatus.hasLocation : false}
+        locationName={krogerStatus.connected ? krogerStatus.locationName : null}
+        bannerName={krogerStatus.connected ? krogerStatus.bannerName : "Kroger"}
         isPrivileged={isPrivileged(role)}
         notice={notice}
       />
