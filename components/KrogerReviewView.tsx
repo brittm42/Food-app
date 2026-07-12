@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Collapsible from "@/components/Collapsible";
-import { sendToKroger } from "@/app/actions/kroger-send";
+import { sendToKroger, setFavoriteProduct, removeFavoriteProduct } from "@/app/actions/kroger-send";
 import type { ReviewItem } from "@/lib/kroger/review";
 
 type LocalItem = ReviewItem & { included: boolean };
@@ -125,6 +125,24 @@ function ReviewRow({
   onChange: (patch: Partial<LocalItem>) => void;
 }) {
   const hasMatch = row.candidates.length > 0;
+  const [isPending, startTransition] = useTransition();
+  const isFavorite = row.favoriteUpc != null && row.favoriteUpc === row.selectedUpc;
+
+  function toggleFavorite() {
+    const selected = row.candidates.find((c) => c.upc === row.selectedUpc);
+    if (!selected) return;
+    if (isFavorite) {
+      onChange({ favoriteUpc: null });
+      startTransition(() => {
+        removeFavoriteProduct(row.label);
+      });
+    } else {
+      onChange({ favoriteUpc: selected.upc });
+      startTransition(() => {
+        setFavoriteProduct(row.label, selected.upc, selected.description, selected.brand);
+      });
+    }
+  }
 
   return (
     <div className="bg-surface border border-border rounded-lg px-3 py-2.5 flex flex-col gap-2">
@@ -152,7 +170,7 @@ function ReviewRow({
             value={row.selectedUpc ?? ""}
             onChange={(e) => onChange({ selectedUpc: e.target.value })}
             disabled={!row.included}
-            className="flex-1 border border-border rounded-lg px-2 py-1.5 text-xs bg-surface focus:outline-none focus:border-teal disabled:opacity-50"
+            className="flex-1 min-w-0 border border-border rounded-lg px-2 py-1.5 text-xs bg-surface focus:outline-none focus:border-teal disabled:opacity-50"
           >
             {row.candidates.map((c) => (
               <option key={c.upc} value={c.upc}>
@@ -161,6 +179,17 @@ function ReviewRow({
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={toggleFavorite}
+            disabled={!row.included || isPending}
+            aria-label={isFavorite ? `Unfavorite ${row.label}` : `Favorite this ${row.label} pick`}
+            className={`w-6 h-6 rounded text-xs cursor-pointer flex-shrink-0 flex items-center justify-center transition-colors disabled:opacity-50 ${
+              isFavorite ? "text-gold" : "border border-border text-ink-light hover:border-gold hover:text-gold"
+            }`}
+          >
+            {isFavorite ? "★" : "☆"}
+          </button>
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               type="button"

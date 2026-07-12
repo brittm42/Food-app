@@ -41,7 +41,8 @@ export async function toggleChecked(itemKey: string) {
 export async function createPantryItem(
   name: string,
   qty: number | null = null,
-  unit: string | null = null
+  unit: string | null = null,
+  note: string | null = null
 ) {
   const trimmed = name.trim();
   if (!trimmed) return { error: "Enter an item name." };
@@ -62,6 +63,7 @@ export async function createPantryItem(
     on_hand_unit: fresh ? null : unit,
     target_qty: fresh ? qty : null,
     target_unit: fresh ? unit : null,
+    note: note?.trim() || null,
     in_stock: true,
   });
 
@@ -212,6 +214,26 @@ export async function addPantryItemToShoppingList(id: string) {
     source_pantry_item_id: item.id,
   });
   if (error) return { error: error.message };
+
+  revalidatePath("/kitchen");
+  revalidatePath("/shopping");
+  return {};
+}
+
+// Undoes addPantryItemToShoppingList — tapping the "already on the list"
+// checkmark removes the linked shopping_items row so a mistaken add is
+// reversible, same as Fresh's markPantryItemInStock does for its own flow.
+export async function removePantryItemFromShoppingList(id: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+
+  const supabase = await createClient();
+
+  await supabase
+    .from("shopping_items")
+    .delete()
+    .eq("household_id", household.householdId)
+    .eq("source_pantry_item_id", id);
 
   revalidatePath("/kitchen");
   revalidatePath("/shopping");

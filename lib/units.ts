@@ -32,6 +32,7 @@ const UNIT_DEFS: Record<string, UnitDef> = {
   whole: { dimension: "count", toBase: 1 },
   package: { dimension: "count", toBase: 1 },
   bunch: { dimension: "count", toBase: 1 },
+  count: { dimension: "count", toBase: 1 },
 };
 
 // Explicit synonym/plural lookup — not generic pluralization rules, since
@@ -70,6 +71,7 @@ const UNIT_SYNONYMS: Record<string, string> = {
   pack: "package",
   packs: "package",
   bunches: "bunch",
+  counts: "count",
 };
 
 // Vague-but-physically-estimable quantities get a small fixed

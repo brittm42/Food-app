@@ -78,6 +78,55 @@ function normalizeIngredientName(name: string) {
   return name.trim().toLowerCase();
 }
 
+// Pins a specific Kroger product as the household's default pick for an
+// ingredient — the review screen (lib/kroger/review.ts's buildReviewItems)
+// pre-selects this instead of Kroger's own top-search-relevance result from
+// then on. Still just the default: the swap dropdown stays fully populated,
+// so any individual order can still pick something else. Household-scoped,
+// not per-person — matches the Kroger connection itself being shared.
+export async function setFavoriteProduct(
+  ingredientName: string,
+  upc: string,
+  description: string,
+  brand: string | null
+) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("kroger_favorite_products").upsert(
+    {
+      household_id: household.householdId,
+      ingredient_name: normalizeIngredientName(ingredientName),
+      upc,
+      description,
+      brand,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "household_id,ingredient_name" }
+  );
+  if (error) return { error: error.message };
+
+  revalidatePath("/shopping/send-to-kroger");
+  return {};
+}
+
+export async function removeFavoriteProduct(ingredientName: string) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("kroger_favorite_products")
+    .delete()
+    .eq("household_id", household.householdId)
+    .eq("ingredient_name", normalizeIngredientName(ingredientName));
+  if (error) return { error: error.message };
+
+  revalidatePath("/shopping/send-to-kroger");
+  return {};
+}
+
 // "Mark order picked up" — the groceries have actually arrived, so this is
 // where reconciliation actually runs (sending ≠ having; see
 // kroger_cart_integration memory for why that split exists). Mirrors

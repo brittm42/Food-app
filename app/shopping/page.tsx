@@ -35,7 +35,6 @@ export default async function ShoppingPage() {
       pantry={data.pantry}
       hasQueue={data.hasQueue}
       krogerConnected={krogerStatus.connected}
-      krogerBannerName={krogerStatus.connected ? krogerStatus.bannerName : "Kroger"}
       hasEligibleItems={hasEligibleItems}
       hasSentItems={hasSentItems}
     />

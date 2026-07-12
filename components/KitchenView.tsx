@@ -5,6 +5,7 @@ import {
   deletePantryItem,
   createPantryItem,
   addPantryItemToShoppingList,
+  removePantryItemFromShoppingList,
   flagPantryItemNeeded,
   markPantryItemInStock,
 } from "@/app/actions/pantry";
@@ -54,7 +55,7 @@ function groupByCategory(items: PantryItem[]) {
   }));
 }
 
-function PantryItemRow({ item, isPending }: { item: PantryItem; isPending: boolean }) {
+function PantryItemRow({ item, isPending, onList }: { item: PantryItem; isPending: boolean; onList: boolean }) {
   const [editing, setEditing] = useState(false);
   const [rowPending, startTransition] = useTransition();
   const line = stockLine(item, false);
@@ -77,13 +78,21 @@ function PantryItemRow({ item, isPending }: { item: PantryItem; isPending: boole
             disabled={disabled}
             onClick={() =>
               startTransition(() => {
-                addPantryItemToShoppingList(item.id);
+                if (onList) {
+                  removePantryItemFromShoppingList(item.id);
+                } else {
+                  addPantryItemToShoppingList(item.id);
+                }
               })
             }
-            aria-label={`Add ${item.name} to shopping list`}
-            className="w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 bg-surface-warm text-ink-light hover:bg-gold-light"
+            aria-label={onList ? `Remove ${item.name} from shopping list` : `Add ${item.name} to shopping list`}
+            className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
+              onList
+                ? "bg-gold text-white"
+                : "border border-border text-ink-light hover:border-gold hover:bg-gold-light"
+            }`}
           >
-            +
+            {onList ? "✓" : "+"}
           </button>
         </div>
       </SwipeableRow>
@@ -125,7 +134,7 @@ function FreshItemRow({ item, isPending }: { item: PantryItem; isPending: boolea
             }}
             className={`flex-shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium cursor-pointer transition-colors disabled:opacity-50 ${
               item.in_stock
-                ? "bg-surface-warm text-ink-light hover:bg-gold-light"
+                ? "border border-border text-ink-light hover:border-gold hover:bg-gold-light"
                 : "bg-gold-light text-ink"
             }`}
           >
@@ -156,7 +165,7 @@ function FlagNeededSheet({ item, onClose }: { item: PantryItem; onClose: () => v
   }
 
   return (
-    <div className="fixed inset-0 bg-ink/40 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-x-0 top-0 h-dvh bg-ink/40 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-surface rounded-t-xl sm:rounded-xl p-4 w-full sm:max-w-xs flex flex-col gap-4"
@@ -208,23 +217,25 @@ function AddKitchenItemButton() {
   const [name, setName] = useState("");
   const [qty, setQty] = useState("");
   const [unit, setUnit] = useState("");
+  const [note, setNote] = useState("");
   const [isPending, startTransition] = useTransition();
 
   function submit(close: () => void) {
     const trimmed = name.trim();
     if (!trimmed) return;
     startTransition(() => {
-      createPantryItem(trimmed, qty.trim() ? Number(qty) : null, unit || null);
+      createPantryItem(trimmed, qty.trim() ? Number(qty) : null, unit || null, note || null);
     });
     setName("");
     setQty("");
     setUnit("");
+    setNote("");
     close();
   }
 
   return (
     <QuickAddModal
-      triggerAriaLabel="Add an item to the Kitchen"
+      triggerAriaLabel="Add an item to My Kitchen"
       headerLabel="Add an item"
       submitDisabled={isPending}
       onSubmit={submit}
@@ -259,13 +270,27 @@ function AddKitchenItemButton() {
           ))}
         </select>
       </div>
+      <input
+        type="text"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="Note (brand, store, dietary…) — optional"
+        className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+      />
       <p className="text-[11px] text-ink-light">It&apos;ll be sorted into Fresh or Pantry automatically.</p>
     </QuickAddModal>
   );
 }
 
-export default function KitchenView({ items }: { items: PantryItem[] }) {
+export default function KitchenView({
+  items,
+  onShoppingListIds,
+}: {
+  items: PantryItem[];
+  onShoppingListIds: string[];
+}) {
   const [isPending] = useTransition();
+  const onListSet = new Set(onShoppingListIds);
 
   const freshItems = items.filter((i) => isFreshCategory(i.category));
   const pantryItems = items.filter((i) => !isFreshCategory(i.category));
@@ -275,11 +300,11 @@ export default function KitchenView({ items }: { items: PantryItem[] }) {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-xl font-light">Kitchen</h1>
+        <h1 className="font-display text-xl font-light">My Kitchen</h1>
         <AddKitchenItemButton />
       </div>
 
-      <Collapsible title="Fresh" subtitle="Perishables — just in stock or not. Flag it when you need more.">
+      <Collapsible level="section" title="Fresh" subtitle="Perishables — just in stock or not. Flag it when you need more.">
         <div className="flex flex-col gap-5">
           {freshByCategory.map((group) => (
             <Collapsible key={group.category} title={group.category}>
@@ -294,13 +319,13 @@ export default function KitchenView({ items }: { items: PantryItem[] }) {
         </div>
       </Collapsible>
 
-      <Collapsible title="Pantry" subtitle="Shelf-stable — tracked on-hand vs. target.">
+      <Collapsible level="section" title="Pantry" subtitle="Shelf-stable — tracked on-hand vs. target.">
         <div className="flex flex-col gap-5">
           {pantryByCategory.map((group) => (
             <Collapsible key={group.category} title={group.category}>
               <div className="flex flex-col gap-1.5">
                 {group.items.map((item) => (
-                  <PantryItemRow key={item.id} item={item} isPending={isPending} />
+                  <PantryItemRow key={item.id} item={item} isPending={isPending} onList={onListSet.has(item.id)} />
                 ))}
               </div>
             </Collapsible>

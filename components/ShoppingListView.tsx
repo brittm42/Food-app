@@ -35,7 +35,6 @@ export default function ShoppingListView({
   pantry,
   hasQueue,
   krogerConnected,
-  krogerBannerName,
   hasEligibleItems,
   hasSentItems,
 }: {
@@ -43,7 +42,6 @@ export default function ShoppingListView({
   pantry: CategoryGroup[];
   hasQueue: boolean;
   krogerConnected: boolean;
-  krogerBannerName: string;
   hasEligibleItems: boolean;
   hasSentItems: boolean;
 }) {
@@ -110,9 +108,9 @@ export default function ShoppingListView({
           {hasEligibleItems && (
             <Link
               href={krogerConnected ? "/shopping/send-to-kroger" : "/api/kroger/connect?returnTo=/shopping/send-to-kroger"}
-              className="flex-1 text-center bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium"
+              className="flex-1 sm:flex-none sm:w-64 flex items-center justify-center gap-1.5 text-center bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium"
             >
-              Send to {krogerBannerName}
+              <span aria-hidden="true">🛒</span> Add to my cart
             </Link>
           )}
           {hasSentItems && (
@@ -120,7 +118,7 @@ export default function ShoppingListView({
               type="button"
               onClick={handlePickedUp}
               disabled={isPending}
-              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
+              className="flex-1 sm:flex-none sm:w-64 border border-border rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
             >
               Mark order picked up
             </button>
@@ -148,7 +146,7 @@ export default function ShoppingListView({
         </div>
       )}
 
-      <Collapsible title="Fresh">
+      <Collapsible level="section" title="Fresh">
         <div className="flex flex-col gap-4">
           {fresh.map((group) => (
             <Collapsible key={group.category} title={group.category}>
@@ -164,7 +162,7 @@ export default function ShoppingListView({
         </div>
       </Collapsible>
 
-      <Collapsible title="Pantry">
+      <Collapsible level="section" title="Pantry">
         <div className="flex flex-col gap-4">
           {pantry.map((group) => (
             <Collapsible key={group.category} title={group.category}>
@@ -178,7 +176,7 @@ export default function ShoppingListView({
           ))}
           {!hasPantry && (
             <p className="text-xs text-ink-light">
-              Nothing on your list — use the + button above to add something, or tap &ldquo;Need to buy&rdquo; on a Kitchen item to restock it.
+              Nothing on your list — use the + button above to add something, or tap &ldquo;Need to buy&rdquo; on a My Kitchen item to restock it.
             </p>
           )}
         </div>
@@ -262,7 +260,7 @@ function ShoppingItemSheet({ item, onClose }: { item: ShoppingItem; onClose: () 
   }
 
   return (
-    <div className="fixed inset-0 bg-ink/40 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-x-0 top-0 h-dvh bg-ink/40 flex items-end sm:items-center justify-center z-50" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-surface rounded-t-xl sm:rounded-xl p-4 w-full sm:max-w-xs flex flex-col gap-4"

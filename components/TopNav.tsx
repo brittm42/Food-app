@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Recipes" },
   { href: "/this-week", label: "This Week" },
   { href: "/shopping", label: "Shopping" },
-  { href: "/kitchen", label: "Kitchen" },
+  { href: "/kitchen", label: "My Kitchen" },
   { href: "/add", label: "+ Add Recipe" },
 ];
 

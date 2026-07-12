@@ -11,7 +11,7 @@ export default async function KitchenPage() {
 
   const supabase = await createClient();
 
-  const [{ data: items, error }, { data: onHandRows }, { data: queue }] = await Promise.all([
+  const [{ data: items, error }, { data: onHandRows }, { data: queue }, { data: sentPantryIds }] = await Promise.all([
     supabase
       .from("pantry_items")
       .select("*")
@@ -25,6 +25,11 @@ export default async function KitchenPage() {
       .from("week_queue")
       .select("recipe:recipes(ingredients)")
       .eq("household_id", household.householdId),
+    supabase
+      .from("shopping_items")
+      .select("source_pantry_item_id")
+      .eq("household_id", household.householdId)
+      .not("source_pantry_item_id", "is", null),
   ]);
 
   if (error) {
@@ -76,5 +81,9 @@ export default async function KitchenPage() {
     if (inserted) allItems = [...allItems, ...inserted];
   }
 
-  return <KitchenView items={allItems} />;
+  const onShoppingListIds = new Set(
+    (sentPantryIds ?? []).map((row) => row.source_pantry_item_id as string)
+  );
+
+  return <KitchenView items={allItems} onShoppingListIds={[...onShoppingListIds]} />;
 }

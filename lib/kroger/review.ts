@@ -14,10 +14,15 @@ export type ReviewItem = {
   candidates: KrogerProductMatch[];
   searchFailed: boolean;
   selectedUpc: string | null;
+  favoriteUpc: string | null;
   quantity: number;
   sourceChecklistKey: string | null;
   sourceShoppingItemId: string | null;
 };
+
+function normalizeIngredientName(name: string) {
+  return name.trim().toLowerCase();
+}
 
 // Builds the review screen's data: everything currently eligible to send
 // (unchecked checklist entries + un-sent shopping_items rows) matched
@@ -71,26 +76,54 @@ export async function buildReviewItems(
 
   if (eligible.length === 0) return { items: [] };
 
-  const candidatesByIndex = await Promise.all(
-    eligible.map(async (item) => {
-      try {
-        return { candidates: await searchProduct(item.label, 3, locationId), searchFailed: false };
-      } catch (err) {
-        // A real API/network failure is a different situation from Kroger
-        // genuinely having no match — logged so it's visible in server
-        // logs instead of silently looking identical to "no product exists."
-        console.error(`Kroger product search failed for "${item.label}":`, err);
-        return { candidates: [] as KrogerProductMatch[], searchFailed: true };
-      }
-    })
+  const [candidatesByIndex, { data: favoriteRows }] = await Promise.all([
+    Promise.all(
+      eligible.map(async (item) => {
+        try {
+          return { candidates: await searchProduct(item.label, 8, locationId), searchFailed: false };
+        } catch (err) {
+          // A real API/network failure is a different situation from Kroger
+          // genuinely having no match — logged so it's visible in server
+          // logs instead of silently looking identical to "no product exists."
+          console.error(`Kroger product search failed for "${item.label}":`, err);
+          return { candidates: [] as KrogerProductMatch[], searchFailed: true };
+        }
+      })
+    ),
+    supabase
+      .from("kroger_favorite_products")
+      .select("ingredient_name, upc, description, brand")
+      .eq("household_id", householdId),
+  ]);
+
+  const favoritesByName = new Map(
+    (favoriteRows ?? []).map((row) => [
+      row.ingredient_name as string,
+      { upc: row.upc as string, description: row.description as string, brand: row.brand as string | null },
+    ])
   );
 
-  const withIds = eligible.map((item, i) => ({
-    ...item,
-    reviewId: `item-${i}`,
-    candidates: candidatesByIndex[i].candidates,
-    searchFailed: candidatesByIndex[i].searchFailed,
-  }));
+  const withIds = eligible.map((item, i) => {
+    const favorite = favoritesByName.get(normalizeIngredientName(item.label));
+    let candidates = candidatesByIndex[i].candidates;
+
+    // A favorited product might not appear in today's top search results
+    // (ranking shifts, discontinued size, etc.) — inject it as a synthetic
+    // candidate from the cached description/brand so it's always
+    // selectable and always the default, rather than silently falling back
+    // to the AI's top pick when the favorite happens to be missing.
+    if (favorite && !candidates.some((c) => c.upc === favorite.upc)) {
+      candidates = [{ upc: favorite.upc, description: favorite.description, brand: favorite.brand }, ...candidates];
+    }
+
+    return {
+      ...item,
+      reviewId: `item-${i}`,
+      candidates,
+      searchFailed: candidatesByIndex[i].searchFailed,
+      favoriteUpc: favorite?.upc ?? null,
+    };
+  });
 
   const quantities = await estimateQuantities(
     withIds.map((item) => ({
@@ -105,7 +138,7 @@ export async function buildReviewItems(
 
   const items: ReviewItem[] = withIds.map((item) => ({
     ...item,
-    selectedUpc: item.candidates[0]?.upc ?? null,
+    selectedUpc: item.favoriteUpc ?? item.candidates[0]?.upc ?? null,
     quantity: quantities[item.reviewId] ?? 1,
   }));
 
