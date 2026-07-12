@@ -37,7 +37,7 @@ export async function buildReviewItems(
   const data = await getShoppingListData(supabase, householdId);
   if ("error" in data) return { error: data.error };
 
-  type Eligible = Omit<ReviewItem, "reviewId" | "candidates" | "searchFailed" | "selectedUpc" | "quantity">;
+  type Eligible = Omit<ReviewItem, "reviewId" | "candidates" | "searchFailed" | "selectedUpc" | "quantity" | "favoriteUpc">;
   const eligible: Eligible[] = [];
 
   for (const [section, groups] of [
