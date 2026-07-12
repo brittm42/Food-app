@@ -11,17 +11,22 @@ import {
   TAG_COLOR_CLASSES,
 } from "@/lib/types";
 import { createRecipe, updateRecipe, createTagColor, type RecipeInput } from "@/app/actions/recipes";
-import { generateRecipeDraft } from "@/app/actions/generate-recipe";
+import { generateRecipeDraft, type ChatTurn } from "@/app/actions/generate-recipe";
 import { parseNumericQuantity } from "@/lib/units";
+
+type ChatMessage = { role: "user" | "assistant"; text: string };
 
 const CHIP_BASE =
   "font-mono text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors";
 const CHIP_ACTIVE = "bg-ink text-white border-ink";
 const CHIP_INACTIVE = "bg-surface text-ink-light border-border hover:bg-surface-warm";
 
-const INPUT_CLASS =
-  "border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal w-full";
+const INPUT_BASE =
+  "border border-border rounded-lg px-3 py-2 text-sm bg-surface focus:outline-none focus:border-teal";
+const INPUT_CLASS = `${INPUT_BASE} w-full`;
 const LABEL_CLASS = "block font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1";
+const SECTION_CLASS = "bg-surface border border-border rounded-xl p-4 flex flex-col gap-4";
+const SECTION_TITLE_CLASS = "font-mono text-[11px] uppercase tracking-wide text-ink-light";
 
 type FormIngredient = { name: string; core: boolean; quantity: string; unit: string };
 
@@ -120,6 +125,8 @@ export default function RecipeForm({
   const [localTagColors, setLocalTagColors] = useState(tagColors);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [apiHistory, setApiHistory] = useState<ChatTurn[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState<string>(TAG_COLOR_OPTIONS[0]);
@@ -197,10 +204,14 @@ export default function RecipeForm({
     setNewTagName("");
   }
 
-  function handleGenerate() {
+  function handleSendPrompt() {
+    const prompt = aiPrompt.trim();
+    if (!prompt) return;
     setAiError(null);
+    setChatMessages((m) => [...m, { role: "user", text: prompt }]);
+    setAiPrompt("");
     startGenerating(async () => {
-      const result = await generateRecipeDraft(aiPrompt);
+      const result = await generateRecipeDraft(prompt, apiHistory);
       if (result.error) {
         setAiError(result.error);
         return;
@@ -208,8 +219,20 @@ export default function RecipeForm({
       if (result.recipe) {
         setForm(formFromRecipe(result.recipe));
         setIsAiGenerated(true);
+        setApiHistory(result.history ?? []);
+        setChatMessages((m) => [
+          ...m,
+          { role: "assistant", text: result.changeSummary ?? "Here's a first draft — review and edit below." },
+        ]);
       }
     });
+  }
+
+  function handleResetChat() {
+    setChatMessages([]);
+    setApiHistory([]);
+    setAiPrompt("");
+    setAiError(null);
   }
 
   function handleSave() {
@@ -237,23 +260,59 @@ export default function RecipeForm({
       </h1>
 
       <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
-        <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
-          Generate with AI
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
+            {chatMessages.length === 0 ? "Generate with AI" : "AI recipe chat"}
+          </div>
+          {chatMessages.length > 0 && (
+            <button
+              type="button"
+              onClick={handleResetChat}
+              className="font-mono text-[10px] text-ink-light hover:text-coral cursor-pointer"
+            >
+              Start over
+            </button>
+          )}
         </div>
+        {chatMessages.length > 0 && (
+          <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">
+            {chatMessages.map((m, i) => (
+              <div
+                key={i}
+                className={`text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] ${
+                  m.role === "user"
+                    ? "bg-ink text-white self-end"
+                    : "bg-surface text-ink self-start border border-border"
+                }`}
+              >
+                {m.text}
+              </div>
+            ))}
+            {isGenerating && (
+              <div className="text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] bg-surface text-ink-light self-start border border-border">
+                Thinking…
+              </div>
+            )}
+          </div>
+        )}
         <textarea
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
-          placeholder="Describe the recipe idea — craving, key ingredients, cuisine..."
+          placeholder={
+            chatMessages.length === 0
+              ? "Describe the recipe idea — craving, key ingredients, cuisine..."
+              : "Ask for a change — \"make it vegetarian\", \"double it\"..."
+          }
           rows={2}
           className={INPUT_CLASS}
         />
         <button
           type="button"
-          disabled={isGenerating}
-          onClick={handleGenerate}
+          disabled={isGenerating || !aiPrompt.trim()}
+          onClick={handleSendPrompt}
           className="bg-plum text-white rounded-lg py-2 text-sm font-medium cursor-pointer disabled:opacity-50 self-start px-4"
         >
-          {isGenerating ? "Drafting…" : "✨ Generate with AI"}
+          {isGenerating ? "Thinking…" : chatMessages.length === 0 ? "✨ Generate with AI" : "Send"}
         </button>
         {aiError && <p className="text-sm text-red">{aiError}</p>}
       </section>
@@ -264,75 +323,78 @@ export default function RecipeForm({
         </div>
       )}
 
-      <div className="flex flex-col gap-1">
-        <label className={LABEL_CLASS}>Name</label>
-        <input
-          className={INPUT_CLASS}
-          value={form.name}
-          onChange={(e) => update("name", e.target.value)}
-        />
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className={LABEL_CLASS}>Category</label>
-        <select
-          className={INPUT_CLASS}
-          value={form.category}
-          onChange={(e) => update("category", e.target.value)}
-        >
-          <option value="" disabled>
-            Select a category…
-          </option>
-          {MEAL_TYPES.map((meal) => (
-            <optgroup key={meal.id} label={meal.label}>
-              {SUB_CATEGORIES[meal.id].map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className={LABEL_CLASS}>Cuisines</label>
-        <div className="flex gap-1.5 flex-wrap">
-          {Object.entries(CUISINE_LABELS).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => toggleCuisine(id)}
-              className={`${CHIP_BASE} ${form.cuisines.includes(id) ? CHIP_ACTIVE : CHIP_INACTIVE}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex gap-3">
-        <div className="flex flex-col gap-1 w-20">
-          <label className={LABEL_CLASS}>Emoji</label>
+      <div className={SECTION_CLASS}>
+        <div className={SECTION_TITLE_CLASS}>Basics</div>
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Name</label>
           <input
             className={INPUT_CLASS}
-            value={form.emoji}
-            onChange={(e) => update("emoji", e.target.value)}
-            maxLength={4}
+            value={form.name}
+            onChange={(e) => update("name", e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-1 flex-1">
-          <label className={LABEL_CLASS}>Hint line</label>
-          <input
+
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Category</label>
+          <select
             className={INPUT_CLASS}
-            value={form.hint}
-            onChange={(e) => update("hint", e.target.value)}
-          />
+            value={form.category}
+            onChange={(e) => update("category", e.target.value)}
+          >
+            <option value="" disabled>
+              Select a category…
+            </option>
+            {MEAL_TYPES.map((meal) => (
+              <optgroup key={meal.id} label={meal.label}>
+                {SUB_CATEGORIES[meal.id].map((sub) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Cuisines</label>
+          <div className="flex gap-1.5 flex-wrap">
+            {Object.entries(CUISINE_LABELS).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => toggleCuisine(id)}
+                className={`${CHIP_BASE} ${form.cuisines.includes(id) ? CHIP_ACTIVE : CHIP_INACTIVE}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex flex-col gap-1 w-20">
+            <label className={LABEL_CLASS}>Emoji</label>
+            <input
+              className={INPUT_CLASS}
+              value={form.emoji}
+              onChange={(e) => update("emoji", e.target.value)}
+              maxLength={4}
+            />
+          </div>
+          <div className="flex flex-col gap-1 flex-1">
+            <label className={LABEL_CLASS}>Hint line</label>
+            <input
+              className={INPUT_CLASS}
+              value={form.hint}
+              onChange={(e) => update("hint", e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className={LABEL_CLASS}>Instructions</label>
+      <div className={SECTION_CLASS}>
+        <div className={SECTION_TITLE_CLASS}>Instructions</div>
         {form.steps.map((step, i) => (
           <div key={i} className="flex gap-2 items-start">
             <span className="font-mono text-[11px] text-ink-light pt-2.5 w-4 flex-shrink-0">
@@ -384,66 +446,69 @@ export default function RecipeForm({
         </button>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className={LABEL_CLASS}>Source (optional)</label>
-        <input
-          className={INPUT_CLASS}
-          value={form.source}
-          onChange={(e) => update("source", e.target.value)}
-          placeholder="Link to where this recipe came from"
-        />
+      <div className={SECTION_CLASS}>
+        <div className={SECTION_TITLE_CLASS}>Details</div>
+        <div className="flex flex-col gap-1">
+          <label className={LABEL_CLASS}>Source (optional)</label>
+          <input
+            className={INPUT_CLASS}
+            value={form.source}
+            onChange={(e) => update("source", e.target.value)}
+            placeholder="Link to where this recipe came from"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Servings</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.servings}
+              onChange={(e) => update("servings", e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Prep time (min)</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.prepTimeMinutes}
+              onChange={(e) => update("prepTimeMinutes", e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Calories</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.cal}
+              onChange={(e) => update("cal", e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Protein (g)</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.protein}
+              onChange={(e) => update("protein", e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Fiber (g)</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.fiber}
+              onChange={(e) => update("fiber", e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Servings</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.servings}
-            onChange={(e) => update("servings", e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Prep time (min)</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.prepTimeMinutes}
-            onChange={(e) => update("prepTimeMinutes", e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Calories</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.cal}
-            onChange={(e) => update("cal", e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Protein (g)</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.protein}
-            onChange={(e) => update("protein", e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className={LABEL_CLASS}>Fiber (g)</label>
-          <input
-            type="number"
-            className={INPUT_CLASS}
-            value={form.fiber}
-            onChange={(e) => update("fiber", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className={LABEL_CLASS}>Tags</label>
+      <div className={SECTION_CLASS}>
+        <div className={SECTION_TITLE_CLASS}>Tags</div>
         <div className="flex gap-1.5 flex-wrap mb-2">
           {localTagColors.map((tc) => (
             <button
@@ -488,18 +553,27 @@ export default function RecipeForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className={LABEL_CLASS}>Ingredients</label>
+      <div className={SECTION_CLASS}>
+        <div className={SECTION_TITLE_CLASS}>Ingredients</div>
+        {form.ingredients.length > 0 && (
+          <div className="flex gap-2 items-center px-0.5 -mb-2">
+            <span className="text-[10px] text-ink-light w-14 flex-shrink-0">Qty</span>
+            <span className="text-[10px] text-ink-light w-20 flex-shrink-0">Unit</span>
+            <span className="text-[10px] text-ink-light flex-1">Name</span>
+            <span className="text-[10px] text-ink-light w-[52px] flex-shrink-0 text-center">Type</span>
+            <span className="w-7 flex-shrink-0" />
+          </div>
+        )}
         {form.ingredients.map((ing, i) => (
           <div key={i} className="flex gap-2 items-center">
             <input
-              className={`${INPUT_CLASS} w-14 flex-shrink-0`}
+              className={`${INPUT_BASE} w-14 flex-shrink-0`}
               value={ing.quantity}
               onChange={(e) => updateIngredientRow(i, { quantity: e.target.value })}
               placeholder="1"
             />
             <input
-              className={`${INPUT_CLASS} w-20 flex-shrink-0`}
+              className={`${INPUT_BASE} w-20 flex-shrink-0`}
               value={ing.unit}
               onChange={(e) => updateIngredientRow(i, { unit: e.target.value })}
               placeholder="cup"
@@ -513,7 +587,7 @@ export default function RecipeForm({
             <button
               type="button"
               onClick={() => updateIngredientRow(i, { core: !ing.core })}
-              className={`${CHIP_BASE} ${ing.core ? CHIP_ACTIVE : CHIP_INACTIVE} flex-shrink-0`}
+              className={`${CHIP_BASE} ${ing.core ? CHIP_ACTIVE : CHIP_INACTIVE} flex-shrink-0 w-[52px] text-center`}
             >
               {ing.core ? "Core" : "Fresh"}
             </button>
