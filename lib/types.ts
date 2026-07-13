@@ -10,7 +10,10 @@ export type Ingredient = {
 
 export type Recipe = {
   id: string;
-  user_id: string | null;
+  household_id: string;
+  created_by: string | null; // who authored/generated the row; attribution only, not ownership — household_id owns it
+  is_public: boolean;
+  imported_from_recipe_id: string | null;
   name: string;
   category: string;
   cuisines: string[];

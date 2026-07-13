@@ -18,6 +18,12 @@ if (!supabaseUrl || !secretKey) {
 
 const supabase = createClient(supabaseUrl, secretKey);
 
+// Mirrors lib/constants.ts's RECIPE_LIBRARY_HOUSEHOLD_ID — kept as a literal
+// here since this plain .mjs script runs outside the Next.js build/TS
+// pipeline. See supabase/recipes-household-ownership.sql for where this
+// reserved household row is created.
+const RECIPE_LIBRARY_HOUSEHOLD_ID = "00000000-0000-0000-0000-000000000001";
+
 const seedData = JSON.parse(readFileSync(seedPath, "utf-8"));
 
 const rows = seedData.recipes.map((r) => ({
@@ -35,14 +41,19 @@ const rows = seedData.recipes.map((r) => ({
   tags: r.tags ?? [],
   ingredients: r.ingredients ?? null,
   is_seed: true,
-  user_id: null,
+  household_id: RECIPE_LIBRARY_HOUSEHOLD_ID,
+  is_public: true,
 }));
 
-// Clear previously seeded rows first so re-running this script is idempotent.
+// Clear previously seeded rows first so re-running this script is
+// idempotent. Scoped to the library household so this can never touch a
+// real household's own recipes, even if one of them happens to be
+// is_seed=true via a future import edge case.
 const { error: deleteError } = await supabase
   .from("recipes")
   .delete()
-  .eq("is_seed", true);
+  .eq("is_seed", true)
+  .eq("household_id", RECIPE_LIBRARY_HOUSEHOLD_ID);
 
 if (deleteError) {
   console.error("Failed to clear existing seed recipes:", deleteError.message);

@@ -6,6 +6,7 @@ import type { RecipeWithRating, TagColor, RatingValue } from "@/lib/types";
 import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
 import { toggleThisWeek } from "@/app/actions/week-queue";
+import { deleteRecipe } from "@/app/actions/recipes";
 import RecipeStepsAndIngredients from "@/components/RecipeStepsAndIngredients";
 
 const CUISINE_BADGE_CLASSES: Record<string, string> = {
@@ -162,13 +163,29 @@ export default function RecipeCard({
               👎
             </button>
             {recipe.editable && (
-              <Link
-                href={`/recipes/${recipe.id}/edit`}
-                aria-label="Edit recipe"
-                className="w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors bg-surface-warm text-ink-light hover:bg-sage-light"
-              >
-                ✏️
-              </Link>
+              <>
+                <Link
+                  href={`/recipes/${recipe.id}/edit`}
+                  aria-label="Edit recipe"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors bg-surface-warm text-ink-light hover:bg-sage-light"
+                >
+                  ✏️
+                </Link>
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => {
+                    if (!window.confirm(`Delete "${recipe.name}"? This can't be undone.`)) return;
+                    startTransition(() => {
+                      deleteRecipe(recipe.id);
+                    });
+                  }}
+                  aria-label="Delete recipe"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors disabled:opacity-50 bg-surface-warm text-ink-light hover:bg-red-light"
+                >
+                  🗑️
+                </button>
+              </>
             )}
           </div>
           <RecipeStepsAndIngredients

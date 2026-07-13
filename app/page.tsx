@@ -12,12 +12,14 @@ export default async function RecipesPage() {
     return <LandingPage />;
   }
 
-  const [{ data: recipes, error }, { data: tagColors }, household] =
-    await Promise.all([
-      supabase.from("recipes").select("*").order("name"),
-      supabase.from("tag_colors").select("*"),
-      getCurrentHousehold(),
-    ]);
+  const household = await getCurrentHousehold();
+
+  const [{ data: recipes, error }, { data: tagColors }] = await Promise.all([
+    household
+      ? supabase.from("recipes").select("*").eq("household_id", household.householdId).order("name")
+      : Promise.resolve({ data: [] as Recipe[], error: null }),
+    supabase.from("tag_colors").select("*"),
+  ]);
 
   if (error) {
     return (
@@ -59,7 +61,7 @@ export default async function RecipesPage() {
     ...(r as Recipe),
     rating: ratingsByRecipe[r.id] ?? null,
     queued: queuedRecipeIds.has(r.id),
-    editable: userData.user != null,
+    editable: true,
   }));
 
   return (
