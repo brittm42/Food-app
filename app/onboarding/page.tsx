@@ -17,6 +17,8 @@ export default async function OnboardingPage() {
         initialAllergies={prefs.allergies}
         initialAvoidFoods={prefs.avoidFoods}
         initialCuisinePreferences={prefs.cuisinePreferences}
+        initialDietaryStyle={prefs.dietaryStyle}
+        initialHealthGoals={prefs.healthGoals}
       />
     </div>
   );

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 import RecipesBrowser from "@/components/RecipesBrowser";
 import LandingPage from "@/components/LandingPage";
-import type { Recipe, RecipeWithRating, RatingValue, TagColor } from "@/lib/types";
+import type { Recipe, RecipeWithRating, RatingValue, TagColor, Allergy } from "@/lib/types";
 
 export default async function RecipesPage() {
   const supabase = await createClient();
@@ -32,8 +32,9 @@ export default async function RecipesPage() {
   let ratingsByRecipe: Record<string, RatingValue> = {};
   let queuedRecipeIds = new Set<string>();
   let pickedFlavorIds: string[] = [];
+  let householdAllergies: Allergy[] = [];
   if (userData.user) {
-    const [{ data: ratings }, { data: queued }, { data: picks }] = await Promise.all([
+    const [{ data: ratings }, { data: queued }, { data: picks }, { data: profiles }] = await Promise.all([
       supabase
         .from("ratings")
         .select("recipe_id, rating")
@@ -49,12 +50,16 @@ export default async function RecipesPage() {
         .select("flavor_id")
         .eq("user_id", userData.user.id)
         .order("picked_at", { ascending: true }),
+      // No explicit household filter — profiles_select's RLS already scopes
+      // this to every profile in the caller's household (self + dependents).
+      supabase.from("profiles").select("allergies"),
     ]);
     ratingsByRecipe = Object.fromEntries(
       (ratings ?? []).map((r) => [r.recipe_id, r.rating as RatingValue])
     );
     queuedRecipeIds = new Set((queued ?? []).map((q) => q.recipe_id));
     pickedFlavorIds = (picks ?? []).map((p) => p.flavor_id as string);
+    householdAllergies = (profiles ?? []).flatMap((p) => (p.allergies as Allergy[] | null) ?? []);
   }
 
   const recipesWithRatings: RecipeWithRating[] = (recipes ?? []).map((r) => ({
@@ -69,6 +74,7 @@ export default async function RecipesPage() {
       recipes={recipesWithRatings}
       tagColors={(tagColors ?? []) as TagColor[]}
       pickedFlavorIds={pickedFlavorIds}
+      householdAllergies={householdAllergies}
     />
   );
 }

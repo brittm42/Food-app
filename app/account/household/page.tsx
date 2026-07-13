@@ -1,10 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { listHouseholdMembers } from "@/app/actions/household";
+import { listHouseholdMembers, getHouseholdCookingProfile } from "@/app/actions/household";
 import { getKrogerConnectionStatus } from "@/app/actions/kroger";
 import { listAlexaLinkedAccounts } from "@/app/actions/alexa";
 import { isPrivileged } from "@/lib/household";
 import AccountBackLink from "@/components/AccountBackLink";
 import HouseholdPanel from "@/components/HouseholdPanel";
+import HouseholdCookingProfilePanel from "@/components/HouseholdCookingProfilePanel";
 import KrogerConnectionPanel from "@/components/KrogerConnectionPanel";
 import AlexaLinkedEmailPanel from "@/components/AlexaLinkedEmailPanel";
 
@@ -17,9 +18,10 @@ export default async function HouseholdSectionPage({
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return null;
 
-  const [{ members, invites, role, householdName }, krogerStatus, alexaAccounts, params] =
+  const [{ members, invites, role, householdName }, cookingProfile, krogerStatus, alexaAccounts, params] =
     await Promise.all([
       listHouseholdMembers(),
+      getHouseholdCookingProfile(),
       getKrogerConnectionStatus(),
       listAlexaLinkedAccounts(),
       searchParams,
@@ -43,6 +45,13 @@ export default async function HouseholdSectionPage({
         invites={invites}
         isPrivileged={isPrivileged(role)}
         currentUserId={userData.user.id}
+      />
+      <HouseholdCookingProfilePanel
+        householdSize={cookingProfile?.householdSize ?? null}
+        mealPriorities={cookingProfile?.mealPriorities ?? []}
+        weeknightTimeMinutes={cookingProfile?.weeknightTimeMinutes ?? null}
+        skillLevel={cookingProfile?.skillLevel ?? null}
+        isPrivileged={isPrivileged(role)}
       />
       <KrogerConnectionPanel
         connected={krogerStatus.connected}

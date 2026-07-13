@@ -18,6 +18,8 @@ export default async function PreferencesSectionPage() {
         initialAllergies={prefs.allergies}
         initialAvoidFoods={prefs.avoidFoods}
         initialCuisinePreferences={prefs.cuisinePreferences}
+        initialDietaryStyle={prefs.dietaryStyle}
+        initialHealthGoals={prefs.healthGoals}
         onSave={updateMyPreferences}
       />
     </div>

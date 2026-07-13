@@ -3,11 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold, isPrivileged } from "@/lib/household";
+import type { Allergy } from "@/lib/types";
 
 export type Preferences = {
-  allergies: string[];
+  allergies: Allergy[];
   avoidFoods: string[];
   cuisinePreferences: string[];
+  dietaryStyle: string[];
+  healthGoals: string[];
 };
 
 export type OnboardingStatus = "pending" | "skipped" | "completed";
@@ -59,14 +62,16 @@ export async function getMyPreferences(): Promise<
 
   const { data } = await supabase
     .from("profiles")
-    .select("allergies, avoid_foods, cuisine_preferences, onboarding_status")
+    .select("allergies, avoid_foods, cuisine_preferences, dietary_style, health_goals, onboarding_status")
     .eq("user_id", userData.user.id)
     .maybeSingle();
 
   return {
-    allergies: data?.allergies ?? [],
+    allergies: (data?.allergies as Allergy[] | null) ?? [],
     avoidFoods: data?.avoid_foods ?? [],
     cuisinePreferences: data?.cuisine_preferences ?? [],
+    dietaryStyle: data?.dietary_style ?? [],
+    healthGoals: data?.health_goals ?? [],
     onboardingStatus: (data?.onboarding_status as OnboardingStatus) ?? "pending",
   };
 }
@@ -84,6 +89,8 @@ export async function updateMyPreferences(prefs: Preferences) {
         allergies: prefs.allergies,
         avoid_foods: prefs.avoidFoods,
         cuisine_preferences: prefs.cuisinePreferences,
+        dietary_style: prefs.dietaryStyle,
+        health_goals: prefs.healthGoals,
         onboarding_status: "completed",
       },
       { onConflict: "user_id" }
@@ -125,7 +132,7 @@ export async function getDependentProfile(memberId: string): Promise<
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("display_name, allergies, avoid_foods, cuisine_preferences")
+    .select("display_name, allergies, avoid_foods, cuisine_preferences, dietary_style, health_goals")
     .eq("member_id", memberId)
     .maybeSingle();
 
@@ -133,9 +140,11 @@ export async function getDependentProfile(memberId: string): Promise<
 
   return {
     displayName: data.display_name,
-    allergies: data.allergies ?? [],
+    allergies: (data.allergies as Allergy[] | null) ?? [],
     avoidFoods: data.avoid_foods ?? [],
     cuisinePreferences: data.cuisine_preferences ?? [],
+    dietaryStyle: data.dietary_style ?? [],
+    healthGoals: data.health_goals ?? [],
   };
 }
 
@@ -160,6 +169,8 @@ export async function updateDependentProfile(
       allergies: input.allergies,
       avoid_foods: input.avoidFoods,
       cuisine_preferences: input.cuisinePreferences,
+      dietary_style: input.dietaryStyle,
+      health_goals: input.healthGoals,
     })
     .eq("member_id", memberId)
     .select("id")

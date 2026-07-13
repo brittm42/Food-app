@@ -110,6 +110,57 @@ export const CUISINE_LABELS: Record<string, string> = {
   amr: "American",
 };
 
+export type AllergySeverity = "severe" | "mild";
+export type AllergyHandling = "strict_avoidance" | "substitution_ok" | "just_flag";
+
+export type Allergy = {
+  name: string;
+  severity: AllergySeverity;
+  handling: AllergyHandling;
+};
+
+export const ALLERGY_SEVERITY_LABELS: Record<AllergySeverity, string> = {
+  severe: "Severe",
+  mild: "Mild",
+};
+
+export const ALLERGY_HANDLING_LABELS: Record<AllergyHandling, string> = {
+  strict_avoidance: "Never include",
+  substitution_ok: "OK to substitute",
+  just_flag: "Just flag it",
+};
+
+// Same shape/usage pattern as CUISINE_LABELS — id -> display label,
+// rendered as toggle chips, not free text.
+export const DIETARY_STYLES: Record<string, string> = {
+  vegetarian: "Vegetarian",
+  vegan: "Vegan",
+  pescatarian: "Pescatarian",
+  gluten_free: "Gluten-Free",
+  dairy_free: "Dairy-Free",
+  keto: "Keto",
+  low_carb: "Low-Carb",
+  paleo: "Paleo",
+  kosher: "Kosher",
+  halal: "Halal",
+};
+
+// Deliberately scoped to what recipe metadata (protein/fiber/cal) can
+// actually back — no "lower sodium" etc., there's no sodium field.
+export const HEALTH_GOALS: Record<string, string> = {
+  higher_protein: "Higher Protein",
+  more_fiber: "More Fiber",
+  lower_calorie: "Lower Calorie",
+};
+
+export type SkillLevel = "beginner" | "intermediate" | "advanced";
+
+export const SKILL_LEVELS: { id: SkillLevel; label: string }[] = [
+  { id: "beginner", label: "Beginner" },
+  { id: "intermediate", label: "Intermediate" },
+  { id: "advanced", label: "Advanced" },
+];
+
 export type TagColor = { name: string; color: string };
 
 export const TAG_COLOR_OPTIONS = ["teal", "coral", "gold", "plum", "sage", "red"] as const;

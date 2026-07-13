@@ -6,7 +6,12 @@ import AvatarInitials from "@/components/AvatarInitials";
 
 function preferencesSubtitle(prefs: Awaited<ReturnType<typeof getMyPreferences>>) {
   if (!prefs) return undefined;
-  const count = prefs.allergies.length + prefs.avoidFoods.length + prefs.cuisinePreferences.length;
+  const count =
+    prefs.allergies.length +
+    prefs.avoidFoods.length +
+    prefs.cuisinePreferences.length +
+    prefs.dietaryStyle.length +
+    prefs.healthGoals.length;
   return count > 0 ? `${count} preference${count === 1 ? "" : "s"} saved` : "Add your food preferences";
 }
 

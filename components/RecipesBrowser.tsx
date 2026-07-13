@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import type { RecipeWithRating, TagColor, RatingValue, MealType } from "@/lib/types";
+import type { RecipeWithRating, TagColor, RatingValue, MealType, Allergy } from "@/lib/types";
 import { MEAL_TYPES, SUB_CATEGORIES, OAT_FLAVORS, OAT_BASE } from "@/lib/types";
 import RecipeCard from "@/components/RecipeCard";
 import { toggleOatPick } from "@/app/actions/oat-picks";
@@ -21,10 +21,12 @@ export default function RecipesBrowser({
   recipes,
   tagColors,
   pickedFlavorIds,
+  householdAllergies,
 }: {
   recipes: RecipeWithRating[];
   tagColors: TagColor[];
   pickedFlavorIds: string[];
+  householdAllergies: Allergy[];
 }) {
   const [activeMeal, setActiveMeal] = useState<MealType>("breakfast");
   const subCats = SUB_CATEGORIES[activeMeal];
@@ -109,7 +111,7 @@ export default function RecipesBrowser({
       {showOats ? (
         <OatFlavorGrid pickedFlavorIds={pickedFlavorIds} />
       ) : (
-        <RecipeList recipes={visibleRecipes} tagColors={tagColors} />
+        <RecipeList recipes={visibleRecipes} tagColors={tagColors} householdAllergies={householdAllergies} />
       )}
     </div>
   );
@@ -118,9 +120,11 @@ export default function RecipesBrowser({
 function RecipeList({
   recipes,
   tagColors,
+  householdAllergies,
 }: {
   recipes: RecipeWithRating[];
   tagColors: TagColor[];
+  householdAllergies: Allergy[];
 }) {
   if (recipes.length === 0) {
     return (
@@ -133,7 +137,12 @@ function RecipeList({
   return (
     <div className="flex flex-col gap-2.5">
       {recipes.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} tagColors={tagColors} />
+        <RecipeCard
+          key={recipe.id}
+          recipe={recipe}
+          tagColors={tagColors}
+          householdAllergies={householdAllergies}
+        />
       ))}
     </div>
   );

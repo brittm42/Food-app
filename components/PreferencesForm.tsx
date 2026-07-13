@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CUISINE_LABELS } from "@/lib/types";
+import type { Allergy } from "@/lib/types";
+import { CUISINE_LABELS, DIETARY_STYLES, HEALTH_GOALS } from "@/lib/types";
 import TagListInput from "@/components/TagListInput";
+import AllergyListInput from "@/components/AllergyListInput";
 
 export type PreferencesFormValues = {
   displayName?: string;
-  allergies: string[];
+  allergies: Allergy[];
   avoidFoods: string[];
   cuisinePreferences: string[];
+  dietaryStyle: string[];
+  healthGoals: string[];
 };
 
 export default function PreferencesForm({
@@ -16,15 +20,19 @@ export default function PreferencesForm({
   initialAllergies,
   initialAvoidFoods,
   initialCuisinePreferences,
+  initialDietaryStyle,
+  initialHealthGoals,
   onSave,
   onSaved,
   saveLabel = "Save",
   secondaryAction,
 }: {
   initialDisplayName?: string;
-  initialAllergies: string[];
+  initialAllergies: Allergy[];
   initialAvoidFoods: string[];
   initialCuisinePreferences: string[];
+  initialDietaryStyle: string[];
+  initialHealthGoals: string[];
   onSave: (values: PreferencesFormValues) => Promise<{ error?: string }>;
   onSaved?: () => void;
   saveLabel?: string;
@@ -35,6 +43,8 @@ export default function PreferencesForm({
   const [allergies, setAllergies] = useState(initialAllergies);
   const [avoidFoods, setAvoidFoods] = useState(initialAvoidFoods);
   const [cuisinePreferences, setCuisinePreferences] = useState(initialCuisinePreferences);
+  const [dietaryStyle, setDietaryStyle] = useState(initialDietaryStyle);
+  const [healthGoals, setHealthGoals] = useState(initialHealthGoals);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -42,6 +52,16 @@ export default function PreferencesForm({
     setCuisinePreferences((prev) =>
       prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
+    setSaved(false);
+  }
+
+  function toggleDietaryStyle(id: string) {
+    setDietaryStyle((prev) => (prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]));
+    setSaved(false);
+  }
+
+  function toggleHealthGoal(id: string) {
+    setHealthGoals((prev) => (prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]));
     setSaved(false);
   }
 
@@ -55,6 +75,8 @@ export default function PreferencesForm({
         allergies,
         avoidFoods,
         cuisinePreferences,
+        dietaryStyle,
+        healthGoals,
       });
       if (result?.error) {
         setError(result.error);
@@ -93,7 +115,7 @@ export default function PreferencesForm({
         <p className="text-xs text-ink-light mb-2">
           Recipes and AI drafts will steer clear of these.
         </p>
-        <TagListInput
+        <AllergyListInput
           values={allergies}
           onChange={(v) => {
             setAllergies(v);
@@ -132,6 +154,56 @@ export default function PreferencesForm({
                 key={id}
                 type="button"
                 onClick={() => toggleCuisine(id)}
+                className={`rounded-full px-3 py-1 text-xs border cursor-pointer ${
+                  active
+                    ? "bg-teal text-white border-teal"
+                    : "border-border text-ink-light hover:border-teal"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">
+          Dietary style
+        </h2>
+        <div className="flex flex-wrap gap-1.5">
+          {Object.entries(DIETARY_STYLES).map(([id, label]) => {
+            const active = dietaryStyle.includes(id);
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => toggleDietaryStyle(id)}
+                className={`rounded-full px-3 py-1 text-xs border cursor-pointer ${
+                  active
+                    ? "bg-teal text-white border-teal"
+                    : "border-border text-ink-light hover:border-teal"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">
+          Health goals
+        </h2>
+        <div className="flex flex-wrap gap-1.5">
+          {Object.entries(HEALTH_GOALS).map(([id, label]) => {
+            const active = healthGoals.includes(id);
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => toggleHealthGoal(id)}
                 className={`rounded-full px-3 py-1 text-xs border cursor-pointer ${
                   active
                     ? "bg-teal text-white border-teal"

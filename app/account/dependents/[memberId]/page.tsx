@@ -4,6 +4,7 @@ import { removeDependent } from "@/app/actions/household";
 import AccountBackLink from "@/components/AccountBackLink";
 import PreferencesForm from "@/components/PreferencesForm";
 import RemoveDependentButton from "@/components/RemoveDependentButton";
+import type { Allergy } from "@/lib/types";
 
 export default async function DependentProfilePage({
   params,
@@ -19,9 +20,11 @@ export default async function DependentProfilePage({
 
   async function saveDependentProfile(values: {
     displayName?: string;
-    allergies: string[];
+    allergies: Allergy[];
     avoidFoods: string[];
     cuisinePreferences: string[];
+    dietaryStyle: string[];
+    healthGoals: string[];
   }) {
     "use server";
     return updateDependentProfile(memberId, {
@@ -29,6 +32,8 @@ export default async function DependentProfilePage({
       allergies: values.allergies,
       avoidFoods: values.avoidFoods,
       cuisinePreferences: values.cuisinePreferences,
+      dietaryStyle: values.dietaryStyle,
+      healthGoals: values.healthGoals,
     });
   }
 
@@ -47,6 +52,8 @@ export default async function DependentProfilePage({
         initialAllergies={profile.allergies}
         initialAvoidFoods={profile.avoidFoods}
         initialCuisinePreferences={profile.cuisinePreferences}
+        initialDietaryStyle={profile.dietaryStyle}
+        initialHealthGoals={profile.healthGoals}
         onSave={saveDependentProfile}
       />
 

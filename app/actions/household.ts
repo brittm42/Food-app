@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentHousehold, isPrivileged, type HouseholdRole } from "@/lib/household";
 import { sendInviteEmail } from "@/lib/email";
+import type { MealType, SkillLevel } from "@/lib/types";
 
 export type HouseholdMemberRow = {
   id: string;
@@ -206,6 +207,59 @@ export async function updateHouseholdName(name: string) {
 
   if (error) return { error: error.message };
   if (!data) return { error: "Could not rename the household. Try again." };
+
+  revalidatePath("/account/household");
+  return {};
+}
+
+export type HouseholdCookingProfile = {
+  householdSize: number | null;
+  mealPriorities: MealType[];
+  weeknightTimeMinutes: number | null;
+  skillLevel: SkillLevel | null;
+};
+
+export async function getHouseholdCookingProfile(): Promise<HouseholdCookingProfile | null> {
+  const household = await getCurrentHousehold();
+  if (!household) return null;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("households")
+    .select("household_size, meal_priorities, weeknight_time_minutes, skill_level")
+    .eq("id", household.householdId)
+    .maybeSingle();
+
+  return {
+    householdSize: data?.household_size ?? null,
+    mealPriorities: (data?.meal_priorities as MealType[] | null) ?? [],
+    weeknightTimeMinutes: data?.weeknight_time_minutes ?? null,
+    skillLevel: (data?.skill_level as SkillLevel | null) ?? null,
+  };
+}
+
+export async function updateHouseholdCookingProfile(input: HouseholdCookingProfile) {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+  if (!isPrivileged(household.role)) {
+    return { error: "Only the household owner or a manager can edit this." };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("households")
+    .update({
+      household_size: input.householdSize,
+      meal_priorities: input.mealPriorities,
+      weeknight_time_minutes: input.weeknightTimeMinutes,
+      skill_level: input.skillLevel,
+    })
+    .eq("id", household.householdId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { error: error.message };
+  if (!data) return { error: "Could not save. Try again." };
 
   revalidatePath("/account/household");
   return {};

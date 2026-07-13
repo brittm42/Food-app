@@ -2,12 +2,13 @@
 
 import { useTransition, useState } from "react";
 import Link from "next/link";
-import type { RecipeWithRating, TagColor, RatingValue } from "@/lib/types";
+import type { RecipeWithRating, TagColor, RatingValue, Allergy } from "@/lib/types";
 import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
 import { toggleThisWeek } from "@/app/actions/week-queue";
 import { deleteRecipe } from "@/app/actions/recipes";
 import RecipeStepsAndIngredients from "@/components/RecipeStepsAndIngredients";
+import RecipeAllergenBadge from "@/components/RecipeAllergenBadge";
 
 const CUISINE_BADGE_CLASSES: Record<string, string> = {
   med: "bg-cuisine-med-light text-cuisine-med",
@@ -31,9 +32,11 @@ const CUISINE_BADGE_CLASSES: Record<string, string> = {
 export default function RecipeCard({
   recipe,
   tagColors,
+  householdAllergies,
 }: {
   recipe: RecipeWithRating;
   tagColors: TagColor[];
+  householdAllergies: Allergy[];
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -83,6 +86,10 @@ export default function RecipeCard({
                   ✨ AI
                 </span>
               )}
+              <RecipeAllergenBadge
+                ingredients={recipe.ingredients}
+                householdAllergies={householdAllergies}
+              />
               {recipe.cuisines.map(
                 (cuisine) =>
                   CUISINE_LABELS[cuisine] && (
