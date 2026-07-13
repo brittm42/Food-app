@@ -3,6 +3,7 @@ import { Fraunces, DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import TopNav from "@/components/TopNav";
 import AuthBar from "@/components/AuthBar";
+import BrandMark from "@/components/BrandMark";
 import { createClient } from "@/lib/supabase/server";
 
 const fraunces = Fraunces({
@@ -54,6 +55,7 @@ export default async function RootLayout({
     >
       <body className="min-h-screen flex flex-col font-body bg-bg text-ink">
         <header className="bg-ink px-5 py-7 text-center">
+          <BrandMark size={32} className="mx-auto mb-2" />
           <div className="font-mono text-[10px] uppercase tracking-widest text-teal-mid mb-2">
             WeeklyNom
           </div>
