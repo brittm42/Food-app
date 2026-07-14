@@ -2,12 +2,13 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { SUB_CATEGORIES, CUISINE_LABELS, DIETARY_STYLES, HEALTH_GOALS } from "@/lib/types";
-import type { Recipe, Allergy, AllergyHandling } from "@/lib/types";
+import { SUB_CATEGORIES, CUISINE_LABELS, DIETARY_STYLES } from "@/lib/types";
+import type { Recipe, Allergy } from "@/lib/types";
 import type { RecipeInput } from "@/app/actions/recipes";
 import { parseNumericQuantity } from "@/lib/units";
 import { CATEGORIES } from "@/lib/categories";
 import { getCurrentHousehold } from "@/lib/household";
+import { buildPreferencesNote, type HouseholdPreferencesContext } from "@/lib/preferences-note";
 
 const CATEGORY_IDS = Object.values(SUB_CATEGORIES).flatMap((subs) => subs.map((s) => s.id));
 const CUISINE_IDS = Object.keys(CUISINE_LABELS);
@@ -136,22 +137,6 @@ const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library 
 - Estimate prep_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
 Draft one recipe matching this voice based on the user's description. Always call the draft_recipe tool with your answer. If this is a follow-up turn revising an earlier draft, make only the changes the feedback asks for and keep everything else from the previous version as-is — always return the complete recipe (every field, not just what changed), and include change_summary.`;
 
-type PersonPrefs = {
-  displayName: string | null;
-  allergies: Allergy[];
-  avoidFoods: string[];
-  cuisinePreferences: string[];
-  dietaryStyle: string[];
-  healthGoals: string[];
-};
-
-export type HouseholdPreferencesContext = {
-  people: PersonPrefs[];
-  weeknightTimeMinutes: number | null;
-  skillLevel: string | null;
-  mealPriorities: string[];
-};
-
 export async function getHouseholdPreferencesContext(
   supabase: Awaited<ReturnType<typeof createClient>>
 ): Promise<HouseholdPreferencesContext | null> {
@@ -188,78 +173,6 @@ export async function getHouseholdPreferencesContext(
     skillLevel: householdRow?.skill_level ?? null,
     mealPriorities: householdRow?.meal_priorities ?? [],
   };
-}
-
-// Prompt-facing clarifications for dietary styles, kept local to this file
-// (not lib/types.ts) since these sentences are AI-prompt engineering, not a
-// UI concern — lib/types.ts's DIETARY_STYLES stays a plain id->label map
-// for the chip UI.
-const DIETARY_STYLE_NOTES: Record<string, string> = {
-  vegetarian: "no meat or fish",
-  vegan: "no meat, fish, dairy, eggs, or other animal products",
-  pescatarian: "fish is fine, no other meat",
-  gluten_free: "no wheat, barley, rye, or other gluten-containing ingredients",
-  dairy_free: "no milk, cheese, butter, or other dairy",
-  keto: "very low-carb, high-fat",
-  low_carb: "keep carbs modest",
-  paleo: "no grains, legumes, or refined sugar",
-  kosher: "kosher dietary rules",
-  halal: "halal dietary rules",
-};
-
-const HANDLING_PHRASING: Record<AllergyHandling, (name: string) => string> = {
-  strict_avoidance: (n) => `a hard constraint — never include ${n} under any circumstance`,
-  substitution_ok: (n) =>
-    `avoid ${n} where possible, but a substitution is OK — just mention the swap if you make one`,
-  just_flag: (n) => `${n} may be included — just clearly note that it's present`,
-};
-
-function buildPreferencesNote(ctx: HouseholdPreferencesContext | null): string {
-  if (!ctx || !ctx.people.length) return "";
-  const lines: string[] = [];
-
-  for (const person of ctx.people) {
-    const who = person.displayName?.trim() || "A household member";
-    if (person.allergies.length) {
-      const parts = person.allergies.map(
-        (a) => `${a.name} (${a.severity} allergy — ${HANDLING_PHRASING[a.handling](a.name)})`
-      );
-      lines.push(`${who}'s allergies: ${parts.join("; ")}.`);
-    }
-    if (person.avoidFoods.length) {
-      lines.push(`${who} would rather avoid (a dislike, not an allergy): ${person.avoidFoods.join(", ")}.`);
-    }
-    if (person.dietaryStyle.length) {
-      const styles = person.dietaryStyle
-        .map((s) => `${DIETARY_STYLES[s] ?? s}${DIETARY_STYLE_NOTES[s] ? ` (${DIETARY_STYLE_NOTES[s]})` : ""}`)
-        .join(", ");
-      lines.push(`${who} eats ${styles}.`);
-    }
-    if (person.healthGoals.length) {
-      lines.push(`${who}'s goals: ${person.healthGoals.map((g) => HEALTH_GOALS[g] ?? g).join(", ")}.`);
-    }
-    if (person.cuisinePreferences.length) {
-      lines.push(`${who} especially enjoys these cuisines: ${person.cuisinePreferences.join(", ")}.`);
-    }
-  }
-
-  if (ctx.weeknightTimeMinutes) {
-    lines.push(
-      `This household generally has about ${ctx.weeknightTimeMinutes} minutes for weeknight cooking — favor recipes that fit that unless told otherwise.`
-    );
-  }
-  if (ctx.skillLevel) {
-    lines.push(`Cook's skill level: ${ctx.skillLevel}.`);
-  }
-  if (ctx.mealPriorities.length) {
-    lines.push(`Meals that matter most to this household: ${ctx.mealPriorities.join(", ")}.`);
-  }
-
-  if (!lines.length) return "";
-  return (
-    `\n\nHousehold context — this always applies, regardless of who is chatting with you right now ` +
-    `(allergy constraints protect every household member, not just the current speaker):\n${lines.join(" ")}`
-  );
 }
 
 export type ChatTurn = Anthropic.MessageParam;

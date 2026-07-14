@@ -49,6 +49,50 @@ export async function addShoppingItemForHousehold(
   return { ok: true, label };
 }
 
+type QueueRow = {
+  servings_override: number | null;
+  recipe: Pick<Recipe, "ingredients" | "servings"> | null;
+};
+
+export type CoreNeed = { value: number; unit: string } | { unreconcilable: true };
+
+// Total scaled quantity each core ingredient needs across every queued
+// recipe (summing, servings-ratio-scaled, per exact lowercased name) —
+// shared by getShoppingListData below and the onboarding wizard's kitchen
+// pre-population (lib/kitchen-prepopulate.ts), which needs the same "how
+// much does this household actually need" figure to mark common pantry
+// basics as already on hand.
+export function computeCoreNeeds(queue: QueueRow[]): Map<string, CoreNeed> {
+  const coreNeeds = new Map<string, CoreNeed>();
+
+  for (const row of queue) {
+    const baseServings = row.recipe?.servings ?? 1;
+    const servings = row.servings_override ?? baseServings;
+    const ratio = servings / baseServings;
+
+    for (const ing of row.recipe?.ingredients ?? []) {
+      if (!ing.core) continue;
+
+      const key = ing.name.trim().toLowerCase();
+      const existing = coreNeeds.get(key);
+      if (existing && "unreconcilable" in existing) continue;
+
+      if (ing.quantity_value == null || ing.quantity_unit == null) {
+        coreNeeds.set(key, { unreconcilable: true });
+        continue;
+      }
+      const scaledValue = ing.quantity_value * ratio;
+      if (existing && existing.unit !== ing.quantity_unit) {
+        coreNeeds.set(key, { unreconcilable: true });
+        continue;
+      }
+      coreNeeds.set(key, { value: (existing?.value ?? 0) + scaledValue, unit: ing.quantity_unit });
+    }
+  }
+
+  return coreNeeds;
+}
+
 export type ChecklistItem = {
   key: string;
   label: string;
@@ -141,40 +185,22 @@ export async function getShoppingListData(
   const freshEntries = new Map<string, { category: string }>();
   const coreNames = new Set<string>();
 
-  type CoreNeed = { value: number; unit: string } | { unreconcilable: true };
-  const coreNeeds = new Map<string, CoreNeed>();
-
   for (const row of queue ?? []) {
     const recipe = row.recipe as unknown as Pick<Recipe, "ingredients" | "servings"> | null;
-    const baseServings = recipe?.servings ?? 1;
-    const servings = (row.servings_override as number | null) ?? baseServings;
-    const ratio = servings / baseServings;
-
     for (const ing of recipe?.ingredients ?? []) {
       if (!ing.core) {
         freshEntries.set(ing.name, {
           category: ing.category ?? categoryByKitchenName.get(ing.name.trim().toLowerCase()) ?? "Other",
         });
-        continue;
+      } else {
+        coreNames.add(ing.name);
       }
-      coreNames.add(ing.name);
-
-      const key = ing.name.trim().toLowerCase();
-      const existing = coreNeeds.get(key);
-      if (existing && "unreconcilable" in existing) continue;
-
-      if (ing.quantity_value == null || ing.quantity_unit == null) {
-        coreNeeds.set(key, { unreconcilable: true });
-        continue;
-      }
-      const scaledValue = ing.quantity_value * ratio;
-      if (existing && existing.unit !== ing.quantity_unit) {
-        coreNeeds.set(key, { unreconcilable: true });
-        continue;
-      }
-      coreNeeds.set(key, { value: (existing?.value ?? 0) + scaledValue, unit: ing.quantity_unit });
     }
   }
+
+  const coreNeeds = computeCoreNeeds(
+    (queue ?? []) as unknown as QueueRow[]
+  );
 
   // Recipe-driven Fresh checklist entries, grouped by aisle category.
   const freshGroups = new Map<string, ChecklistItem[]>();

@@ -1,24 +1,40 @@
 import { getMyPreferences } from "@/app/actions/profile";
-import OnboardingForm from "@/components/OnboardingForm";
+import { getHouseholdCookingProfile } from "@/app/actions/household";
+import { listHouseholdMembers } from "@/app/actions/household";
+import OnboardingWizard from "@/components/OnboardingWizard";
 
 export default async function OnboardingPage() {
-  const prefs = await getMyPreferences();
+  const [prefs, cookingProfile, { householdName, members }] = await Promise.all([
+    getMyPreferences(),
+    getHouseholdCookingProfile(),
+    listHouseholdMembers(),
+  ]);
   if (!prefs) return null;
+
+  const dependents = members
+    .filter((m) => m.userId === null)
+    .map((m) => ({ memberId: m.id, displayName: m.displayName ?? "" }));
 
   return (
     <div className="max-w-md mx-auto py-8 px-4">
-      <h1 className="font-display text-xl font-light mb-1">Welcome to WeeklyNom</h1>
-      <p className="text-sm text-ink-light mb-6">
-        A few quick questions so AI-drafted recipes fit what you actually eat.
-        You can skip this and finish it later from your account.
-      </p>
-
-      <OnboardingForm
-        initialAllergies={prefs.allergies}
-        initialAvoidFoods={prefs.avoidFoods}
-        initialCuisinePreferences={prefs.cuisinePreferences}
-        initialDietaryStyle={prefs.dietaryStyle}
-        initialHealthGoals={prefs.healthGoals}
+      <OnboardingWizard
+        initialHouseholdName={householdName ?? "Home"}
+        initialPrefs={{
+          allergies: prefs.allergies,
+          avoidFoods: prefs.avoidFoods,
+          cuisinePreferences: prefs.cuisinePreferences,
+          dietaryStyle: prefs.dietaryStyle,
+          healthGoals: prefs.healthGoals,
+        }}
+        initialCookingProfile={
+          cookingProfile ?? {
+            householdSize: null,
+            mealPriorities: [],
+            weeknightTimeMinutes: null,
+            skillLevel: null,
+          }
+        }
+        initialDependents={dependents}
       />
     </div>
   );

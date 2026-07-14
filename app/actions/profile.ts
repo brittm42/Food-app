@@ -13,7 +13,7 @@ export type Preferences = {
   healthGoals: string[];
 };
 
-export type OnboardingStatus = "pending" | "skipped" | "completed";
+export type OnboardingStatus = "pending" | "completed";
 
 export async function getDisplayName(): Promise<string | null> {
   const supabase = await createClient();
@@ -76,25 +76,30 @@ export async function getMyPreferences(): Promise<
   };
 }
 
-export async function updateMyPreferences(prefs: Preferences) {
+// markComplete defaults to true for every existing caller (e.g.
+// /account/preferences editing after onboarding is already done). The
+// wizard's own preferences step is the one caller that passes false — it's
+// just one of several required steps, not the whole of onboarding, so
+// onboarding_status shouldn't flip to "completed" until finishOnboarding()
+// (app/actions/onboarding.ts) runs at the very end.
+export async function updateMyPreferences(prefs: Preferences, markComplete = true) {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return { error: "Not signed in." };
 
+  const update: Record<string, unknown> = {
+    user_id: userData.user.id,
+    allergies: prefs.allergies,
+    avoid_foods: prefs.avoidFoods,
+    cuisine_preferences: prefs.cuisinePreferences,
+    dietary_style: prefs.dietaryStyle,
+    health_goals: prefs.healthGoals,
+  };
+  if (markComplete) update.onboarding_status = "completed";
+
   const { data, error } = await supabase
     .from("profiles")
-    .upsert(
-      {
-        user_id: userData.user.id,
-        allergies: prefs.allergies,
-        avoid_foods: prefs.avoidFoods,
-        cuisine_preferences: prefs.cuisinePreferences,
-        dietary_style: prefs.dietaryStyle,
-        health_goals: prefs.healthGoals,
-        onboarding_status: "completed",
-      },
-      { onConflict: "user_id" }
-    )
+    .upsert(update, { onConflict: "user_id" })
     .select("user_id")
     .maybeSingle();
 
@@ -104,22 +109,6 @@ export async function updateMyPreferences(prefs: Preferences) {
   revalidatePath("/account");
   revalidatePath("/account/preferences");
   revalidatePath("/onboarding");
-  return {};
-}
-
-export async function skipOnboarding() {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
-
-  const { error } = await supabase
-    .from("profiles")
-    .upsert(
-      { user_id: userData.user.id, onboarding_status: "skipped" },
-      { onConflict: "user_id" }
-    );
-
-  if (error) return { error: error.message };
   return {};
 }
 
