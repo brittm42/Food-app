@@ -105,51 +105,51 @@
           "core": true,
           "name": "Frozen wild blueberries",
           "unit": "cup",
+          "category": "Frozen",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Almond butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Oat milk",
           "unit": "cup",
-          "quantity": "1",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Frozen spinach",
           "unit": null,
+          "category": "Frozen",
           "quantity": "handful",
-          "quantity_value": 0.25,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 0.25
         }
       ],
       "steps": [
@@ -158,7 +158,13 @@
         "Blend until smooth."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "s2",
@@ -179,40 +185,40 @@
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Cocoa powder",
           "unit": "tbsp",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Oat milk",
           "unit": "cup",
-          "quantity": "1",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1"
         },
         {
           "core": false,
           "name": "Chocolate protein powder",
           "unit": "scoop",
-          "quantity": "1",
-          "category": "Grains & Dried"
+          "category": "Grains & Dried",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -221,7 +227,13 @@
         "Serve immediately — tastes like a Frosty!"
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "s3",
@@ -242,42 +254,42 @@
           "core": true,
           "name": "Frozen strawberries",
           "unit": "cups",
+          "category": "Frozen",
           "quantity": "1.5",
-          "quantity_value": 1.5,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 1.5
         },
         {
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": true,
           "name": "Coconut milk",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Granola",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1/4",
-          "quantity_value": 0.25,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 0.25
         },
         {
           "core": false,
           "name": "Fresh strawberries",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         }
       ],
       "steps": [
@@ -286,7 +298,12 @@
         "Top with granola, sliced fresh strawberries, and a drizzle of honey. <strong>The toppings are the whole point.</strong>"
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "dairy_free"
+      ]
     },
     {
       "id": "s4",
@@ -307,44 +324,44 @@
           "core": true,
           "name": "Frozen mango",
           "unit": "cup",
+          "category": "Frozen",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Frozen spinach",
           "unit": "big handfuls",
+          "category": "Frozen",
           "quantity": "2",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Frozen"
+          "quantity_value": null
         },
         {
           "core": true,
           "name": "Coconut milk",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         }
       ],
       "steps": [
@@ -352,7 +369,13 @@
         "Top with: kiwi, hemp seeds, chia seeds, drizzle of almond butter, and granola."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "s5",
@@ -373,24 +396,24 @@
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 2
         },
         {
           "core": false,
           "name": "Oat milk",
           "unit": "cup",
-          "quantity": "1",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -399,7 +422,13 @@
         "Add protein powder if you want more staying power."
       ],
       "prep_time_minutes": 3,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "h1",
@@ -421,38 +450,38 @@
           "core": false,
           "name": "Eggs",
           "unit": null,
-          "quantity": "3",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "3"
         },
         {
           "core": false,
           "name": "Baby spinach",
           "unit": null,
-          "quantity": "handful",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "handful"
         },
         {
           "core": false,
           "name": "Feta cheese",
           "unit": "tbsp",
-          "quantity": "2",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "2"
         },
         {
           "core": true,
           "name": "Sun-dried tomatoes",
           "unit": null,
+          "category": "Canned Goods",
           "quantity": "a few",
-          "quantity_value": 3,
           "quantity_unit": "whole",
-          "category": "Canned Goods"
+          "quantity_value": 3
         },
         {
           "core": false,
           "name": "Whole grain bread",
           "unit": "slice",
-          "quantity": "2",
-          "category": "Bakery"
+          "category": "Bakery",
+          "quantity": "2"
         }
       ],
       "steps": [
@@ -462,7 +491,11 @@
         "Serve with toasted whole grain bread."
       ],
       "prep_time_minutes": 10,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "gluten_free"
+      ]
     },
     {
       "id": "h2",
@@ -485,42 +518,42 @@
           "core": true,
           "name": "Salsa",
           "unit": "cup",
+          "category": "Sauces & Condiments",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Sauces & Condiments"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Black beans",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 0.5
         },
         {
           "core": false,
           "name": "Eggs",
           "unit": null,
-          "quantity": "2",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "2"
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": true,
           "name": "Tortillas",
           "unit": "small",
+          "category": "Bakery",
           "quantity": "2",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Bakery"
+          "quantity_value": null
         }
       ],
       "steps": [
@@ -532,7 +565,11 @@
         "Eat with tortillas."
       ],
       "prep_time_minutes": 12,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "gluten_free"
+      ]
     },
     {
       "id": "q1",
@@ -578,7 +615,12 @@
         "Then pick a direction — <strong>Mediterranean</strong>: feta + cherry tomato + oregano. <strong>Mexican</strong>: hot sauce + cilantro + everything bagel. <strong>Rich</strong>: chili crisp + sesame seeds + soy drizzle."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "dairy_free"
+      ]
     },
     {
       "id": "q2",
@@ -600,26 +642,26 @@
           "core": false,
           "name": "Bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Nut butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
+          "category": "Grains & Dried",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "tbsp",
-          "category": "Grains & Dried"
+          "quantity_value": 2
         }
       ],
       "steps": [
@@ -629,7 +671,13 @@
         "Eat while figuring out if you're actually hungry enough for a real breakfast."
       ],
       "prep_time_minutes": 1,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "g1",
@@ -676,7 +724,11 @@
         "Plate everything together with a handful of fruit on the side."
       ],
       "prep_time_minutes": 10,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "g2",
@@ -722,7 +774,10 @@
         "Serve alongside bacon — not a trade-off, an upgrade."
       ],
       "prep_time_minutes": 10,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "g3",
@@ -741,7 +796,10 @@
         "No optimization needed. Cinnamon rolls on Saturday morning are a ritual, not a nutrition problem.",
         "If you want, pair with a protein smoothie or some eggs alongside to balance the sugar spike — but don't over-engineer this one."
       ],
-      "servings": 8
+      "servings": 8,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "b1",
@@ -763,70 +821,70 @@
           "core": true,
           "name": "Farro or brown rice",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Chickpeas",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Sweet potato or zucchini",
           "unit": "medium",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": false,
           "name": "Baby spinach",
           "unit": "cup",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         },
         {
           "core": true,
           "name": "Tahini",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "3",
-          "quantity_value": 3,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 3
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Kalamata olives",
           "unit": "cup",
-          "quantity": "1/4",
-          "category": "Canned Goods"
+          "category": "Canned Goods",
+          "quantity": "1/4"
         },
         {
           "core": false,
           "name": "Cucumber",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Feta cheese",
           "unit": "cup",
-          "quantity": "1/4",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1/4"
         }
       ],
       "steps": [
@@ -839,7 +897,11 @@
         "Drizzle the tahini sauce over the assembled bowl and serve."
       ],
       "prep_time_minutes": 20,
-      "servings": 2
+      "servings": 2,
+      "dietary_style": [
+        "vegetarian",
+        "gluten_free"
+      ]
     },
     {
       "id": "b2",
@@ -861,58 +923,58 @@
           "core": true,
           "name": "Brown rice",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Black beans",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Frozen corn",
           "unit": "cup",
+          "category": "Frozen",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 0.5
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": true,
           "name": "Salsa",
           "unit": "cup",
+          "category": "Sauces & Condiments",
           "quantity": "1/4",
-          "quantity_value": 0.25,
           "quantity_unit": "cup",
-          "category": "Sauces & Condiments"
+          "quantity_value": 0.25
         },
         {
           "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
-          "quantity": "1/4",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1/4"
         },
         {
           "core": false,
           "name": "Cilantro",
           "unit": "tbsp",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         }
       ],
       "steps": [
@@ -925,7 +987,11 @@
         "Finish with avocado, shredded cheese, cilantro, and hot sauce. Add leftover chicken to make it more substantial."
       ],
       "prep_time_minutes": 10,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "gluten_free"
+      ]
     },
     {
       "id": "b3",
@@ -947,60 +1013,60 @@
           "core": true,
           "name": "Soba noodles",
           "unit": "oz",
+          "category": "Grains & Dried",
           "quantity": "4",
-          "quantity_value": 4,
           "quantity_unit": "oz",
-          "category": "Grains & Dried"
+          "quantity_value": 4
         },
         {
           "core": true,
           "name": "Edamame",
           "unit": "cup",
+          "category": "Frozen",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 2
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Purple cabbage",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Cucumber",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         }
       ],
       "steps": [
@@ -1011,7 +1077,11 @@
         "<strong>Better as leftovers.</strong>"
       ],
       "prep_time_minutes": 15,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan"
+      ]
     },
     {
       "id": "b4",
@@ -1033,51 +1103,51 @@
           "core": true,
           "name": "Red lentils",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1/3",
-          "quantity_value": 0.3333333333333333,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 0.3333333333333333
         },
         {
           "core": true,
           "name": "Brown rice",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Diced tomatoes",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1/4",
-          "quantity_value": 0.25,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 0.25
         },
         {
           "core": true,
           "name": "Veggie broth",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Cucumber",
           "unit": "cup",
-          "quantity": "1/4",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/4"
         },
         {
           "core": false,
           "name": "Cilantro",
           "unit": "tbsp",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -1087,7 +1157,13 @@
         "Add cilantro and a drizzle of chili oil."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "w1",
@@ -1110,47 +1186,47 @@
           "core": true,
           "name": "Chickpeas",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Large tortillas",
           "unit": "whole",
+          "category": "Bakery",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "whole",
-          "category": "Bakery"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Baby spinach",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Cucumber",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Cherry tomatoes",
           "unit": "whole",
-          "quantity": "5-6",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "5-6"
         },
         {
           "core": false,
           "name": "Feta cheese",
           "unit": "tbsp",
-          "quantity": "2-3",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "2-3"
         }
       ],
       "steps": [
@@ -1161,7 +1237,10 @@
         "Roll tight."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "w2",
@@ -1183,47 +1262,47 @@
           "core": false,
           "name": "Leftover salmon",
           "unit": "cup",
-          "quantity": "2",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "2"
         },
         {
           "core": false,
           "name": "Butter lettuce",
           "unit": "leaf",
-          "quantity": "8",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "8"
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 2
         },
         {
           "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Purple cabbage",
           "unit": null,
-          "quantity": "shredded",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "shredded"
         },
         {
           "core": false,
           "name": "Green onions",
           "unit": "stalk",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         }
       ],
       "steps": [
@@ -1233,7 +1312,11 @@
         "Top with: shredded purple cabbage, green onion, sesame seeds, and julienned carrot."
       ],
       "prep_time_minutes": 5,
-      "servings": 2
+      "servings": 2,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "w3",
@@ -1255,42 +1338,42 @@
           "core": true,
           "name": "Black beans",
           "unit": "cup",
+          "category": "Canned Goods",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Large tortillas",
           "unit": null,
+          "category": "Bakery",
           "quantity": "1",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Bakery"
+          "quantity_value": null
         },
         {
           "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": true,
           "name": "Salsa",
           "unit": null,
+          "category": "Sauces & Condiments",
           "quantity": "spoonful",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Sauces & Condiments"
+          "quantity_value": null
         }
       ],
       "steps": [
@@ -1301,7 +1384,10 @@
         "Add spinach for yourself."
       ],
       "prep_time_minutes": 10,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "so1",
@@ -1324,49 +1410,49 @@
           "core": true,
           "name": "Red lentils",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Diced tomatoes",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Veggie broth",
           "unit": "cups",
+          "category": "Canned Goods",
           "quantity": "4",
-          "quantity_value": 4,
           "quantity_unit": "cup",
-          "category": "Canned Goods"
+          "quantity_value": 4
         },
         {
           "core": false,
           "name": "Onion",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": false,
           "name": "Garlic",
           "unit": "cloves",
-          "quantity": "3",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "3"
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": "squeeze",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -1377,7 +1463,13 @@
         "Portion into 4 containers."
       ],
       "prep_time_minutes": 5,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "so2",
@@ -1398,47 +1490,47 @@
           "core": true,
           "name": "White miso",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Rice noodles or ramen",
           "unit": "oz",
-          "quantity": "2",
-          "category": "Grains & Dried"
+          "category": "Grains & Dried",
+          "quantity": "2"
         },
         {
           "core": false,
           "name": "Mushrooms",
           "unit": null,
-          "quantity": "sliced",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "sliced"
         },
         {
           "core": false,
           "name": "Baby spinach",
           "unit": "cup",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Green onions",
           "unit": "stalk",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -1448,7 +1540,12 @@
         "Top with: soft-boiled egg (Britt only), green onion, a drizzle of sesame oil, and chili crisp."
       ],
       "prep_time_minutes": 15,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "dairy_free"
+      ]
     },
     {
       "id": "lq1",
@@ -1469,40 +1566,40 @@
           "core": false,
           "name": "Hummus",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Other"
+          "category": "Other",
+          "quantity": "1/2"
         },
         {
           "core": true,
           "name": "Crackers",
           "unit": "whole",
+          "category": "Snacks",
           "quantity": "8-10",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Snacks"
+          "quantity_value": null
         },
         {
           "core": false,
           "name": "Cucumber",
           "unit": "whole",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         },
         {
           "core": false,
           "name": "Cherry tomatoes",
           "unit": "whole",
-          "quantity": "8-10",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "8-10"
         },
         {
           "core": true,
           "name": "Mixed nuts",
           "unit": null,
+          "category": "Snacks",
           "quantity": "handful",
-          "quantity_value": 0.25,
           "quantity_unit": "cup",
-          "category": "Snacks"
+          "quantity_value": 0.25
         }
       ],
       "steps": [
@@ -1510,7 +1607,12 @@
         "This is a real lunch, not a snack plate. The hummus (protein) + nuts (fat) + veg (fiber) combo keeps you full. Your nothing-in-the-fridge emergency lunch."
       ],
       "prep_time_minutes": 2,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "dairy_free"
+      ]
     },
     {
       "id": "lq2",
@@ -1532,33 +1634,33 @@
           "core": false,
           "name": "Leftover salmon",
           "unit": "oz",
-          "quantity": "4",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "4"
         },
         {
           "core": true,
           "name": "Brown rice",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         }
       ],
       "steps": [
@@ -1568,7 +1670,10 @@
         "Done. This is why the cook-alongside system works: make extra so you always have this for the next day."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "dairy_free"
+      ]
     },
     {
       "id": "sn1",
@@ -1590,10 +1695,10 @@
           "core": true,
           "name": "Edamame",
           "unit": "cup",
+          "category": "Frozen",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Frozen"
+          "quantity_value": 1
         }
       ],
       "steps": [
@@ -1603,7 +1708,13 @@
         "Also good with: everything bagel seasoning, chili lime salt, or soy sauce + sesame oil drizzle."
       ],
       "prep_time_minutes": 3,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sn2",
@@ -1625,17 +1736,17 @@
           "core": true,
           "name": "Nut butter",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 2
         },
         {
           "core": false,
           "name": "Apples or bananas",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -1643,7 +1754,13 @@
         "Pair with an apple or banana and enjoy the fat + fiber + natural sugar combo, the most stabilizing snack combo there is."
       ],
       "prep_time_minutes": 1,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sn3",
@@ -1702,7 +1819,13 @@
         "This snack only happens when the veg is already cut. It never happens when you have to cut it first. Cut the veg."
       ],
       "prep_time_minutes": 15,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sn4",
@@ -1724,24 +1847,24 @@
           "core": false,
           "name": "Cheese",
           "unit": "block",
-          "quantity": "1",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Crackers",
           "unit": "whole",
+          "category": "Snacks",
           "quantity": "8",
-          "quantity_value": 8,
           "quantity_unit": "whole",
-          "category": "Snacks"
+          "quantity_value": 8
         },
         {
           "core": false,
           "name": "Fruit",
           "unit": null,
-          "quantity": "handful",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "handful"
         }
       ],
       "steps": [
@@ -1749,7 +1872,10 @@
         "Arrange on a plate with whole grain crackers and a handful of grapes or apple slices."
       ],
       "prep_time_minutes": 2,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "sn5",
@@ -1770,19 +1896,19 @@
           "core": true,
           "name": "Seaweed snack packs",
           "unit": "pack",
+          "category": "Snacks",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "package",
-          "category": "Snacks"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Mixed nuts",
           "unit": null,
+          "category": "Snacks",
           "quantity": "small handful",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Snacks"
+          "quantity_value": null
         }
       ],
       "steps": [
@@ -1790,7 +1916,13 @@
         "Enjoy as a satisfying savory snack — no prep needed."
       ],
       "prep_time_minutes": 1,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "f1",
@@ -1811,31 +1943,31 @@
           "core": false,
           "name": "Chicken thighs",
           "unit": "whole",
-          "quantity": "8",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "8"
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": "whole",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         },
         {
           "core": false,
           "name": "Garlic",
           "unit": "clove",
-          "quantity": "3",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "3"
         },
         {
           "core": true,
           "name": "Dried oregano",
           "unit": "tbsp",
+          "category": "Spices",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Spices"
+          "quantity_value": 1
         }
       ],
       "steps": [
@@ -1845,7 +1977,11 @@
         "<strong>Your salmon:</strong> same seasoning on a fillet, same pan, pull it out 10 min earlier."
       ],
       "prep_time_minutes": 30,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "f2",
@@ -1866,49 +2002,49 @@
           "core": false,
           "name": "Ground beef",
           "unit": "lb",
-          "quantity": "1",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Tortillas",
           "unit": "whole",
+          "category": "Bakery",
           "quantity": "8",
-          "quantity_value": 8,
           "quantity_unit": "whole",
-          "category": "Bakery"
+          "quantity_value": 8
         },
         {
           "core": true,
           "name": "Black beans",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": null,
-          "quantity": "extra",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "extra"
         },
         {
           "core": true,
           "name": "Salsa",
           "unit": "cup",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
-          "quantity": "1",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -1918,7 +2054,8 @@
         "Add pickled red onion.",
         "Family gets the tacos they love, you get a more complete meal. No extra cooking required."
       ],
-      "servings": 4
+      "servings": 4,
+      "dietary_style": []
     },
     {
       "id": "f3",
@@ -1939,49 +2076,49 @@
           "core": false,
           "name": "Chicken thighs or breast",
           "unit": "lb",
-          "quantity": "1 to 1.5",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1 to 1.5"
         },
         {
           "core": true,
           "name": "Brown rice",
           "unit": "cup",
+          "category": "Grains & Dried",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "cup",
-          "category": "Grains & Dried"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "3",
-          "quantity_value": 3,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 3
         },
         {
           "core": false,
           "name": "Honey",
           "unit": "tbsp",
-          "quantity": "1",
-          "category": "Sauces & Condiments"
+          "category": "Sauces & Condiments",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Broccoli",
           "unit": "cup",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         }
       ],
       "steps": [
@@ -1992,7 +2129,10 @@
         "<strong>Your salmon:</strong> same sauce, bake at 400° for 12–15 min while chicken cooks."
       ],
       "prep_time_minutes": 25,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "dairy_free"
+      ]
     },
     {
       "id": "f4",
@@ -2014,33 +2154,33 @@
           "core": false,
           "name": "Chicken (for family)",
           "unit": "lb",
-          "quantity": "2",
-          "category": "Other"
+          "category": "Other",
+          "quantity": "2"
         },
         {
           "core": false,
           "name": "Tikka masala sauce (jar)",
           "unit": "jar",
-          "quantity": "1",
-          "category": "Sauces & Condiments"
+          "category": "Sauces & Condiments",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Chickpeas",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "2",
-          "quantity_value": 2,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 2
         },
         {
           "core": true,
           "name": "Coconut milk",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         }
       ],
       "steps": [
@@ -2049,7 +2189,8 @@
         "You eat more fiber, they eat what they love — same spice, same dinner table, different bowls."
       ],
       "prep_time_minutes": 20,
-      "servings": 6
+      "servings": 6,
+      "dietary_style": []
     },
     {
       "id": "f5",
@@ -2071,42 +2212,42 @@
           "core": true,
           "name": "Pasta",
           "unit": "oz",
+          "category": "Grains & Dried",
           "quantity": "12",
-          "quantity_value": 12,
           "quantity_unit": "oz",
-          "category": "Grains & Dried"
+          "quantity_value": 12
         },
         {
           "core": true,
           "name": "Cannellini beans",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Diced tomatoes",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Baby spinach",
           "unit": null,
-          "quantity": "handful",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "handful"
         },
         {
           "core": false,
           "name": "Parmesan",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Dairy & Eggs"
+          "category": "Dairy & Eggs",
+          "quantity": "1/2"
         }
       ],
       "steps": [
@@ -2118,7 +2259,10 @@
         "Top with parmesan."
       ],
       "prep_time_minutes": 20,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "vegetarian"
+      ]
     },
     {
       "id": "si1",
@@ -2171,7 +2315,11 @@
         "Season with salt and toss to combine."
       ],
       "prep_time_minutes": 3,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "gluten_free"
+      ]
     },
     {
       "id": "si2",
@@ -2193,28 +2341,28 @@
           "core": true,
           "name": "Black beans",
           "unit": "can",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "can",
-          "category": "Canned Goods"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Cumin",
           "unit": "tsp",
+          "category": "Spices",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "tsp",
-          "category": "Spices"
+          "quantity_value": 0.5
         },
         {
           "core": true,
           "name": "Garlic powder",
           "unit": "tsp",
+          "category": "Spices",
           "quantity": "1/4",
-          "quantity_value": 0.25,
           "quantity_unit": "tsp",
-          "category": "Spices"
+          "quantity_value": 0.25
         }
       ],
       "steps": [
@@ -2223,7 +2371,13 @@
         "Add these as your personal side to any Mexican-ish dinner — adds 15g fiber to your plate without touching the family's food."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "si3",
@@ -2244,17 +2398,17 @@
           "core": false,
           "name": "Broccoli",
           "unit": "large head",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Garlic powder",
           "unit": "tsp",
+          "category": "Spices",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "tsp",
-          "category": "Spices"
+          "quantity_value": 0.5
         }
       ],
       "steps": [
@@ -2262,7 +2416,13 @@
         "Roast at 425° for 20 min until edges are <strong>dark and crispy</strong>."
       ],
       "prep_time_minutes": 5,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sal1",
@@ -2283,38 +2443,38 @@
           "core": false,
           "name": "Salmon fillet",
           "unit": "fillet (6 oz)",
-          "quantity": "1",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1"
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Dried oregano",
           "unit": "tsp",
+          "category": "Spices",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "tsp",
-          "category": "Spices"
+          "quantity_value": 0.5
         },
         {
           "core": false,
           "name": "Kalamata olives",
           "unit": "sliced",
-          "quantity": "a few",
-          "category": "Canned Goods"
+          "category": "Canned Goods",
+          "quantity": "a few"
         },
         {
           "core": false,
           "name": "Cherry tomatoes",
           "unit": "cup",
-          "quantity": "1/2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1/2"
         }
       ],
       "steps": [
@@ -2324,7 +2484,11 @@
         "Serve with roasted veg or a grain bowl."
       ],
       "prep_time_minutes": 10,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sal2",
@@ -2345,33 +2509,33 @@
           "core": false,
           "name": "Salmon fillet",
           "unit": "fillet (about 6 oz)",
-          "quantity": "1",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "White miso",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
+          "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
           "quantity_unit": "tbsp",
-          "category": "Sauces & Condiments"
+          "quantity_value": 1
         },
         {
           "core": false,
           "name": "Honey",
           "unit": "tsp",
-          "quantity": "1",
-          "category": "Sauces & Condiments"
+          "category": "Sauces & Condiments",
+          "quantity": "1"
         }
       ],
       "steps": [
@@ -2382,7 +2546,11 @@
         "Serve over rice with edamame."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sal3",
@@ -2403,49 +2571,49 @@
           "core": false,
           "name": "Salmon fillet",
           "unit": "lb",
-          "quantity": "1.5",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1.5"
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "1"
         },
         {
           "core": true,
           "name": "Chili powder",
           "unit": null,
+          "category": "Spices",
           "quantity": "to taste",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Spices"
+          "quantity_value": null
         },
         {
           "core": true,
           "name": "Cumin",
           "unit": null,
+          "category": "Spices",
           "quantity": "to taste",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Spices"
+          "quantity_value": null
         },
         {
           "core": false,
           "name": "Avocados",
           "unit": "whole",
-          "quantity": "2",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "2"
         },
         {
           "core": true,
           "name": "Black beans",
           "unit": "can (15 oz)",
+          "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": null,
           "quantity_unit": null,
-          "category": "Canned Goods"
+          "quantity_value": null
         }
       ],
       "steps": [
@@ -2455,7 +2623,11 @@
         "Serve over rice with avocado and black beans."
       ],
       "prep_time_minutes": 5,
-      "servings": 4
+      "servings": 4,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sal4",
@@ -2476,24 +2648,24 @@
           "core": false,
           "name": "Salmon fillet",
           "unit": "whole",
-          "quantity": "1",
-          "category": "Meat & Seafood"
+          "category": "Meat & Seafood",
+          "quantity": "1"
         },
         {
           "core": false,
           "name": "Lemons",
           "unit": null,
-          "quantity": "slices",
-          "category": "Produce"
+          "category": "Produce",
+          "quantity": "slices"
         },
         {
           "core": true,
           "name": "Dried dill",
           "unit": "tsp",
+          "category": "Spices",
           "quantity": "1/2",
-          "quantity_value": 0.5,
           "quantity_unit": "tsp",
-          "category": "Spices"
+          "quantity_value": 0.5
         }
       ],
       "steps": [
@@ -2502,7 +2674,11 @@
         "Bake at 400° for 13 minutes."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "gluten_free",
+        "dairy_free"
+      ]
     },
     {
       "id": "sal5",
@@ -2555,7 +2731,284 @@
         "Serve with roasted veg or crusty bread to scoop up the sauce."
       ],
       "prep_time_minutes": 5,
-      "servings": 1
+      "servings": 1,
+      "dietary_style": [
+        "gluten_free"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "family",
+      "emoji": "🍛",
+      "name": "Red Lentil Coconut Dal",
+      "hint": "Creamy, spiced lentils in coconut milk — weeknight comfort in one pot.",
+      "cuisine": "ind",
+      "tags": [
+        "High protein",
+        "High fiber",
+        "Batch cook"
+      ],
+      "recipe": null,
+      "protein": 18,
+      "fiber": 14,
+      "cal": 420,
+      "ingredients": [
+        {
+          "core": true,
+          "name": "Red lentils",
+          "unit": "cup",
+          "category": "Grains & Dried",
+          "quantity": "1.5",
+          "quantity_value": 1.5,
+          "quantity_unit": "cup"
+        },
+        {
+          "core": true,
+          "name": "Coconut milk",
+          "unit": "can (13.5 oz)",
+          "category": "Canned Goods",
+          "quantity": "1",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Diced tomatoes",
+          "unit": "can (14 oz)",
+          "category": "Canned Goods",
+          "quantity": "1",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Veggie broth",
+          "unit": "cup",
+          "category": "Canned Goods",
+          "quantity": "1.5",
+          "quantity_value": 1.5,
+          "quantity_unit": "cup"
+        },
+        {
+          "core": false,
+          "name": "Onion",
+          "unit": "medium",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "unit": "cloves",
+          "category": "Produce",
+          "quantity": "4"
+        },
+        {
+          "core": false,
+          "name": "Carrots",
+          "unit": "medium",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": false,
+          "name": "Baby spinach",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": true,
+          "name": "Cumin",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1.5",
+          "quantity_value": 1.5,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Chili powder",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": false,
+          "name": "Cilantro",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "¼"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": true,
+          "name": "Brown rice",
+          "unit": "cup (dry)",
+          "category": "Grains & Dried",
+          "quantity": "1.5",
+          "quantity_value": null,
+          "quantity_unit": null
+        }
+      ],
+      "steps": [
+        "Cook brown rice according to package directions; set aside.",
+        "Dice the onion and carrots, and mince the garlic.",
+        "Heat a drizzle of olive oil in a large pot over medium heat, then add the onion and carrots and sauté for 5 minutes until softened.",
+        "Add the garlic, cumin, and chili powder; stir and cook for 1 minute until fragrant.",
+        "Stir in the red lentils, diced tomatoes, coconut milk, and veggie broth; bring to a boil.",
+        "Reduce heat to low, cover, and simmer for 20 minutes, stirring occasionally, until lentils are completely soft and the dal is thick.",
+        "Fold in the baby spinach and stir until wilted, about 1–2 minutes.",
+        "Squeeze in the juice of the lemon, taste, and adjust seasoning as needed.",
+        "Serve over brown rice and top with fresh cilantro."
+      ],
+      "prep_time_minutes": 10,
+      "servings": 4,
+      "dietary_style": [
+        "vegan"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "family",
+      "emoji": "🍜",
+      "name": "Gochujang Soba Noodle Bowl",
+      "hint": "Spicy-sweet Korean noodles with crispy veggies and a punchy sesame sauce — ready in 20.",
+      "cuisine": "kor",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": null,
+      "protein": 22,
+      "fiber": 8,
+      "cal": 480,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Soba noodles",
+          "unit": "oz",
+          "category": "Grains & Dried",
+          "quantity": "12"
+        },
+        {
+          "core": false,
+          "name": "Edamame",
+          "unit": "cups",
+          "category": "Frozen",
+          "quantity": "2"
+        },
+        {
+          "core": false,
+          "name": "Purple cabbage",
+          "unit": "cups",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": false,
+          "name": "Carrots",
+          "unit": "medium",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": false,
+          "name": "Green onions",
+          "unit": "stalks",
+          "category": "Produce",
+          "quantity": "4"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "unit": "cloves",
+          "category": "Produce",
+          "quantity": "3"
+        },
+        {
+          "core": true,
+          "name": "Soy sauce",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "3",
+          "quantity_value": 3,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Sesame oil",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Tahini",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "3",
+          "quantity_value": 3,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Maple syrup",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Gochujang",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "unit": "",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": true,
+          "name": "Hemp seeds",
+          "unit": "tbsp",
+          "category": "Snacks",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        }
+      ],
+      "steps": [
+        "Bring a large pot of water to a boil. Cook soba noodles according to package directions, then drain and rinse under cold water to stop cooking. Set aside.",
+        "While noodles cook, thaw edamame under warm running water or microwave for 2 minutes; drain well.",
+        "Thinly shred purple cabbage and julienne or grate the carrots. Thinly slice green onions, keeping green tops separate. Mince garlic.",
+        "In a small bowl, whisk together soy sauce, sesame oil, tahini, maple syrup, gochujang, the juice of 1 lemon, and minced garlic until smooth. Add 2–3 tbsp water to loosen to a pourable consistency.",
+        "Add drained soba noodles to a large mixing bowl. Pour sauce over noodles and toss well to coat every strand.",
+        "Add edamame, purple cabbage, and carrots to the bowl and toss again to combine.",
+        "Divide into 4 bowls. Top each with green onion tops and a sprinkle of hemp seeds. Serve immediately."
+      ],
+      "prep_time_minutes": 20,
+      "servings": 4,
+      "dietary_style": [
+        "vegan"
+      ]
     }
   ],
   "pantry": {

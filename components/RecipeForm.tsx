@@ -34,6 +34,7 @@ type FormState = {
   name: string;
   category: string;
   cuisines: string[];
+  dietaryStyle: string[];
   emoji: string;
   hint: string;
   steps: string[];
@@ -52,6 +53,9 @@ function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
     name: recipe?.name ?? "",
     category: recipe?.category ?? "",
     cuisines: recipe?.cuisines ?? [],
+    // No manual UI for this — AI-inferred only (generation + backfill).
+    // Carried through unchanged so a manual edit/re-save never wipes it.
+    dietaryStyle: recipe?.dietary_style ?? [],
     emoji: recipe?.emoji ?? "",
     hint: recipe?.hint ?? "",
     steps: recipe?.steps && recipe.steps.length > 0 ? recipe.steps : [""],
@@ -76,6 +80,7 @@ function toRecipeInput(form: FormState, isAiGenerated: boolean): RecipeInput {
     name: form.name.trim(),
     category: form.category,
     cuisines: form.cuisines,
+    dietary_style: form.dietaryStyle,
     emoji: form.emoji.trim() || null,
     hint: form.hint.trim() || null,
     recipe: null,

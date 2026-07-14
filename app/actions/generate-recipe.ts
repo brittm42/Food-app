@@ -11,6 +11,7 @@ import { getCurrentHousehold } from "@/lib/household";
 
 const CATEGORY_IDS = Object.values(SUB_CATEGORIES).flatMap((subs) => subs.map((s) => s.id));
 const CUISINE_IDS = Object.keys(CUISINE_LABELS);
+const DIETARY_STYLE_IDS = Object.keys(DIETARY_STYLES);
 
 function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropic.Tool {
   return {
@@ -29,6 +30,12 @@ function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropi
           type: "array",
           items: { type: "string", enum: CUISINE_IDS },
           description: "Zero or more cuisine tags that fit this recipe.",
+        },
+        dietary_style: {
+          type: "array",
+          items: { type: "string", enum: DIETARY_STYLE_IDS },
+          description:
+            "Zero or more dietary styles this recipe genuinely satisfies as written (e.g. only include \"vegan\" if there is truly no meat, fish, dairy, eggs, or other animal product anywhere in the ingredients). Leave empty if none apply — do not guess.",
         },
         emoji: { type: "string", description: "A single emoji representing the dish." },
         hint: {
@@ -138,14 +145,14 @@ type PersonPrefs = {
   healthGoals: string[];
 };
 
-type HouseholdPreferencesContext = {
+export type HouseholdPreferencesContext = {
   people: PersonPrefs[];
   weeknightTimeMinutes: number | null;
   skillLevel: string | null;
   mealPriorities: string[];
 };
 
-async function getHouseholdPreferencesContext(
+export async function getHouseholdPreferencesContext(
   supabase: Awaited<ReturnType<typeof createClient>>
 ): Promise<HouseholdPreferencesContext | null> {
   const household = await getCurrentHousehold();

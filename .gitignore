@@ -47,3 +47,5 @@ next-env.d.ts
 /scripts/backfill-servings-output.json
 /scripts/backfill-quantity-values-output.json
 /scripts/backfill-ingredient-categories-output.json
+/scripts/backfill-recipe-dietary-style-output.json
+/scripts/generate-library-gap-recipes-output.json

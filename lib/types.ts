@@ -17,6 +17,7 @@ export type Recipe = {
   name: string;
   category: string;
   cuisines: string[];
+  dietary_style: string[]; // AI-inferred subset of DIETARY_STYLES ids this recipe satisfies; not manually tagged
   emoji: string | null;
   hint: string | null;
   recipe: string | null; // deprecated: legacy prose instructions, superseded by `steps`

@@ -109,6 +109,7 @@ export async function importRecipe(sourceId: string) {
       name: source.name,
       category: source.category,
       cuisines: source.cuisines,
+      dietary_style: source.dietary_style,
       emoji: source.emoji,
       hint: source.hint,
       recipe: source.recipe,

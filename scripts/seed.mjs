@@ -30,6 +30,7 @@ const rows = seedData.recipes.map((r) => ({
   name: r.name,
   category: r.cat,
   cuisines: r.cuisine ? [r.cuisine] : [],
+  dietary_style: r.dietary_style ?? [],
   emoji: r.emoji ?? null,
   hint: r.hint ?? null,
   recipe: r.recipe ?? null,
