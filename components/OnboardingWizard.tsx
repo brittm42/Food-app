@@ -16,7 +16,7 @@ import PreferencesForm from "@/components/PreferencesForm";
 import { MEAL_TYPES, SKILL_LEVELS, CUISINE_LABELS } from "@/lib/types";
 import type { Allergy, MealType, SkillLevel } from "@/lib/types";
 
-const STEPS = [
+const FULL_STEPS = [
   "household",
   "you",
   "cooking-profile",
@@ -25,7 +25,13 @@ const STEPS = [
   "first-recipe",
   "finishing",
 ] as const;
-type Step = (typeof STEPS)[number];
+// A joining member (role "member", never the one who set this household up)
+// only has one thing here that's actually theirs to set -- household
+// name/cooking profile/dependents are owner-or-manager-only server actions
+// and would reject them; curated recipes/first-recipe/kitchen prepopulation
+// already happened for the household during the owner's own onboarding.
+const JOINER_STEPS = ["you"] as const;
+type Step = (typeof FULL_STEPS)[number];
 
 const STEP_TITLES: Record<Step, string> = {
   household: "Name your household",
@@ -73,19 +79,23 @@ function WizardProgress({ current, total }: { current: number; total: number }) 
 }
 
 export default function OnboardingWizard({
+  canManageHousehold,
   initialHouseholdName,
   initialPrefs,
   initialCookingProfile,
   initialDependents,
 }: {
+  canManageHousehold: boolean;
   initialHouseholdName: string;
   initialPrefs: Prefs;
   initialCookingProfile: CookingProfile;
   initialDependents: { memberId: string; displayName: string }[];
 }) {
   const router = useRouter();
+  const steps: readonly Step[] = canManageHousehold ? FULL_STEPS : JOINER_STEPS;
   const [stepIndex, setStepIndex] = useState(0);
-  const step = STEPS[stepIndex];
+  const step = steps[stepIndex];
+  const isLastStep = stepIndex === steps.length - 1;
 
   const [householdName, setHouseholdName] = useState(initialHouseholdName);
   const [cookingProfile, setCookingProfile] = useState(initialCookingProfile);
@@ -97,7 +107,11 @@ export default function OnboardingWizard({
   const [savedRecipeCount, setSavedRecipeCount] = useState(0);
 
   function next() {
-    setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
+    if (isLastStep) {
+      router.push("/");
+      return;
+    }
+    setStepIndex((i) => Math.min(i + 1, steps.length - 1));
   }
   function back() {
     setStepIndex((i) => Math.max(i - 1, 0));
@@ -109,12 +123,12 @@ export default function OnboardingWizard({
       <p className="text-sm text-ink-light mb-4">
         A few quick questions so AI-drafted recipes fit what this household actually eats.
       </p>
-      <WizardProgress current={stepIndex} total={STEPS.length} />
+      <WizardProgress current={stepIndex} total={steps.length} />
 
       {step === "household" && <HouseholdNameStep initialName={householdName} onSaved={setHouseholdName} onNext={next} />}
 
       {step === "you" && (
-        <PreferencesStep initial={initialPrefs} onNext={next} onBack={back} />
+        <PreferencesStep initial={initialPrefs} isFinalStep={isLastStep} onNext={next} onBack={canManageHousehold ? back : undefined} />
       )}
 
       {step === "cooking-profile" && (
@@ -201,12 +215,14 @@ function HouseholdNameStep({
 
 function PreferencesStep({
   initial,
+  isFinalStep,
   onNext,
   onBack,
 }: {
   initial: Prefs;
+  isFinalStep: boolean;
   onNext: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }) {
   return (
     <PreferencesForm
@@ -215,7 +231,7 @@ function PreferencesStep({
       initialCuisinePreferences={initial.cuisinePreferences}
       initialDietaryStyle={initial.dietaryStyle}
       initialHealthGoals={initial.healthGoals}
-      saveLabel="Continue"
+      saveLabel={isFinalStep ? "Finish" : "Continue"}
       onSave={(values) =>
         updateMyPreferences(
           {
@@ -225,14 +241,16 @@ function PreferencesStep({
             dietaryStyle: values.dietaryStyle,
             healthGoals: values.healthGoals,
           },
-          false
+          isFinalStep
         )
       }
       onSaved={onNext}
       secondaryAction={
-        <button type="button" onClick={onBack} className={BUTTON_SECONDARY}>
-          Back
-        </button>
+        onBack ? (
+          <button type="button" onClick={onBack} className={BUTTON_SECONDARY}>
+            Back
+          </button>
+        ) : undefined
       }
     />
   );
