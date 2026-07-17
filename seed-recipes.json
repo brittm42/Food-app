@@ -2759,8 +2759,8 @@
           "unit": "cup",
           "category": "Grains & Dried",
           "quantity": "1.5",
-          "quantity_value": 1.5,
-          "quantity_unit": "cup"
+          "quantity_unit": "cup",
+          "quantity_value": 1.5
         },
         {
           "core": true,
@@ -2768,8 +2768,8 @@
           "unit": "can (13.5 oz)",
           "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": null,
-          "quantity_unit": null
+          "quantity_unit": null,
+          "quantity_value": null
         },
         {
           "core": true,
@@ -2777,8 +2777,8 @@
           "unit": "can (14 oz)",
           "category": "Canned Goods",
           "quantity": "1",
-          "quantity_value": null,
-          "quantity_unit": null
+          "quantity_unit": null,
+          "quantity_value": null
         },
         {
           "core": true,
@@ -2786,8 +2786,8 @@
           "unit": "cup",
           "category": "Canned Goods",
           "quantity": "1.5",
-          "quantity_value": 1.5,
-          "quantity_unit": "cup"
+          "quantity_unit": "cup",
+          "quantity_value": 1.5
         },
         {
           "core": false,
@@ -2823,8 +2823,8 @@
           "unit": "tsp",
           "category": "Spices",
           "quantity": "1.5",
-          "quantity_value": 1.5,
-          "quantity_unit": "tsp"
+          "quantity_unit": "tsp",
+          "quantity_value": 1.5
         },
         {
           "core": true,
@@ -2832,8 +2832,8 @@
           "unit": "tsp",
           "category": "Spices",
           "quantity": "1",
-          "quantity_value": 1,
-          "quantity_unit": "tsp"
+          "quantity_unit": "tsp",
+          "quantity_value": 1
         },
         {
           "core": false,
@@ -2854,8 +2854,8 @@
           "unit": "cup (dry)",
           "category": "Grains & Dried",
           "quantity": "1.5",
-          "quantity_value": null,
-          "quantity_unit": null
+          "quantity_unit": null,
+          "quantity_value": null
         }
       ],
       "steps": [
@@ -2939,8 +2939,8 @@
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "3",
-          "quantity_value": 3,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 3
         },
         {
           "core": true,
@@ -2948,8 +2948,8 @@
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 2
         },
         {
           "core": true,
@@ -2957,8 +2957,8 @@
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "3",
-          "quantity_value": 3,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 3
         },
         {
           "core": true,
@@ -2966,8 +2966,8 @@
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "1",
-          "quantity_value": 1,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 1
         },
         {
           "core": true,
@@ -2975,8 +2975,8 @@
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "2",
-          "quantity_value": 2,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 2
         },
         {
           "core": false,
@@ -2991,8 +2991,8 @@
           "unit": "tbsp",
           "category": "Snacks",
           "quantity": "2",
-          "quantity_value": 2,
-          "quantity_unit": "tbsp"
+          "quantity_unit": "tbsp",
+          "quantity_value": 2
         }
       ],
       "steps": [
@@ -3008,6 +3008,745 @@
       "servings": 4,
       "dietary_style": [
         "vegan"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "bowls",
+      "emoji": "🥣",
+      "name": "Moroccan Chickpea & Carrot Bowls",
+      "hint": "Spiced chickpeas and roasted carrots over fluffy farro — hearty, plant-powered, and ready in 30.",
+      "cuisine": "mideast",
+      "tags": [
+        "High protein",
+        "High fiber",
+        "Batch cook"
+      ],
+      "recipe": null,
+      "protein": 16,
+      "fiber": 13,
+      "cal": 420,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Carrots",
+          "unit": "",
+          "category": "Produce",
+          "quantity": "4 medium"
+        },
+        {
+          "core": true,
+          "name": "Chickpeas",
+          "unit": "cans (15 oz each)",
+          "category": "Canned Goods",
+          "quantity": "2",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Farro or brown rice",
+          "unit": "cup dry",
+          "category": "Grains & Dried",
+          "quantity": "1",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": false,
+          "name": "Baby spinach",
+          "unit": "cups",
+          "category": "Produce",
+          "quantity": "3"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "unit": "cloves",
+          "category": "Produce",
+          "quantity": "3"
+        },
+        {
+          "core": true,
+          "name": "Tahini",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "3",
+          "quantity_value": 3,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Cumin",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1½",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Chili powder",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Dried oregano",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "½",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Maple syrup",
+          "unit": "tsp",
+          "category": "Sauces & Condiments",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Olive oil",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Salt",
+          "category": "Spices",
+          "quantity": "to taste",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Black pepper",
+          "category": "Spices",
+          "quantity": "to taste",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": false,
+          "name": "Fresh parsley",
+          "unit": "cup chopped",
+          "category": "Produce",
+          "quantity": "¼"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 425 °F (220 °C) and line a large baking sheet with parchment.",
+        "Peel and cut carrots into ½-inch coins, then toss with 1 tbsp olive oil, 1 tsp cumin, ½ tsp chili powder, salt, and black pepper. Spread on one half of the baking sheet.",
+        "Drain and rinse chickpeas, pat dry, then toss with the remaining 1 tbsp olive oil, ½ tsp cumin, ½ tsp chili powder, ½ tsp dried oregano, salt, and black pepper. Spread on the other half of the baking sheet.",
+        "Roast carrots and chickpeas for 25 minutes, flipping once halfway through, until carrots are tender and chickpeas are lightly crispy.",
+        "Meanwhile, cook farro or brown rice according to package directions; season lightly with salt.",
+        "Mince garlic and whisk together with tahini, juice of 1 lemon, 1 tsp maple syrup, and 3–4 tbsp water until a smooth, pourable dressing forms. Season with salt and black pepper.",
+        "Divide cooked farro or brown rice among 4 bowls. Top each with a handful of baby spinach, roasted carrots, and crispy chickpeas.",
+        "Drizzle tahini-lemon dressing over each bowl and finish with chopped fresh parsley."
+      ],
+      "prep_time_minutes": 30,
+      "servings": 4,
+      "dietary_style": [
+        "vegan"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "bowls",
+      "emoji": "🥜",
+      "name": "Thai Peanut Rice Noodle Bowl",
+      "hint": "Slurpy rice noodles tossed in a punchy peanut-lime sauce with crisp veggies and edamame.",
+      "cuisine": "tha",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": null,
+      "protein": 22,
+      "fiber": 8,
+      "cal": 520,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Rice noodles",
+          "unit": "oz",
+          "category": "Grains & Dried",
+          "quantity": "6"
+        },
+        {
+          "core": false,
+          "name": "Edamame",
+          "unit": "cup",
+          "category": "Frozen",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Purple cabbage",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Carrots",
+          "unit": "medium",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Green onions",
+          "unit": "stalks",
+          "category": "Produce",
+          "quantity": "3"
+        },
+        {
+          "core": false,
+          "name": "Cilantro",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "¼"
+        },
+        {
+          "core": true,
+          "name": "Peanut butter",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "3",
+          "quantity_value": 3,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Tamari",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Sesame oil",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Honey",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "unit": "lime",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "unit": "cloves",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": true,
+          "name": "Gochujang",
+          "unit": "tsp",
+          "category": "Sauces & Condiments",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Mixed nuts",
+          "unit": "cup",
+          "category": "Snacks",
+          "quantity": "¼",
+          "quantity_value": null,
+          "quantity_unit": null
+        }
+      ],
+      "steps": [
+        "Cook rice noodles according to package directions, then drain and rinse under cold water to stop cooking.",
+        "Thaw edamame under warm running water, then drain well.",
+        "Shred purple cabbage and julienne or grate the carrots; slice green onions and roughly chop cilantro.",
+        "Mince garlic and whisk together with peanut butter, tamari, sesame oil, honey, lime juice, and gochujang until smooth. Thin with 2–3 tbsp warm water to reach a pourable consistency.",
+        "Add the drained noodles to a large bowl and pour the peanut sauce over them; toss well to coat.",
+        "Add edamame, cabbage, and carrots; toss again to combine.",
+        "Divide between two bowls and top with green onions, cilantro, and mixed nuts.",
+        "Serve immediately or refrigerate — sauce thickens as it sits, so add a splash of water before eating leftovers."
+      ],
+      "prep_time_minutes": 20,
+      "servings": 2,
+      "dietary_style": [
+        "gluten_free"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "bowls",
+      "emoji": "🌮",
+      "name": "Smoky Black Bean & Sweet Potato Tacos",
+      "hint": "Hearty, smoky veggie tacos with zero dairy and zero fuss — weeknight lunch hero.",
+      "cuisine": "mex",
+      "tags": [
+        "High fiber",
+        "High protein",
+        "Kid-friendly"
+      ],
+      "recipe": null,
+      "protein": 14,
+      "fiber": 12,
+      "cal": 430,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Sweet potato or zucchini",
+          "category": "Produce",
+          "quantity": "2 medium sweet potatoes, peeled and diced into ½-inch cubes"
+        },
+        {
+          "core": true,
+          "name": "Black beans",
+          "category": "Canned Goods",
+          "quantity": "1 can (15 oz), drained and rinsed",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Tortillas",
+          "category": "Bakery",
+          "quantity": "8 small corn tortillas",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": false,
+          "name": "Avocados",
+          "category": "Produce",
+          "quantity": "2, sliced"
+        },
+        {
+          "core": true,
+          "name": "Salsa",
+          "category": "Sauces & Condiments",
+          "quantity": "½ cup",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": false,
+          "name": "Cilantro",
+          "category": "Produce",
+          "quantity": "¼ cup, roughly chopped"
+        },
+        {
+          "core": false,
+          "name": "Onion",
+          "category": "Produce",
+          "quantity": "½ medium red onion, finely diced"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "category": "Produce",
+          "quantity": "1 lime (or lemon), juiced"
+        },
+        {
+          "core": true,
+          "name": "Cumin",
+          "category": "Spices",
+          "quantity": "1 tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Chili powder",
+          "category": "Spices",
+          "quantity": "1 tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Garlic powder",
+          "category": "Spices",
+          "quantity": "½ tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Olive oil",
+          "category": "Sauces & Condiments",
+          "quantity": "2 tbsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Salt",
+          "category": "Spices",
+          "quantity": "½ tsp, plus more to taste",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": false,
+          "name": "Purple cabbage",
+          "category": "Produce",
+          "quantity": "1 cup, thinly sliced"
+        }
+      ],
+      "steps": [
+        "Preheat oven to 425 °F (220 °C) and line a large baking sheet with parchment or foil.",
+        "Toss diced sweet potato with olive oil, cumin, chili powder, garlic powder, and salt until evenly coated.",
+        "Spread sweet potato in a single layer on the baking sheet and roast for 20–22 minutes, flipping once halfway, until tender and lightly caramelised.",
+        "While the sweet potato roasts, add drained black beans to a small saucepan over medium heat. Warm for 3–4 minutes, stirring occasionally, then season with a pinch of salt and cumin.",
+        "In a small bowl, toss purple cabbage and red onion with lime juice and a pinch of salt; set aside to quick-pickle while everything else finishes.",
+        "Warm tortillas directly over a gas flame or in a dry skillet for 30 seconds per side until slightly charred and pliable.",
+        "Build each taco: layer black beans, roasted sweet potato, and pickled cabbage slaw onto a tortilla.",
+        "Top with avocado slices, a spoonful of salsa, and fresh cilantro. Serve immediately."
+      ],
+      "prep_time_minutes": 20,
+      "servings": 4,
+      "dietary_style": [
+        "dairy_free"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "family",
+      "emoji": "🍛",
+      "name": "Red Lentil Dal with Coconut Milk",
+      "hint": "Creamy, warming dal that comes together in one pot — weeknight magic.",
+      "cuisine": "ind",
+      "tags": [
+        "High protein",
+        "High fiber",
+        "Batch cook"
+      ],
+      "recipe": null,
+      "protein": 18,
+      "fiber": 14,
+      "cal": 420,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Red lentils",
+          "unit": "cup",
+          "category": "Grains & Dried",
+          "quantity": "1.5"
+        },
+        {
+          "core": true,
+          "name": "Coconut milk",
+          "unit": "can (13.5 oz)",
+          "category": "Canned Goods",
+          "quantity": "1",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Diced tomatoes",
+          "unit": "can (14 oz)",
+          "category": "Canned Goods",
+          "quantity": "1",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Veggie broth",
+          "unit": "cup",
+          "category": "Canned Goods",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "cup"
+        },
+        {
+          "core": false,
+          "name": "Onion",
+          "unit": "",
+          "category": "Produce",
+          "quantity": "1 medium"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "unit": "cloves",
+          "category": "Produce",
+          "quantity": "4"
+        },
+        {
+          "core": false,
+          "name": "Carrots",
+          "unit": "",
+          "category": "Produce",
+          "quantity": "2 medium"
+        },
+        {
+          "core": false,
+          "name": "Baby spinach",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "3"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "unit": "",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Fresh parsley",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "¼"
+        },
+        {
+          "core": true,
+          "name": "Cumin",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1.5",
+          "quantity_value": 1.5,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Chili powder",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Garlic powder",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "½",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Olive oil",
+          "unit": "tbsp",
+          "category": "Sauces & Condiments",
+          "quantity": "2",
+          "quantity_value": 2,
+          "quantity_unit": "tbsp"
+        },
+        {
+          "core": true,
+          "name": "Salt",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "1",
+          "quantity_value": 1,
+          "quantity_unit": "tsp"
+        },
+        {
+          "core": true,
+          "name": "Black pepper",
+          "unit": "tsp",
+          "category": "Spices",
+          "quantity": "½",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Brown rice",
+          "unit": "cup (dry)",
+          "category": "Grains & Dried",
+          "quantity": "1.5",
+          "quantity_value": null,
+          "quantity_unit": null
+        }
+      ],
+      "steps": [
+        "Cook brown rice according to package directions; set aside.",
+        "Dice the onion and carrots into small pieces; mince the garlic.",
+        "Heat olive oil in a large pot over medium heat. Add the onion and carrots and cook, stirring occasionally, for 5–6 minutes until softened.",
+        "Add the garlic, cumin, chili powder, and garlic powder; stir constantly for 1 minute until fragrant.",
+        "Rinse the red lentils under cold water, then add them to the pot along with the diced tomatoes, coconut milk, and veggie broth. Stir to combine.",
+        "Bring to a boil, then reduce heat to low. Simmer uncovered for 20–25 minutes, stirring occasionally, until lentils are completely soft and the dal has thickened.",
+        "Stir in the baby spinach and cook for 2 minutes until wilted. Season with salt and black pepper.",
+        "Squeeze the lemon over the dal and stir to brighten the flavors.",
+        "Serve over brown rice and garnish with fresh parsley."
+      ],
+      "prep_time_minutes": 10,
+      "servings": 4,
+      "dietary_style": [
+        "vegan"
+      ]
+    },
+    {
+      "id": "sNaN",
+      "cat": "family",
+      "emoji": "🍋",
+      "name": "Greek Lemon Chicken & Veggie Tray Bake",
+      "hint": "One-pan roasted chicken thighs with lemony veggies — zero fuss, big flavor",
+      "cuisine": "gre",
+      "tags": [
+        "High protein",
+        "High fiber"
+      ],
+      "recipe": null,
+      "protein": 36,
+      "fiber": 5,
+      "cal": 420,
+      "ingredients": [
+        {
+          "core": false,
+          "name": "Chicken thighs",
+          "category": "Meat & Seafood",
+          "quantity": "8 bone-in, skin-on"
+        },
+        {
+          "core": false,
+          "name": "Lemons",
+          "category": "Produce",
+          "quantity": "2"
+        },
+        {
+          "core": false,
+          "name": "Bell pepper",
+          "category": "Produce",
+          "quantity": "2 large"
+        },
+        {
+          "core": false,
+          "name": "Cherry tomatoes",
+          "unit": "cup",
+          "category": "Produce",
+          "quantity": "1"
+        },
+        {
+          "core": false,
+          "name": "Onion",
+          "category": "Produce",
+          "quantity": "1 large"
+        },
+        {
+          "core": false,
+          "name": "Sweet potato or zucchini",
+          "category": "Produce",
+          "quantity": "2 medium sweet potatoes"
+        },
+        {
+          "core": false,
+          "name": "Garlic",
+          "category": "Produce",
+          "quantity": "5 cloves"
+        },
+        {
+          "core": false,
+          "name": "Fresh parsley",
+          "category": "Produce",
+          "quantity": "¼ cup, chopped"
+        },
+        {
+          "core": true,
+          "name": "Kalamata olives",
+          "category": "Canned Goods",
+          "quantity": "½ cup, pitted",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Dried oregano",
+          "category": "Spices",
+          "quantity": "2 tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Olive oil",
+          "category": "Sauces & Condiments",
+          "quantity": "3 tbsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Salt",
+          "category": "Spices",
+          "quantity": "1½ tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Black pepper",
+          "category": "Spices",
+          "quantity": "½ tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        },
+        {
+          "core": true,
+          "name": "Chili powder",
+          "category": "Spices",
+          "quantity": "½ tsp",
+          "quantity_value": null,
+          "quantity_unit": null
+        }
+      ],
+      "steps": [
+        "Preheat the oven to 425 °F (220 °C).",
+        "Peel and cube the sweet potatoes into 1-inch pieces; slice the bell peppers and onion into thick strips; mince the garlic.",
+        "Spread the sweet potatoes, bell peppers, onion, garlic, cherry tomatoes, and kalamata olives across a large rimmed baking sheet.",
+        "Drizzle the vegetables with 2 tbsp olive oil, then sprinkle with 1 tsp dried oregano, ½ tsp salt, and ¼ tsp black pepper; toss to coat.",
+        "Pat the chicken thighs dry and place them skin-side up on top of the vegetables.",
+        "In a small bowl, whisk together the remaining 1 tbsp olive oil, juice of 1 lemon, remaining 1 tsp dried oregano, chili powder, 1 tsp salt, and ¼ tsp black pepper.",
+        "Spoon the lemon-herb mixture evenly over the chicken thighs.",
+        "Slice the second lemon into thin rounds and tuck them among the vegetables on the tray.",
+        "Roast for 40–45 minutes, until the chicken skin is golden and an instant-read thermometer reads 165 °F at the thickest part.",
+        "Scatter the chopped fresh parsley over the tray and serve directly from the pan."
+      ],
+      "prep_time_minutes": 15,
+      "servings": 4,
+      "dietary_style": [
+        "dairy_free"
       ]
     }
   ],
