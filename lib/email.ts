@@ -3,6 +3,9 @@ import { Resend } from "resend";
 // weeklynom.com is verified with Resend, so this sends from a real domain
 // by default. RESEND_FROM can still override it if needed.
 const FROM = process.env.RESEND_FROM ?? "WeeklyNom <invites@weeklynom.com>";
+const FEEDBACK_NOTIFY_EMAIL = process.env.FEEDBACK_NOTIFY_EMAIL ?? "brittany.madruga@gmail.com";
+
+const CATEGORY_LABELS: Record<string, string> = { bug: "Bug", idea: "Idea", other: "Other" };
 
 export async function sendInviteEmail(
   toEmail: string,
@@ -20,6 +23,24 @@ export async function sendInviteEmail(
       <p>You've been invited to join <strong>${householdName}</strong> on WeeklyNom — a shared recipe library, This Week planner, pantry, and shopping list.</p>
       <p><a href="${inviteUrl}">Click here to join</a>.</p>
       <p style="color:#888;font-size:12px;">This link expires in 7 days.</p>
+    `,
+  });
+}
+
+export async function sendFeedbackNotificationEmail(
+  category: string,
+  message: string,
+  fromEmail: string | null
+) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
+  return resend.emails.send({
+    from: FROM,
+    to: FEEDBACK_NOTIFY_EMAIL,
+    subject: `New WeeklyNom feedback: ${CATEGORY_LABELS[category] ?? category}`,
+    html: `
+      <p><strong>${CATEGORY_LABELS[category] ?? category}</strong> from ${fromEmail ?? "an unknown user"}:</p>
+      <p style="white-space:pre-wrap;">${message.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" })[c]!)}</p>
     `,
   });
 }

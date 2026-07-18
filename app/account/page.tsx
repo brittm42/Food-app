@@ -56,6 +56,11 @@ export default async function AccountPage() {
           title="Preferences"
           subtitle={preferencesSubtitle(prefs)}
         />
+        <AccountSectionRow
+          href="/account/feedback"
+          title="Feedback"
+          subtitle="Bugs, ideas, anything else"
+        />
       </div>
     </div>
   );
