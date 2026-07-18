@@ -75,10 +75,19 @@ export async function updateSession(request: NextRequest) {
     const isOnboardingExempt = ONBOARDING_EXEMPT_PATHS.some((path) =>
       pathname.startsWith(path)
     );
+    // Cache cookie values are the userId itself, not a flat "1" -- if the
+    // browser's cookie jar still has a cache cookie from a *different* user
+    // (e.g. switching test accounts in the same browser without an explicit
+    // sign-out, or a magic link silently replacing the session), it must
+    // not be treated as valid for this user. A flat boolean here previously
+    // let a stale cache from a fully-onboarded account skip both checks
+    // entirely for a brand-new user in the same browser -- no household
+    // ever got created and no /onboarding redirect fired, leaving them
+    // signed in with no household and no profile row at all.
     const householdCached =
-      request.cookies.get(HOUSEHOLD_CACHE_COOKIE)?.value === "1";
+      request.cookies.get(HOUSEHOLD_CACHE_COOKIE)?.value === userId;
     const onboardingCached =
-      request.cookies.get(ONBOARDING_CACHE_COOKIE)?.value === "1";
+      request.cookies.get(ONBOARDING_CACHE_COOKIE)?.value === userId;
     const needsHouseholdCheck = !householdCached;
     const needsProfileCheck = !isOnboardingExempt && !onboardingCached;
 
@@ -127,7 +136,7 @@ export async function updateSession(request: NextRequest) {
           });
         }
       }
-      response.cookies.set(HOUSEHOLD_CACHE_COOKIE, "1", {
+      response.cookies.set(HOUSEHOLD_CACHE_COOKIE, userId, {
         maxAge: HOUSEHOLD_CACHE_MAX_AGE,
       });
     }
@@ -147,7 +156,7 @@ export async function updateSession(request: NextRequest) {
         });
         return redirectResponse;
       }
-      response.cookies.set(ONBOARDING_CACHE_COOKIE, "1", {
+      response.cookies.set(ONBOARDING_CACHE_COOKIE, userId, {
         maxAge: ONBOARDING_CACHE_MAX_AGE,
       });
     }
