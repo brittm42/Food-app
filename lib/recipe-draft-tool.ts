@@ -42,7 +42,8 @@ export function buildDraftRecipeTool(
           type: "array",
           items: { type: "string", enum: DIETARY_STYLE_IDS },
           description:
-            "Zero or more dietary styles this recipe genuinely satisfies as written (e.g. only include \"vegan\" if there is truly no meat, fish, dairy, eggs, or other animal product anywhere in the ingredients). Leave empty if none apply — do not guess.",
+            "Zero or more dietary styles this recipe genuinely satisfies as written. Check each style independently and consistently against the actual ingredient list — don't skip an obvious one just because the dish doesn't stereotypically read as that style (a banana bread with eggs but no dairy or meat is genuinely \"vegetarian\", the same as an obvious salad would be; don't omit it just because it's a baked good). " +
+            "\"vegan\" requires truly no meat, fish, dairy, eggs, honey, or other animal product anywhere in the ingredients — including eggs (a recipe with eggs is never vegan, even if everything else is plant-based) and including butter/ghee/cheese/etc. used only as a minor ingredient. \"vegetarian\" only requires no meat or fish — eggs and dairy are fine. A recipe can be vegetarian without being vegan (e.g. it has eggs or dairy), but every vegan recipe is also vegetarian, so include both when the stricter one applies. Leave empty if none apply — do not guess.",
         },
         emoji: { type: "string", description: "A single emoji representing the dish." },
         hint: {
