@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { Allergy } from "@/lib/types";
-import { CUISINE_LABELS, DIETARY_STYLES, HEALTH_GOALS } from "@/lib/types";
+import type { Allergy, TagColor } from "@/lib/types";
+import { DIETARY_STYLES, HEALTH_GOALS } from "@/lib/types";
 import TagListInput from "@/components/TagListInput";
 import AllergyListInput from "@/components/AllergyListInput";
 
@@ -22,6 +22,7 @@ export default function PreferencesForm({
   initialCuisinePreferences,
   initialDietaryStyle,
   initialHealthGoals,
+  cuisineColors,
   onSave,
   onSaved,
   saveLabel = "Save",
@@ -33,6 +34,7 @@ export default function PreferencesForm({
   initialCuisinePreferences: string[];
   initialDietaryStyle: string[];
   initialHealthGoals: string[];
+  cuisineColors: TagColor[];
   onSave: (values: PreferencesFormValues) => Promise<{ error?: string }>;
   onSaved?: () => void;
   saveLabel?: string;
@@ -147,20 +149,20 @@ export default function PreferencesForm({
           Cuisines enjoyed
         </h2>
         <div className="flex flex-wrap gap-1.5">
-          {Object.entries(CUISINE_LABELS).map(([id, label]) => {
-            const active = cuisinePreferences.includes(id);
+          {cuisineColors.map(({ name }) => {
+            const active = cuisinePreferences.includes(name);
             return (
               <button
-                key={id}
+                key={name}
                 type="button"
-                onClick={() => toggleCuisine(id)}
+                onClick={() => toggleCuisine(name)}
                 className={`rounded-full px-3 py-1 text-xs border cursor-pointer ${
                   active
                     ? "bg-teal text-white border-teal"
                     : "border-border text-ink-light hover:border-teal"
                 }`}
               >
-                {label}
+                {name}
               </button>
             );
           })}

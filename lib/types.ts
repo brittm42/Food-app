@@ -23,7 +23,9 @@ export type Recipe = {
   recipe: string | null; // deprecated: legacy prose instructions, superseded by `steps`
   steps: string[];
   prep_time_minutes: number | null;
+  cook_time_minutes: number | null;
   source: string | null;
+  imported_via: "link" | "photo" | null;
   servings: number | null;
   protein: number | null;
   fiber: number | null;
@@ -94,23 +96,6 @@ export const SUB_CATEGORIES: Record<MealType, { id: string; label: string }[]> =
   solo: [{ id: "solo", label: "Just for Me" }],
 };
 
-export const CUISINE_LABELS: Record<string, string> = {
-  med: "Mediterranean",
-  mex: "Mexican",
-  asi: "Asian",
-  ind: "Indian",
-  ita: "Italian",
-  tha: "Thai",
-  chn: "Chinese",
-  jpn: "Japanese",
-  kor: "Korean",
-  viet: "Vietnamese",
-  mideast: "Middle Eastern",
-  gre: "Greek",
-  fre: "French",
-  amr: "American",
-};
-
 export type AllergySeverity = "severe" | "mild";
 export type AllergyHandling = "strict_avoidance" | "substitution_ok" | "just_flag";
 
@@ -131,8 +116,9 @@ export const ALLERGY_HANDLING_LABELS: Record<AllergyHandling, string> = {
   just_flag: "Just flag it",
 };
 
-// Same shape/usage pattern as CUISINE_LABELS — id -> display label,
-// rendered as toggle chips, not free text.
+// id -> display label, rendered as toggle chips, not free text. Unlike
+// cuisines, this stays a fixed enum (see cuisine_colors table) since dietary
+// styles are a closed, well-known set the AI reasons about structurally.
 export const DIETARY_STYLES: Record<string, string> = {
   vegetarian: "Vegetarian",
   vegan: "Vegan",
@@ -174,6 +160,27 @@ export const TAG_COLOR_CLASSES: Record<string, string> = {
   sage: "bg-sage-light text-sage",
   red: "bg-red-light text-red",
 };
+
+// Resolves a cuisine name (from an AI draft/import, which won't always
+// match casing exactly — "italian" vs "Italian") to its existing canonical
+// spelling when one already exists, so the vocabulary doesn't silently
+// fragment into case-variant near-duplicates. Returns the name unchanged
+// (a genuinely new cuisine) when no case-insensitive match is found.
+export function canonicalCuisineName(name: string, known: string[]): string {
+  const match = known.find((k) => k.toLowerCase() === name.toLowerCase());
+  return match ?? name;
+}
+
+// Deterministic color assignment for a brand-new cuisine name (or tag),
+// used when something other than a human picking from a color dropdown
+// introduces one — e.g. an AI draft or a URL import proposing a cuisine
+// that isn't in cuisine_colors yet. Same name always maps to the same
+// color, so two independent flows introducing "Filipino" don't disagree.
+export function autoColorForName(name: string): (typeof TAG_COLOR_OPTIONS)[number] {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  return TAG_COLOR_OPTIONS[Math.abs(hash) % TAG_COLOR_OPTIONS.length];
+}
 
 export function mealTypeForCategory(category: string): MealType {
   for (const meal of MEAL_TYPES) {

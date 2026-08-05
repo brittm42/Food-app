@@ -12,9 +12,10 @@ export default async function EditRecipePage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [recipe, { data: tagColors }, household] = await Promise.all([
+  const [recipe, { data: tagColors }, { data: cuisineColors }, household] = await Promise.all([
     getRecipeById(id),
     supabase.from("tag_colors").select("*"),
+    supabase.from("cuisine_colors").select("*"),
     getCurrentHousehold(),
   ]);
 
@@ -39,6 +40,7 @@ export default async function EditRecipePage({
       recipeId={recipe.id}
       initial={recipe}
       tagColors={(tagColors ?? []) as TagColor[]}
+      cuisineColors={(cuisineColors ?? []) as TagColor[]}
     />
   );
 }

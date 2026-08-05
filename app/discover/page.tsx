@@ -21,7 +21,7 @@ export default async function DiscoverPage() {
     );
   }
 
-  const [{ data: recipes, error }, { data: tagColors }, { data: imported }] =
+  const [{ data: recipes, error }, { data: tagColors }, { data: cuisineColors }, { data: imported }] =
     await Promise.all([
       supabase
         .from("recipes")
@@ -30,6 +30,7 @@ export default async function DiscoverPage() {
         .neq("household_id", household.householdId)
         .order("name"),
       supabase.from("tag_colors").select("*"),
+      supabase.from("cuisine_colors").select("*"),
       supabase
         .from("recipes")
         .select("imported_from_recipe_id")
@@ -53,6 +54,7 @@ export default async function DiscoverPage() {
     <DiscoverBrowser
       recipes={(recipes ?? []) as Recipe[]}
       tagColors={(tagColors ?? []) as TagColor[]}
+      cuisineColors={(cuisineColors ?? []) as TagColor[]}
       alreadyImportedIds={alreadyImportedIds}
     />
   );

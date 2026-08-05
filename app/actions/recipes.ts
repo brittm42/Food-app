@@ -115,7 +115,9 @@ export async function importRecipe(sourceId: string) {
       recipe: source.recipe,
       steps: source.steps,
       prep_time_minutes: source.prep_time_minutes,
+      cook_time_minutes: source.cook_time_minutes,
       source: source.source,
+      imported_via: source.imported_via,
       servings: source.servings,
       protein: source.protein,
       fiber: source.fiber,
@@ -151,6 +153,21 @@ export async function createTagColor(name: string, color: string) {
 
   const { error } = await supabase
     .from("tag_colors")
+    .upsert({ name, color }, { onConflict: "name", ignoreDuplicates: true });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/");
+  return {};
+}
+
+export async function createCuisineColor(name: string, color: string) {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return { error: "Not signed in." };
+
+  const { error } = await supabase
+    .from("cuisine_colors")
     .upsert({ name, color }, { onConflict: "name", ignoreDuplicates: true });
 
   if (error) return { error: error.message };

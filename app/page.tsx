@@ -14,11 +14,12 @@ export default async function RecipesPage() {
 
   const household = await getCurrentHousehold();
 
-  const [{ data: recipes, error }, { data: tagColors }] = await Promise.all([
+  const [{ data: recipes, error }, { data: tagColors }, { data: cuisineColors }] = await Promise.all([
     household
       ? supabase.from("recipes").select("*").eq("household_id", household.householdId).order("name")
       : Promise.resolve({ data: [] as Recipe[], error: null }),
     supabase.from("tag_colors").select("*"),
+    supabase.from("cuisine_colors").select("*"),
   ]);
 
   if (error) {
@@ -73,6 +74,7 @@ export default async function RecipesPage() {
     <RecipesBrowser
       recipes={recipesWithRatings}
       tagColors={(tagColors ?? []) as TagColor[]}
+      cuisineColors={(cuisineColors ?? []) as TagColor[]}
       pickedFlavorIds={pickedFlavorIds}
       householdAllergies={householdAllergies}
     />

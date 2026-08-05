@@ -1,9 +1,15 @@
 import { getMyPreferences, updateMyPreferences } from "@/app/actions/profile";
+import { createClient } from "@/lib/supabase/server";
 import AccountBackLink from "@/components/AccountBackLink";
 import PreferencesForm from "@/components/PreferencesForm";
+import type { TagColor } from "@/lib/types";
 
 export default async function PreferencesSectionPage() {
-  const prefs = await getMyPreferences();
+  const supabase = await createClient();
+  const [prefs, { data: cuisineColors }] = await Promise.all([
+    getMyPreferences(),
+    supabase.from("cuisine_colors").select("*"),
+  ]);
   if (!prefs) return null;
 
   return (
@@ -20,6 +26,7 @@ export default async function PreferencesSectionPage() {
         initialCuisinePreferences={prefs.cuisinePreferences}
         initialDietaryStyle={prefs.dietaryStyle}
         initialHealthGoals={prefs.healthGoals}
+        cuisineColors={(cuisineColors ?? []) as TagColor[]}
         onSave={updateMyPreferences}
       />
     </div>

@@ -1,10 +1,11 @@
 import { getCurrentHousehold, isPrivileged } from "@/lib/household";
 import { getDependentProfile, updateDependentProfile } from "@/app/actions/profile";
 import { removeDependent } from "@/app/actions/household";
+import { createClient } from "@/lib/supabase/server";
 import AccountBackLink from "@/components/AccountBackLink";
 import PreferencesForm from "@/components/PreferencesForm";
 import RemoveDependentButton from "@/components/RemoveDependentButton";
-import type { Allergy } from "@/lib/types";
+import type { Allergy, TagColor } from "@/lib/types";
 
 export default async function DependentProfilePage({
   params,
@@ -15,7 +16,11 @@ export default async function DependentProfilePage({
   const household = await getCurrentHousehold();
   if (!household || !isPrivileged(household.role)) return null;
 
-  const profile = await getDependentProfile(memberId);
+  const supabase = await createClient();
+  const [profile, { data: cuisineColors }] = await Promise.all([
+    getDependentProfile(memberId),
+    supabase.from("cuisine_colors").select("*"),
+  ]);
   if (!profile) return null;
 
   async function saveDependentProfile(values: {
@@ -54,6 +59,7 @@ export default async function DependentProfilePage({
         initialCuisinePreferences={profile.cuisinePreferences}
         initialDietaryStyle={profile.dietaryStyle}
         initialHealthGoals={profile.healthGoals}
+        cuisineColors={(cuisineColors ?? []) as TagColor[]}
         onSave={saveDependentProfile}
       />
 

@@ -6,12 +6,20 @@ import type { Recipe, TagColor } from "@/lib/types";
 import {
   MEAL_TYPES,
   SUB_CATEGORIES,
-  CUISINE_LABELS,
   TAG_COLOR_OPTIONS,
   TAG_COLOR_CLASSES,
+  autoColorForName,
+  canonicalCuisineName,
 } from "@/lib/types";
-import { createRecipe, updateRecipe, createTagColor, type RecipeInput } from "@/app/actions/recipes";
+import {
+  createRecipe,
+  updateRecipe,
+  createTagColor,
+  createCuisineColor,
+  type RecipeInput,
+} from "@/app/actions/recipes";
 import { generateRecipeDraft, type ChatTurn } from "@/app/actions/generate-recipe";
+import { importRecipeFromUrl, importRecipeFromText } from "@/app/actions/import-recipe";
 import { parseNumericQuantity } from "@/lib/units";
 
 type ChatMessage = { role: "user" | "assistant"; text: string };
@@ -39,6 +47,7 @@ type FormState = {
   hint: string;
   steps: string[];
   prepTimeMinutes: string;
+  cookTimeMinutes: string;
   source: string;
   servings: string;
   protein: string;
@@ -60,6 +69,7 @@ function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
     hint: recipe?.hint ?? "",
     steps: recipe?.steps && recipe.steps.length > 0 ? recipe.steps : [""],
     prepTimeMinutes: recipe?.prep_time_minutes != null ? String(recipe.prep_time_minutes) : "",
+    cookTimeMinutes: recipe?.cook_time_minutes != null ? String(recipe.cook_time_minutes) : "",
     source: recipe?.source ?? "",
     servings: recipe?.servings != null ? String(recipe.servings) : "",
     protein: recipe?.protein != null ? String(recipe.protein) : "",
@@ -75,7 +85,11 @@ function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
   };
 }
 
-function toRecipeInput(form: FormState, isAiGenerated: boolean): RecipeInput {
+function toRecipeInput(
+  form: FormState,
+  isAiGenerated: boolean,
+  importedVia: "link" | "photo" | null
+): RecipeInput {
   return {
     name: form.name.trim(),
     category: form.category,
@@ -86,6 +100,8 @@ function toRecipeInput(form: FormState, isAiGenerated: boolean): RecipeInput {
     recipe: null,
     steps: form.steps.map((s) => s.trim()).filter(Boolean),
     prep_time_minutes: form.prepTimeMinutes.trim() ? Number(form.prepTimeMinutes) : null,
+    cook_time_minutes: form.cookTimeMinutes.trim() ? Number(form.cookTimeMinutes) : null,
+    imported_via: importedVia,
     source: form.source.trim() || null,
     servings: form.servings.trim() ? Number(form.servings) : null,
     protein: form.protein.trim() ? Number(form.protein) : null,
@@ -118,16 +134,22 @@ export default function RecipeForm({
   recipeId,
   initial,
   tagColors,
+  cuisineColors,
 }: {
   mode: "create" | "edit";
   recipeId?: string;
   initial?: Recipe;
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
 }) {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(() => formFromRecipe(initial));
   const [isAiGenerated, setIsAiGenerated] = useState(Boolean(initial?.is_ai_generated));
+  const [importedVia, setImportedVia] = useState<"link" | "photo" | null>(
+    initial?.imported_via ?? null
+  );
   const [localTagColors, setLocalTagColors] = useState(tagColors);
+  const [localCuisineColors, setLocalCuisineColors] = useState(cuisineColors);
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiError, setAiError] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -135,20 +157,50 @@ export default function RecipeForm({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState<string>(TAG_COLOR_OPTIONS[0]);
+  const [newCuisineName, setNewCuisineName] = useState("");
+  const [newCuisineColor, setNewCuisineColor] = useState<string>(TAG_COLOR_OPTIONS[0]);
+  const [sourceMode, setSourceMode] = useState<"ai" | "import">("ai");
+  const [importUrl, setImportUrl] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
+  const [needsManualText, setNeedsManualText] = useState(false);
+  const [manualText, setManualText] = useState("");
   const [isGenerating, startGenerating] = useTransition();
+  const [isImporting, startImporting] = useTransition();
   const [isSaving, startSaving] = useTransition();
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function toggleCuisine(id: string) {
+  function toggleCuisine(name: string) {
     setForm((f) => ({
       ...f,
-      cuisines: f.cuisines.includes(id)
-        ? f.cuisines.filter((c) => c !== id)
-        : [...f.cuisines, id],
+      cuisines: f.cuisines.includes(name)
+        ? f.cuisines.filter((c) => c !== name)
+        : [...f.cuisines, name],
     }));
+  }
+
+  // Registers any cuisine an AI draft/import introduced that isn't already
+  // a known chip, so it's immediately pickable without a page reload —
+  // mirrors handleAddNewTag's local-state-plus-persist pattern below. Also
+  // canonicalizes casing against the known list ("italian" -> "Italian" if
+  // that already exists) so a harmless casing difference from the model
+  // never fragments the vocabulary into near-duplicates; returns the
+  // canonicalized list for the caller to use as the form's actual value.
+  function reconcileCuisines(cuisines: string[]): string[] {
+    const knownNames = localCuisineColors.map((c) => c.name);
+    const canonical = cuisines.map((c) => canonicalCuisineName(c, knownNames));
+    const known = new Set(knownNames);
+    const additions = [...new Set(canonical.filter((name) => !known.has(name)))];
+    if (additions.length) {
+      additions.forEach((name) => createCuisineColor(name, autoColorForName(name)));
+      setLocalCuisineColors((cur) => [
+        ...cur,
+        ...additions.map((name) => ({ name, color: autoColorForName(name) })),
+      ]);
+    }
+    return canonical;
   }
 
   function toggleTag(name: string) {
@@ -209,6 +261,17 @@ export default function RecipeForm({
     setNewTagName("");
   }
 
+  function handleAddNewCuisine() {
+    const name = newCuisineName.trim();
+    if (!name) return;
+    if (!localCuisineColors.some((c) => c.name === name)) {
+      setLocalCuisineColors((cur) => [...cur, { name, color: newCuisineColor }]);
+      createCuisineColor(name, newCuisineColor);
+    }
+    setForm((f) => (f.cuisines.includes(name) ? f : { ...f, cuisines: [...f.cuisines, name] }));
+    setNewCuisineName("");
+  }
+
   function handleSendPrompt() {
     const prompt = aiPrompt.trim();
     if (!prompt) return;
@@ -222,8 +285,10 @@ export default function RecipeForm({
         return;
       }
       if (result.recipe) {
-        setForm(formFromRecipe(result.recipe));
+        const canonicalCuisines = reconcileCuisines(result.recipe.cuisines ?? []);
+        setForm(formFromRecipe({ ...result.recipe, cuisines: canonicalCuisines }));
         setIsAiGenerated(true);
+        setImportedVia(null);
         setApiHistory(result.history ?? []);
         setChatMessages((m) => [
           ...m,
@@ -240,6 +305,47 @@ export default function RecipeForm({
     setAiError(null);
   }
 
+  function handleImportUrl() {
+    const url = importUrl.trim();
+    if (!url) return;
+    setImportError(null);
+    setNeedsManualText(false);
+    startImporting(async () => {
+      const result = await importRecipeFromUrl(url);
+      if (result.error) {
+        setImportError(result.error);
+        setNeedsManualText(Boolean(result.needsManualText));
+        return;
+      }
+      if (result.recipe) {
+        const canonicalCuisines = reconcileCuisines(result.recipe.cuisines ?? []);
+        setForm(formFromRecipe({ ...result.recipe, cuisines: canonicalCuisines }));
+        setIsAiGenerated(false);
+        setImportedVia("link");
+      }
+    });
+  }
+
+  function handleImportManualText() {
+    if (!manualText.trim()) return;
+    setImportError(null);
+    startImporting(async () => {
+      const result = await importRecipeFromText(manualText, importUrl.trim() || undefined);
+      if (result.error) {
+        setImportError(result.error);
+        return;
+      }
+      if (result.recipe) {
+        const canonicalCuisines = reconcileCuisines(result.recipe.cuisines ?? []);
+        setForm(formFromRecipe({ ...result.recipe, cuisines: canonicalCuisines }));
+        setIsAiGenerated(false);
+        setImportedVia("link");
+        setNeedsManualText(false);
+        setManualText("");
+      }
+    });
+  }
+
   function handleSave() {
     setSaveError(null);
     if (!form.name.trim() || !form.steps.some((s) => s.trim()) || !form.category) {
@@ -247,7 +353,7 @@ export default function RecipeForm({
       return;
     }
     startSaving(async () => {
-      const input = toRecipeInput(form, isAiGenerated);
+      const input = toRecipeInput(form, isAiGenerated, importedVia);
       const result =
         mode === "create" ? await createRecipe(input) : await updateRecipe(recipeId!, input);
       if (result.error) {
@@ -264,67 +370,140 @@ export default function RecipeForm({
         {mode === "create" ? "Add a Recipe" : "Edit Recipe"}
       </h1>
 
-      <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
-            {chatMessages.length === 0 ? "Generate with AI" : "AI recipe chat"}
-          </div>
-          {chatMessages.length > 0 && (
-            <button
-              type="button"
-              onClick={handleResetChat}
-              className="font-mono text-[10px] text-ink-light hover:text-coral cursor-pointer"
-            >
-              Start over
-            </button>
-          )}
-        </div>
-        {chatMessages.length > 0 && (
-          <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">
-            {chatMessages.map((m, i) => (
-              <div
-                key={i}
-                className={`text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] ${
-                  m.role === "user"
-                    ? "bg-ink text-white self-end"
-                    : "bg-surface text-ink self-start border border-border"
-                }`}
-              >
-                {m.text}
-              </div>
-            ))}
-            {isGenerating && (
-              <div className="text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] bg-surface text-ink-light self-start border border-border">
-                Thinking…
-              </div>
-            )}
-          </div>
-        )}
-        <textarea
-          value={aiPrompt}
-          onChange={(e) => setAiPrompt(e.target.value)}
-          placeholder={
-            chatMessages.length === 0
-              ? "Describe the recipe idea — craving, key ingredients, cuisine..."
-              : "Ask for a change — \"make it vegetarian\", \"double it\"..."
-          }
-          rows={2}
-          className={INPUT_CLASS}
-        />
+      <div className="flex gap-2">
         <button
           type="button"
-          disabled={isGenerating || !aiPrompt.trim()}
-          onClick={handleSendPrompt}
-          className="bg-plum text-white rounded-lg py-2 text-sm font-medium cursor-pointer disabled:opacity-50 self-start px-4"
+          onClick={() => setSourceMode("ai")}
+          className={`flex-1 rounded-lg py-2 text-sm font-medium cursor-pointer transition-colors ${
+            sourceMode === "ai" ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
+          }`}
         >
-          {isGenerating ? "Thinking…" : chatMessages.length === 0 ? "✨ Generate with AI" : "Send"}
+          ✨ Generate with AI
         </button>
-        {aiError && <p className="text-sm text-red">{aiError}</p>}
-      </section>
+        <button
+          type="button"
+          onClick={() => setSourceMode("import")}
+          className={`flex-1 rounded-lg py-2 text-sm font-medium cursor-pointer transition-colors ${
+            sourceMode === "import" ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
+          }`}
+        >
+          🔗 Import from URL
+        </button>
+      </div>
+
+      {sourceMode === "ai" ? (
+        <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
+              {chatMessages.length === 0 ? "Generate with AI" : "AI recipe chat"}
+            </div>
+            {chatMessages.length > 0 && (
+              <button
+                type="button"
+                onClick={handleResetChat}
+                className="font-mono text-[10px] text-ink-light hover:text-coral cursor-pointer"
+              >
+                Start over
+              </button>
+            )}
+          </div>
+          {chatMessages.length > 0 && (
+            <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">
+              {chatMessages.map((m, i) => (
+                <div
+                  key={i}
+                  className={`text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] ${
+                    m.role === "user"
+                      ? "bg-ink text-white self-end"
+                      : "bg-surface text-ink self-start border border-border"
+                  }`}
+                >
+                  {m.text}
+                </div>
+              ))}
+              {isGenerating && (
+                <div className="text-[13px] leading-snug rounded-lg px-3 py-2 max-w-[85%] bg-surface text-ink-light self-start border border-border">
+                  Thinking…
+                </div>
+              )}
+            </div>
+          )}
+          <textarea
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+            placeholder={
+              chatMessages.length === 0
+                ? "Describe the recipe idea — craving, key ingredients, cuisine..."
+                : "Ask for a change — \"make it vegetarian\", \"double it\"..."
+            }
+            rows={2}
+            className={INPUT_CLASS}
+          />
+          <button
+            type="button"
+            disabled={isGenerating || !aiPrompt.trim()}
+            onClick={handleSendPrompt}
+            className="bg-plum text-white rounded-lg py-2 text-sm font-medium cursor-pointer disabled:opacity-50 self-start px-4"
+          >
+            {isGenerating ? "Thinking…" : chatMessages.length === 0 ? "✨ Generate with AI" : "Send"}
+          </button>
+          {aiError && <p className="text-sm text-red">{aiError}</p>}
+        </section>
+      ) : (
+        <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
+          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
+            Import from URL
+          </div>
+          <div className="flex gap-2">
+            <input
+              className={`${INPUT_CLASS} flex-1`}
+              value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)}
+              placeholder="Paste a link to a recipe"
+            />
+            <button
+              type="button"
+              disabled={isImporting || !importUrl.trim()}
+              onClick={handleImportUrl}
+              className="bg-plum text-white rounded-lg py-2 px-4 text-sm font-medium cursor-pointer disabled:opacity-50 flex-shrink-0"
+            >
+              {isImporting ? "Importing…" : "Import"}
+            </button>
+          </div>
+          {importError && <p className="text-sm text-red">{importError}</p>}
+          {needsManualText && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs text-ink-light">
+                Paste the recipe&apos;s text below instead and we&apos;ll extract it from that.
+              </p>
+              <textarea
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                placeholder="Paste the recipe's ingredients and steps here..."
+                rows={6}
+                className={INPUT_CLASS}
+              />
+              <button
+                type="button"
+                disabled={isImporting || !manualText.trim()}
+                onClick={handleImportManualText}
+                className="bg-plum text-white rounded-lg py-2 text-sm font-medium cursor-pointer disabled:opacity-50 self-start px-4"
+              >
+                {isImporting ? "Importing…" : "Use this text instead"}
+              </button>
+            </div>
+          )}
+        </section>
+      )}
 
       {isAiGenerated && (
         <div className="bg-plum-light text-plum text-xs font-mono uppercase tracking-wide rounded-lg px-3 py-2">
           ✨ AI-drafted — review before saving
+        </div>
+      )}
+      {importedVia && (
+        <div className="bg-teal-light text-teal text-xs font-mono uppercase tracking-wide rounded-lg px-3 py-2">
+          📥 Imported — review before saving
         </div>
       )}
 
@@ -361,19 +540,45 @@ export default function RecipeForm({
           </select>
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <label className={LABEL_CLASS}>Cuisines</label>
           <div className="flex gap-1.5 flex-wrap">
-            {Object.entries(CUISINE_LABELS).map(([id, label]) => (
+            {localCuisineColors.map((cc) => (
               <button
-                key={id}
+                key={cc.name}
                 type="button"
-                onClick={() => toggleCuisine(id)}
-                className={`${CHIP_BASE} ${form.cuisines.includes(id) ? CHIP_ACTIVE : CHIP_INACTIVE}`}
+                onClick={() => toggleCuisine(cc.name)}
+                className={`${CHIP_BASE} ${form.cuisines.includes(cc.name) ? CHIP_ACTIVE : CHIP_INACTIVE}`}
               >
-                {label}
+                {cc.name}
               </button>
             ))}
+          </div>
+          <div className="flex gap-2 items-center mt-1">
+            <input
+              className={INPUT_CLASS}
+              placeholder="New cuisine name"
+              value={newCuisineName}
+              onChange={(e) => setNewCuisineName(e.target.value)}
+            />
+            <select
+              className="border border-border rounded-lg px-2 py-2 text-sm bg-surface"
+              value={newCuisineColor}
+              onChange={(e) => setNewCuisineColor(e.target.value)}
+            >
+              {TAG_COLOR_OPTIONS.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={handleAddNewCuisine}
+              className="bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium cursor-pointer flex-shrink-0"
+            >
+              + Add
+            </button>
           </div>
         </div>
 
@@ -480,6 +685,15 @@ export default function RecipeForm({
               className={INPUT_CLASS}
               value={form.prepTimeMinutes}
               onChange={(e) => update("prepTimeMinutes", e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className={LABEL_CLASS}>Cook time (min)</label>
+            <input
+              type="number"
+              className={INPUT_CLASS}
+              value={form.cookTimeMinutes}
+              onChange={(e) => update("cookTimeMinutes", e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-1">

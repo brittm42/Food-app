@@ -2,139 +2,20 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { SUB_CATEGORIES, CUISINE_LABELS, DIETARY_STYLES } from "@/lib/types";
 import type { Recipe, Allergy } from "@/lib/types";
 import type { RecipeInput } from "@/app/actions/recipes";
 import { parseNumericQuantity } from "@/lib/units";
-import { CATEGORIES } from "@/lib/categories";
 import { getCurrentHousehold } from "@/lib/household";
 import { buildPreferencesNote, type HouseholdPreferencesContext } from "@/lib/preferences-note";
-
-const CATEGORY_IDS = Object.values(SUB_CATEGORIES).flatMap((subs) => subs.map((s) => s.id));
-const CUISINE_IDS = Object.keys(CUISINE_LABELS);
-const DIETARY_STYLE_IDS = Object.keys(DIETARY_STYLES);
-
-function buildTool(tagNames: string[], knownIngredientNames: string[]): Anthropic.Tool {
-  return {
-    name: "draft_recipe",
-    description: "Draft a structured recipe for the WeeklyNom recipe library.",
-    input_schema: {
-      type: "object",
-      properties: {
-        name: { type: "string", description: "Short, appetizing recipe name." },
-        category: {
-          type: "string",
-          enum: CATEGORY_IDS,
-          description: "The single best-fit sub-category id for this recipe.",
-        },
-        cuisines: {
-          type: "array",
-          items: { type: "string", enum: CUISINE_IDS },
-          description: "Zero or more cuisine tags that fit this recipe.",
-        },
-        dietary_style: {
-          type: "array",
-          items: { type: "string", enum: DIETARY_STYLE_IDS },
-          description:
-            "Zero or more dietary styles this recipe genuinely satisfies as written (e.g. only include \"vegan\" if there is truly no meat, fish, dairy, eggs, or other animal product anywhere in the ingredients). Leave empty if none apply — do not guess.",
-        },
-        emoji: { type: "string", description: "A single emoji representing the dish." },
-        hint: {
-          type: "string",
-          description: "A short, casual one-line description (PRD voice: friendly, brief).",
-        },
-        steps: {
-          type: "array",
-          items: { type: "string" },
-          description:
-            "Ordered list of instruction steps, one clear action per step (not a single paragraph). Light inline HTML like <strong> is OK for emphasis; no other markup. Every ingredient named in a step — including pantry basics like oil, salt, pepper, and butter — must also appear as its own entry in the ingredients list. Never mention an ingredient in a step that isn't listed.",
-        },
-        prep_time_minutes: {
-          type: "integer",
-          description:
-            "Estimated active prep time in minutes, only if you have a reasonable basis for estimating it from the ingredient list/step count. Omit if you'd just be guessing.",
-        },
-        source: {
-          type: "string",
-          description:
-            "URL or citation for where this recipe came from, only if the user's description mentions or links one. Omit entirely if no source was given — never invent one.",
-        },
-        servings: { type: "integer", description: "Number of servings this recipe makes." },
-        protein: {
-          type: "number",
-          description:
-            "Grams of protein per serving, only if you have a reasonable basis for estimating it from the ingredients. Omit if you'd just be guessing.",
-        },
-        fiber: {
-          type: "number",
-          description:
-            "Grams of fiber per serving, only if you have a reasonable basis for estimating it from the ingredients. Omit if you'd just be guessing.",
-        },
-        cal: {
-          type: "number",
-          description:
-            "Calories per serving, only if you have a reasonable basis for estimating it from the ingredients. Omit if you'd just be guessing.",
-        },
-        change_summary: {
-          type: "string",
-          description:
-            "One short, casual sentence summarizing what changed from the previous draft (e.g. \"Swapped the chicken for tofu and dropped the dairy.\"). Only include this when revising an earlier draft based on feedback — omit entirely when drafting the very first version.",
-        },
-        tags: {
-          type: "array",
-          items: { type: "string", enum: tagNames },
-          description:
-            "Zero or more existing tags that fit this recipe. Only pick from the provided list — never invent a new tag name, even if none fit perfectly. Leave empty if nothing fits.",
-        },
-        ingredients: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: {
-                type: "string",
-                description:
-                  `Bare ingredient name only — no quantity, brand, or prep notes (write "Black beans", never "1 can black beans" or "Black beans (15oz)"). ` +
-                  (knownIngredientNames.length
-                    ? `Reuse one of these existing names whenever it's the same ingredient, so it matches across recipes on the Shopping List: ${knownIngredientNames.join(", ")}.`
-                    : ""),
-              },
-              core: {
-                type: "boolean",
-                description:
-                  "true if this is a shelf-stable Core Pantry item, false if it's a Fresh/weekly-buy item.",
-              },
-              category: {
-                type: "string",
-                enum: CATEGORIES as unknown as string[],
-                description: "The single best-fit grocery-aisle category for this ingredient.",
-              },
-              quantity: {
-                type: "string",
-                description:
-                  'Amount as it would appear in a recipe. Free text, not strictly numeric — always give a real value: a number ("1", "1/2", "2-3"), a count word ("a few", "handful"), or "to taste" for seasonings. Never omit this.',
-              },
-              unit: {
-                type: "string",
-                description:
-                  'Unit of measure, e.g. "cup", "tbsp", "clove", "can", "whole". Omit only if quantity has no unit (e.g. "to taste", "3 eggs" with quantity "3" and no unit).',
-              },
-            },
-            required: ["name", "core", "category", "quantity"],
-          },
-        },
-      },
-      required: ["name", "category", "cuisines", "emoji", "hint", "steps", "servings", "tags", "ingredients"],
-    },
-  };
-}
+import { buildDraftRecipeTool } from "@/lib/recipe-draft-tool";
+import { COMMON_INGREDIENT_NAMES } from "@/lib/common-ingredients";
 
 const SYSTEM_PROMPT = `You are drafting a recipe for a household recipe library called WeeklyNom. The library's existing recipes share a consistent voice:
 - Casual, brief hint lines (not full sentences of marketing copy).
 - Protein- and fiber-forward home cooking, simple weeknight-friendly instructions.
 - Instructions are an ordered list of discrete steps, not a single paragraph — one clear action per step. Light inline HTML (just <strong> for emphasis) inside a step is OK, no other markup.
 - Ingredients are split into "Fresh" (perishable, weekly-buy) vs "Core" (shelf-stable pantry staples) for shopping list generation, and each also gets a grocery-aisle category (Produce, Dairy & Eggs, Meat & Seafood, Frozen, Bakery, Canned Goods, Grains & Dried, Sauces & Condiments, Spices, Beverages, Snacks, Household & Non-food, Other) used to group the Shopping List by aisle. Ingredient names must be bare nouns with no quantity or brand, and should reuse an existing name when the same ingredient is already in the library — the Shopping List dedupes ingredients by exact name match across recipes, so inconsistent naming creates duplicate entries. Quantities and units belong in their own fields, using realistic everyday-recipe conventions (fractions, ranges, or words like "handful"/"to taste" are fine — quantity is a string, not strictly numeric). Every ingredient must have a quantity, and every ingredient your steps mention — including pantry basics like oil, salt, pepper, and butter — must be listed, even if the amount is just "to taste" or "a drizzle". The ingredients list and the steps must never disagree about what's used.
-- Estimate prep_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
+- Estimate prep_time_minutes and cook_time_minutes only when there's a reasonable basis for it from the ingredient list/step count — omit rather than guess wildly.
 Draft one recipe matching this voice based on the user's description. Always call the draft_recipe tool with your answer. If this is a follow-up turn revising an earlier draft, make only the changes the feedback asks for and keep everything else from the previous version as-is — always return the complete recipe (every field, not just what changed), and include change_summary.`;
 
 export async function getHouseholdPreferencesContext(
@@ -201,19 +82,28 @@ export async function generateRecipeDraft(
   if (!description.trim()) return { error: "Describe the recipe idea first." };
 
   const supabase = await createClient();
-  const [{ data: tagColors }, { data: recipes }, householdContext] = await Promise.all([
-    supabase.from("tag_colors").select("name"),
-    supabase.from("recipes").select("ingredients"),
-    getHouseholdPreferencesContext(supabase),
-  ]);
+  const [{ data: tagColors }, { data: cuisineColors }, { data: recipes }, householdContext] =
+    await Promise.all([
+      supabase.from("tag_colors").select("name"),
+      supabase.from("cuisine_colors").select("name"),
+      supabase.from("recipes").select("ingredients"),
+      getHouseholdPreferencesContext(supabase),
+    ]);
 
   const tagNames = (tagColors ?? []).map((t) => t.name as string);
+  const knownCuisineNames = (cuisineColors ?? []).map((c) => c.name as string);
+  // Curated common-ingredient baseline first, then whatever's actually in
+  // the library — the library alone has accumulated some genuinely messy
+  // entries (e.g. "Waffle mix", "Shredded cheese") that a naive reuse
+  // instruction was matching against; the curated list gives the model a
+  // correct anchor to prefer even for ingredients no recipe has used yet.
   const knownIngredientNames = [
-    ...new Set(
-      (recipes ?? []).flatMap(
+    ...new Set([
+      ...COMMON_INGREDIENT_NAMES,
+      ...(recipes ?? []).flatMap(
         (r) => ((r as Pick<Recipe, "ingredients">).ingredients ?? []).map((i) => i.name)
-      )
-    ),
+      ),
+    ]),
   ].sort();
 
   const client = new Anthropic({ apiKey });
@@ -226,7 +116,7 @@ export async function generateRecipeDraft(
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       system: SYSTEM_PROMPT + preferencesNote,
-      tools: [buildTool(tagNames, knownIngredientNames)],
+      tools: [buildDraftRecipeTool(tagNames, knownIngredientNames, knownCuisineNames)],
       tool_choice: { type: "tool", name: "draft_recipe" },
       messages,
     });

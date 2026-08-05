@@ -20,11 +20,13 @@ function ratingRank(rating: RatingValue | null) {
 export default function RecipesBrowser({
   recipes,
   tagColors,
+  cuisineColors,
   pickedFlavorIds,
   householdAllergies,
 }: {
   recipes: RecipeWithRating[];
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
   pickedFlavorIds: string[];
   householdAllergies: Allergy[];
 }) {
@@ -111,7 +113,12 @@ export default function RecipesBrowser({
       {showOats ? (
         <OatFlavorGrid pickedFlavorIds={pickedFlavorIds} />
       ) : (
-        <RecipeList recipes={visibleRecipes} tagColors={tagColors} householdAllergies={householdAllergies} />
+        <RecipeList
+          recipes={visibleRecipes}
+          tagColors={tagColors}
+          cuisineColors={cuisineColors}
+          householdAllergies={householdAllergies}
+        />
       )}
     </div>
   );
@@ -120,10 +127,12 @@ export default function RecipesBrowser({
 function RecipeList({
   recipes,
   tagColors,
+  cuisineColors,
   householdAllergies,
 }: {
   recipes: RecipeWithRating[];
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
   householdAllergies: Allergy[];
 }) {
   if (recipes.length === 0) {
@@ -141,6 +150,7 @@ function RecipeList({
           key={recipe.id}
           recipe={recipe}
           tagColors={tagColors}
+          cuisineColors={cuisineColors}
           householdAllergies={householdAllergies}
         />
       ))}

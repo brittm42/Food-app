@@ -3,47 +3,31 @@
 import { useTransition, useState } from "react";
 import Link from "next/link";
 import type { RecipeWithRating, TagColor, RatingValue, Allergy } from "@/lib/types";
-import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
+import { TAG_COLOR_CLASSES } from "@/lib/types";
 import { setRating } from "@/app/actions/ratings";
 import { toggleThisWeek } from "@/app/actions/week-queue";
 import { deleteRecipe } from "@/app/actions/recipes";
 import RecipeStepsAndIngredients from "@/components/RecipeStepsAndIngredients";
 import RecipeAllergenBadge from "@/components/RecipeAllergenBadge";
 
-const CUISINE_BADGE_CLASSES: Record<string, string> = {
-  med: "bg-cuisine-med-light text-cuisine-med",
-  mex: "bg-cuisine-mex-light text-cuisine-mex",
-  asi: "bg-cuisine-asi-light text-cuisine-asi",
-  ind: "bg-cuisine-ind-light text-cuisine-ind",
-  // Newer cuisines reuse the existing generic tag palette instead of
-  // adding bespoke design tokens for each one.
-  ita: TAG_COLOR_CLASSES.gold,
-  tha: TAG_COLOR_CLASSES.coral,
-  chn: TAG_COLOR_CLASSES.red,
-  jpn: TAG_COLOR_CLASSES.plum,
-  kor: TAG_COLOR_CLASSES.sage,
-  viet: TAG_COLOR_CLASSES.teal,
-  mideast: TAG_COLOR_CLASSES.gold,
-  gre: TAG_COLOR_CLASSES.teal,
-  fre: TAG_COLOR_CLASSES.plum,
-  amr: TAG_COLOR_CLASSES.coral,
-};
-
 export default function RecipeCard({
   recipe,
   tagColors,
+  cuisineColors,
   householdAllergies,
 }: {
   recipe: RecipeWithRating;
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
   householdAllergies: Allergy[];
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const hasMacros = Boolean(
-    recipe.protein || recipe.fiber || recipe.cal || recipe.prep_time_minutes
+    recipe.protein || recipe.fiber || recipe.cal || recipe.prep_time_minutes || recipe.cook_time_minutes
   );
   const tagColorByName = Object.fromEntries(tagColors.map((t) => [t.name, t.color]));
+  const cuisineColorByName = Object.fromEntries(cuisineColors.map((c) => [c.name, c.color]));
 
   function rate(value: RatingValue) {
     startTransition(() => {
@@ -86,21 +70,25 @@ export default function RecipeCard({
                   ✨ AI
                 </span>
               )}
+              {recipe.imported_via && (
+                <span className="font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-teal-light text-teal">
+                  📥 Imported
+                </span>
+              )}
               <RecipeAllergenBadge
                 ingredients={recipe.ingredients}
                 householdAllergies={householdAllergies}
               />
-              {recipe.cuisines.map(
-                (cuisine) =>
-                  CUISINE_LABELS[cuisine] && (
-                    <span
-                      key={cuisine}
-                      className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${CUISINE_BADGE_CLASSES[cuisine]}`}
-                    >
-                      {CUISINE_LABELS[cuisine]}
-                    </span>
-                  )
-              )}
+              {recipe.cuisines.map((cuisine) => (
+                <span
+                  key={cuisine}
+                  className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${
+                    TAG_COLOR_CLASSES[cuisineColorByName[cuisine]] ?? "bg-sage-light text-sage"
+                  }`}
+                >
+                  {cuisine}
+                </span>
+              ))}
               {recipe.tags.map((tag) => (
                 <span
                   key={tag}
@@ -204,6 +192,9 @@ export default function RecipeCard({
             <div className="flex gap-2 mt-3.5">
               {recipe.prep_time_minutes ? (
                 <Macro value={`${recipe.prep_time_minutes}m`} label="Prep" />
+              ) : null}
+              {recipe.cook_time_minutes ? (
+                <Macro value={`${recipe.cook_time_minutes}m`} label="Cook" />
               ) : null}
               {recipe.protein ? (
                 <Macro value={`${recipe.protein}g`} label="Protein" />

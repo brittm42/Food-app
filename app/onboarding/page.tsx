@@ -2,14 +2,19 @@ import { getMyPreferences } from "@/app/actions/profile";
 import { getHouseholdCookingProfile } from "@/app/actions/household";
 import { listHouseholdMembers } from "@/app/actions/household";
 import { isPrivileged } from "@/lib/household";
+import { createClient } from "@/lib/supabase/server";
 import OnboardingWizard from "@/components/OnboardingWizard";
+import type { TagColor } from "@/lib/types";
 
 export default async function OnboardingPage() {
-  const [prefs, cookingProfile, { householdName, members, role }] = await Promise.all([
-    getMyPreferences(),
-    getHouseholdCookingProfile(),
-    listHouseholdMembers(),
-  ]);
+  const supabase = await createClient();
+  const [prefs, cookingProfile, { householdName, members, role }, { data: cuisineColors }] =
+    await Promise.all([
+      getMyPreferences(),
+      getHouseholdCookingProfile(),
+      listHouseholdMembers(),
+      supabase.from("cuisine_colors").select("*"),
+    ]);
   if (!prefs) return null;
 
   const dependents = members
@@ -27,6 +32,7 @@ export default async function OnboardingPage() {
     <div className="max-w-md mx-auto py-8 px-4">
       <OnboardingWizard
         canManageHousehold={canManageHousehold}
+        cuisineColors={(cuisineColors ?? []) as TagColor[]}
         initialHouseholdName={householdName ?? "Home"}
         initialPrefs={{
           allergies: prefs.allergies,

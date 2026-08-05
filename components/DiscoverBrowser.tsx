@@ -7,10 +7,12 @@ import DiscoverRecipeCard from "@/components/DiscoverRecipeCard";
 export default function DiscoverBrowser({
   recipes,
   tagColors,
+  cuisineColors,
   alreadyImportedIds,
 }: {
   recipes: Recipe[];
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
   alreadyImportedIds: string[];
 }) {
   const [query, setQuery] = useState("");
@@ -55,6 +57,7 @@ export default function DiscoverBrowser({
               key={recipe.id}
               recipe={recipe}
               tagColors={tagColors}
+              cuisineColors={cuisineColors}
               alreadyImported={importedSet.has(recipe.id)}
             />
           ))}

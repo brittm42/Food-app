@@ -13,8 +13,8 @@ import {
 import { generateRecipeDraft } from "@/app/actions/generate-recipe";
 import { createRecipe, type RecipeInput } from "@/app/actions/recipes";
 import PreferencesForm from "@/components/PreferencesForm";
-import { MEAL_TYPES, SKILL_LEVELS, CUISINE_LABELS } from "@/lib/types";
-import type { Allergy, MealType, SkillLevel } from "@/lib/types";
+import { MEAL_TYPES, SKILL_LEVELS } from "@/lib/types";
+import type { Allergy, MealType, SkillLevel, TagColor } from "@/lib/types";
 
 const FULL_STEPS = [
   "household",
@@ -84,12 +84,14 @@ export default function OnboardingWizard({
   initialPrefs,
   initialCookingProfile,
   initialDependents,
+  cuisineColors,
 }: {
   canManageHousehold: boolean;
   initialHouseholdName: string;
   initialPrefs: Prefs;
   initialCookingProfile: CookingProfile;
   initialDependents: { memberId: string; displayName: string }[];
+  cuisineColors: TagColor[];
 }) {
   const router = useRouter();
   const steps: readonly Step[] = canManageHousehold ? FULL_STEPS : JOINER_STEPS;
@@ -128,7 +130,13 @@ export default function OnboardingWizard({
       {step === "household" && <HouseholdNameStep initialName={householdName} onSaved={setHouseholdName} onNext={next} />}
 
       {step === "you" && (
-        <PreferencesStep initial={initialPrefs} isFinalStep={isLastStep} onNext={next} onBack={canManageHousehold ? back : undefined} />
+        <PreferencesStep
+          initial={initialPrefs}
+          isFinalStep={isLastStep}
+          cuisineColors={cuisineColors}
+          onNext={next}
+          onBack={canManageHousehold ? back : undefined}
+        />
       )}
 
       {step === "cooking-profile" && (
@@ -136,7 +144,13 @@ export default function OnboardingWizard({
       )}
 
       {step === "members" && (
-        <MembersStep dependents={dependents} onChange={setDependents} onNext={next} onBack={back} />
+        <MembersStep
+          dependents={dependents}
+          cuisineColors={cuisineColors}
+          onChange={setDependents}
+          onNext={next}
+          onBack={back}
+        />
       )}
 
       {step === "curated-recipes" && (
@@ -216,11 +230,13 @@ function HouseholdNameStep({
 function PreferencesStep({
   initial,
   isFinalStep,
+  cuisineColors,
   onNext,
   onBack,
 }: {
   initial: Prefs;
   isFinalStep: boolean;
+  cuisineColors: TagColor[];
   onNext: () => void;
   onBack?: () => void;
 }) {
@@ -231,6 +247,7 @@ function PreferencesStep({
       initialCuisinePreferences={initial.cuisinePreferences}
       initialDietaryStyle={initial.dietaryStyle}
       initialHealthGoals={initial.healthGoals}
+      cuisineColors={cuisineColors}
       saveLabel={isFinalStep ? "Finish" : "Continue"}
       onSave={(values) =>
         updateMyPreferences(
@@ -381,11 +398,13 @@ const EMPTY_PREFS: Prefs = {
 
 function MembersStep({
   dependents,
+  cuisineColors,
   onChange,
   onNext,
   onBack,
 }: {
   dependents: Dependent[];
+  cuisineColors: TagColor[];
   onChange: (dependents: Dependent[]) => void;
   onNext: () => void;
   onBack: () => void;
@@ -428,6 +447,7 @@ function MembersStep({
           initialCuisinePreferences={EMPTY_PREFS.cuisinePreferences}
           initialDietaryStyle={EMPTY_PREFS.dietaryStyle}
           initialHealthGoals={EMPTY_PREFS.healthGoals}
+          cuisineColors={cuisineColors}
           saveLabel="Save"
           onSave={(values) =>
             updateDependentProfile(activeDependent.memberId, {
@@ -656,9 +676,7 @@ function CuratedRecipesStep({
                     </span>
                   </div>
                   {pick.cuisines.length > 0 && (
-                    <p className="text-xs text-ink-light mt-0.5">
-                      {pick.cuisines.map((c) => CUISINE_LABELS[c] ?? c).join(", ")}
-                    </p>
+                    <p className="text-xs text-ink-light mt-0.5">{pick.cuisines.join(", ")}</p>
                   )}
                   <p className="text-xs text-ink-light mt-1 italic">{pick.reason}</p>
                 </button>

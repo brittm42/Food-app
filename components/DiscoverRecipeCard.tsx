@@ -2,43 +2,29 @@
 
 import { useTransition, useState } from "react";
 import type { Recipe, TagColor } from "@/lib/types";
-import { CUISINE_LABELS, TAG_COLOR_CLASSES } from "@/lib/types";
+import { TAG_COLOR_CLASSES } from "@/lib/types";
 import { importRecipe } from "@/app/actions/recipes";
 import RecipeStepsAndIngredients from "@/components/RecipeStepsAndIngredients";
-
-const CUISINE_BADGE_CLASSES: Record<string, string> = {
-  med: "bg-cuisine-med-light text-cuisine-med",
-  mex: "bg-cuisine-mex-light text-cuisine-mex",
-  asi: "bg-cuisine-asi-light text-cuisine-asi",
-  ind: "bg-cuisine-ind-light text-cuisine-ind",
-  ita: TAG_COLOR_CLASSES.gold,
-  tha: TAG_COLOR_CLASSES.coral,
-  chn: TAG_COLOR_CLASSES.red,
-  jpn: TAG_COLOR_CLASSES.plum,
-  kor: TAG_COLOR_CLASSES.sage,
-  viet: TAG_COLOR_CLASSES.teal,
-  mideast: TAG_COLOR_CLASSES.gold,
-  gre: TAG_COLOR_CLASSES.teal,
-  fre: TAG_COLOR_CLASSES.plum,
-  amr: TAG_COLOR_CLASSES.coral,
-};
 
 export default function DiscoverRecipeCard({
   recipe,
   tagColors,
+  cuisineColors,
   alreadyImported,
 }: {
   recipe: Recipe;
   tagColors: TagColor[];
+  cuisineColors: TagColor[];
   alreadyImported: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [imported, setImported] = useState(alreadyImported);
   const hasMacros = Boolean(
-    recipe.protein || recipe.fiber || recipe.cal || recipe.prep_time_minutes
+    recipe.protein || recipe.fiber || recipe.cal || recipe.prep_time_minutes || recipe.cook_time_minutes
   );
   const tagColorByName = Object.fromEntries(tagColors.map((t) => [t.name, t.color]));
+  const cuisineColorByName = Object.fromEntries(cuisineColors.map((c) => [c.name, c.color]));
 
   function add() {
     startTransition(async () => {
@@ -67,17 +53,21 @@ export default function DiscoverRecipeCard({
                   ✨ AI
                 </span>
               )}
-              {recipe.cuisines.map(
-                (cuisine) =>
-                  CUISINE_LABELS[cuisine] && (
-                    <span
-                      key={cuisine}
-                      className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${CUISINE_BADGE_CLASSES[cuisine]}`}
-                    >
-                      {CUISINE_LABELS[cuisine]}
-                    </span>
-                  )
+              {recipe.imported_via && (
+                <span className="font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-teal-light text-teal">
+                  📥 Imported
+                </span>
               )}
+              {recipe.cuisines.map((cuisine) => (
+                <span
+                  key={cuisine}
+                  className={`font-mono text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full ${
+                    TAG_COLOR_CLASSES[cuisineColorByName[cuisine]] ?? "bg-sage-light text-sage"
+                  }`}
+                >
+                  {cuisine}
+                </span>
+              ))}
               {recipe.tags.map((tag) => (
                 <span
                   key={tag}
@@ -125,6 +115,9 @@ export default function DiscoverRecipeCard({
             <div className="flex gap-2 mt-3.5">
               {recipe.prep_time_minutes ? (
                 <Macro value={`${recipe.prep_time_minutes}m`} label="Prep" />
+              ) : null}
+              {recipe.cook_time_minutes ? (
+                <Macro value={`${recipe.cook_time_minutes}m`} label="Cook" />
               ) : null}
               {recipe.protein ? <Macro value={`${recipe.protein}g`} label="Protein" /> : null}
               {recipe.fiber ? <Macro value={`${recipe.fiber}g`} label="Fiber" /> : null}
