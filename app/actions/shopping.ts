@@ -36,14 +36,18 @@ export async function addShoppingItem(
   return {};
 }
 
-// Edits an existing one-off item's quantity/unit/note — the tap-to-edit
+// Edits an existing one-off item's label/quantity/unit/note — the tap-to-edit
 // sheet shared with Kitchen's PantryItemSheet pattern.
 export async function updateShoppingItem(
   id: string,
+  label: string,
   quantityValue: number | null,
   quantityUnit: string | null,
   note: string | null
 ) {
+  const trimmedLabel = label.trim();
+  if (!trimmedLabel) return { error: "Enter an item name." };
+
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
 
@@ -52,6 +56,7 @@ export async function updateShoppingItem(
   const { error } = await supabase
     .from("shopping_items")
     .update({
+      label: trimmedLabel,
       quantity_value: quantityValue,
       quantity_unit: quantityValue != null ? quantityUnit : null,
       note: note?.trim() || null,

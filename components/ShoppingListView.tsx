@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { toggleChecked } from "@/app/actions/pantry";
 import { toggleCoreItemChecked } from "@/app/actions/pantry-on-hand";
@@ -46,8 +46,18 @@ export default function ShoppingListView({
   hasSentItems: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [removedItem, setRemovedItem] = useState<ShoppingItem | null>(null);
-  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Items mid-checkoff: shown checked + greyed in place, not yet deleted.
+  // A second tap within the window cancels the pending removal and restores
+  // the item to normal; letting the timer run out actually removes it.
+  const [pendingRemoval, setPendingRemoval] = useState<Record<string, boolean>>({});
+  const removalTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  useEffect(() => {
+    const timers = removalTimers.current;
+    return () => {
+      Object.values(timers).forEach(clearTimeout);
+    };
+  }, []);
 
   function toggle(item: ChecklistItem) {
     startTransition(() => {
@@ -65,26 +75,34 @@ export default function ShoppingListView({
     });
   }
 
-  // Every shopping_items row (one-off adds, Kitchen restock/flag taps) is a
-  // hard delete — there's no toggle to flip back. Hold onto what was just
-  // removed for a few seconds so an accidental tap is recoverable via the
-  // Undo banner below.
-  function checkOffItem(item: ShoppingItem) {
-    if (undoTimer.current) clearTimeout(undoTimer.current);
-    setRemovedItem(item);
-    undoTimer.current = setTimeout(() => setRemovedItem(null), 5000);
-    startTransition(() => {
-      removeShoppingItem(item.id);
-    });
-  }
+  // Tapping the checkbox marks the item checked + greyed right where it is —
+  // no delete yet. A second tap within 5s cancels the pending removal and
+  // restores it to a normal unchecked row. If the window elapses untouched,
+  // the row is actually removed from shopping_items.
+  function toggleCheckOff(item: ShoppingItem) {
+    if (pendingRemoval[item.id]) {
+      clearTimeout(removalTimers.current[item.id]);
+      delete removalTimers.current[item.id];
+      setPendingRemoval((prev) => {
+        const next = { ...prev };
+        delete next[item.id];
+        return next;
+      });
+      return;
+    }
 
-  function undoRemove() {
-    if (!removedItem) return;
-    if (undoTimer.current) clearTimeout(undoTimer.current);
-    startTransition(() => {
-      addShoppingItem(removedItem.label, removedItem.quantityValue, removedItem.quantityUnit, removedItem.note);
-    });
-    setRemovedItem(null);
+    setPendingRemoval((prev) => ({ ...prev, [item.id]: true }));
+    removalTimers.current[item.id] = setTimeout(() => {
+      delete removalTimers.current[item.id];
+      setPendingRemoval((prev) => {
+        const next = { ...prev };
+        delete next[item.id];
+        return next;
+      });
+      startTransition(() => {
+        removeShoppingItem(item.id);
+      });
+    }, 5000);
   }
 
   function handlePickedUp() {
@@ -133,19 +151,6 @@ export default function ShoppingListView({
         </p>
       )}
 
-      {removedItem && (
-        <div className="flex items-center justify-between bg-ink text-white rounded-lg px-3 py-2 text-sm">
-          <span>Removed &ldquo;{removedItem.label}&rdquo;</span>
-          <button
-            type="button"
-            onClick={undoRemove}
-            className="font-mono text-[11px] uppercase tracking-wide text-teal-mid cursor-pointer"
-          >
-            Undo
-          </button>
-        </div>
-      )}
-
       <Collapsible level="section" title="Fresh">
         <div className="flex flex-col gap-4">
           {fresh.map((group) => (
@@ -153,7 +158,13 @@ export default function ShoppingListView({
               <div className="flex flex-col gap-1.5">
                 <ChecklistSection items={group.checklist} onToggle={toggle} disabled={isPending} />
                 {group.shoppingItems.map((item) => (
-                  <ShoppingItemRow key={item.id} item={item} onCheckOff={checkOffItem} disabled={isPending} />
+                  <ShoppingItemRow
+                    key={item.id}
+                    item={item}
+                    checked={!!pendingRemoval[item.id]}
+                    onCheckOff={toggleCheckOff}
+                    disabled={isPending}
+                  />
                 ))}
               </div>
             </Collapsible>
@@ -169,7 +180,13 @@ export default function ShoppingListView({
               <div className="flex flex-col gap-1.5">
                 <ChecklistSection items={group.checklist} onToggle={toggleCore} disabled={isPending} />
                 {group.shoppingItems.map((item) => (
-                  <ShoppingItemRow key={item.id} item={item} onCheckOff={checkOffItem} disabled={isPending} />
+                  <ShoppingItemRow
+                    key={item.id}
+                    item={item}
+                    checked={!!pendingRemoval[item.id]}
+                    onCheckOff={toggleCheckOff}
+                    disabled={isPending}
+                  />
                 ))}
               </div>
             </Collapsible>
@@ -187,10 +204,12 @@ export default function ShoppingListView({
 
 function ShoppingItemRow({
   item,
+  checked,
   onCheckOff,
   disabled,
 }: {
   item: ShoppingItem;
+  checked: boolean;
   onCheckOff: (item: ShoppingItem) => void;
   disabled: boolean;
 }) {
@@ -220,12 +239,17 @@ function ShoppingItemRow({
       <div className="flex items-center gap-2.5 bg-surface border border-border rounded-lg px-3 py-2">
         <input
           type="checkbox"
-          checked={false}
+          checked={checked}
           disabled={disabled}
           onChange={() => onCheckOff(item)}
           className="w-4 h-4 accent-teal cursor-pointer flex-shrink-0"
         />
-        <button type="button" onClick={() => setEditing(true)} className="flex-1 text-left text-sm min-w-0 cursor-pointer">
+        <button
+          type="button"
+          onClick={() => !checked && setEditing(true)}
+          disabled={checked}
+          className={`flex-1 text-left text-sm min-w-0 ${checked ? "text-ink-light line-through" : "cursor-pointer"}`}
+        >
           {item.label}
           {item.quantityValue != null && (
             <span className="text-ink-light text-xs">
@@ -246,6 +270,7 @@ function ShoppingItemRow({
 // same pattern as Kitchen's PantryItemSheet, closing the gap where one-off
 // items could only get a quantity/unit at creation, never afterward.
 function ShoppingItemSheet({ item, onClose }: { item: ShoppingItem; onClose: () => void }) {
+  const [label, setLabel] = useState(item.label);
   const [value, setValue] = useState(item.quantityValue != null ? String(item.quantityValue) : "");
   const [unit, setUnit] = useState(item.quantityUnit ?? "");
   const [note, setNote] = useState(item.note ?? "");
@@ -254,7 +279,7 @@ function ShoppingItemSheet({ item, onClose }: { item: ShoppingItem; onClose: () 
   function save() {
     const qtyValue = value.trim() ? Number(value) : null;
     startTransition(async () => {
-      await updateShoppingItem(item.id, qtyValue, unit || null, note || null);
+      await updateShoppingItem(item.id, label, qtyValue, unit || null, note || null);
       onClose();
     });
   }
@@ -265,7 +290,15 @@ function ShoppingItemSheet({ item, onClose }: { item: ShoppingItem; onClose: () 
         onClick={(e) => e.stopPropagation()}
         className="bg-surface rounded-t-xl sm:rounded-xl p-4 w-full sm:max-w-xs flex flex-col gap-4"
       >
-        <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">{item.label}</div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-ink-light">Name</label>
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+          />
+        </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-ink-light">Quantity</label>
@@ -311,7 +344,7 @@ function ShoppingItemSheet({ item, onClose }: { item: ShoppingItem; onClose: () 
           </button>
           <button
             type="button"
-            disabled={isPending}
+            disabled={isPending || !label.trim()}
             onClick={save}
             className="bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
           >

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { UNIT_OPTIONS } from "@/lib/units";
-import { updatePantryOnHand, updatePantryTarget, updatePantryNote } from "@/app/actions/pantry";
+import { updatePantryOnHand, updatePantryTarget, updatePantryNote, updatePantryItemName } from "@/app/actions/pantry";
 
 // Tap-to-edit bottom sheet for a Kitchen item: a Pantry-category item's
 // on-hand + target quantities, or a Fresh-category item's single "usual
@@ -26,6 +26,7 @@ export default function PantryItemSheet({
   fresh: boolean;
   onClose: () => void;
 }) {
+  const [name, setName] = useState(item.name);
   const [onHandValue, setOnHandValue] = useState(item.on_hand_qty != null ? String(item.on_hand_qty) : "");
   const [onHandUnit, setOnHandUnit] = useState(item.on_hand_unit ?? "");
   const [targetValue, setTargetValue] = useState(item.target_qty != null ? String(item.target_qty) : "");
@@ -39,7 +40,9 @@ export default function PantryItemSheet({
   function save() {
     const nextOnHandValue = onHandValue.trim() ? Number(onHandValue) : null;
     const nextTargetValue = targetValue.trim() ? Number(targetValue) : null;
+    const trimmedName = name.trim();
     startTransition(async () => {
+      if (trimmedName && trimmedName !== item.name) await updatePantryItemName(item.id, trimmedName);
       if (showOnHand) await updatePantryOnHand(item.id, nextOnHandValue, onHandUnit || null);
       await updatePantryTarget(item.id, nextTargetValue, targetUnit || null);
       if (note !== (item.note ?? "")) await updatePantryNote(item.id, note || null);
@@ -53,7 +56,15 @@ export default function PantryItemSheet({
         onClick={(e) => e.stopPropagation()}
         className="bg-surface rounded-t-xl sm:rounded-xl p-4 w-full sm:max-w-xs flex flex-col gap-4"
       >
-        <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">{item.name}</div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-ink-light">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
+          />
+        </div>
 
         {showOnHand && (
           <div className="flex flex-col gap-1.5">
@@ -128,7 +139,7 @@ export default function PantryItemSheet({
           </button>
           <button
             type="button"
-            disabled={isPending}
+            disabled={isPending || !name.trim()}
             onClick={save}
             className="bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium cursor-pointer disabled:opacity-50"
           >

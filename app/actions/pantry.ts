@@ -151,6 +151,28 @@ export async function updatePantryTarget(id: string, qtyValue: number | null, qt
   return {};
 }
 
+// Edits the item's name/label (previously only fixable via delete + re-add).
+export async function updatePantryItemName(id: string, name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return { error: "Enter an item name." };
+
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("pantry_items")
+    .update({ name: trimmed })
+    .eq("id", id)
+    .eq("household_id", household.householdId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/kitchen");
+  revalidatePath("/shopping");
+  return {};
+}
+
 // Edits the freeform note (e.g. "Britt only," a brand/store preference).
 export async function updatePantryNote(id: string, note: string | null) {
   const household = await getCurrentHousehold();
