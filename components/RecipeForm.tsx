@@ -43,7 +43,7 @@ const SECTION_TITLE_CLASS = "font-mono text-[11px] uppercase tracking-wide text-
 
 const MAX_PHOTOS = 5;
 
-type FormIngredient = { name: string; core: boolean; quantity: string; unit: string };
+type FormIngredient = { name: string; quantity: string; unit: string };
 
 type FormState = {
   name: string;
@@ -85,7 +85,6 @@ function formFromRecipe(recipe?: Recipe | RecipeInput): FormState {
     tags: recipe?.tags ?? [],
     ingredients: (recipe?.ingredients ?? []).map((ing) => ({
       name: ing.name,
-      core: ing.core,
       quantity: ing.quantity ?? "",
       unit: ing.unit ?? "",
     })),
@@ -125,7 +124,6 @@ function toRecipeInput(
         const parsed = parseNumericQuantity(quantity, unit);
         return {
           name: i.name.trim(),
-          core: i.core,
           quantity,
           unit,
           quantity_value: parsed?.value ?? null,
@@ -223,7 +221,7 @@ export default function RecipeForm({
   function addIngredientRow() {
     setForm((f) => ({
       ...f,
-      ingredients: [...f.ingredients, { name: "", core: false, quantity: "", unit: "" }],
+      ingredients: [...f.ingredients, { name: "", quantity: "", unit: "" }],
     }));
   }
 
@@ -927,7 +925,6 @@ export default function RecipeForm({
             <span className="text-[10px] text-ink-light w-14 flex-shrink-0">Qty</span>
             <span className="text-[10px] text-ink-light w-20 flex-shrink-0">Unit</span>
             <span className="text-[10px] text-ink-light flex-1">Name</span>
-            <span className="text-[10px] text-ink-light w-[52px] flex-shrink-0 text-center">Type</span>
             <span className="w-7 flex-shrink-0" />
           </div>
         )}
@@ -951,13 +948,6 @@ export default function RecipeForm({
               onChange={(e) => updateIngredientRow(i, { name: e.target.value })}
               placeholder="Ingredient name"
             />
-            <button
-              type="button"
-              onClick={() => updateIngredientRow(i, { core: !ing.core })}
-              className={`${CHIP_BASE} ${ing.core ? CHIP_ACTIVE : CHIP_INACTIVE} flex-shrink-0 w-[52px] text-center`}
-            >
-              {ing.core ? "Core" : "Fresh"}
-            </button>
             <button
               type="button"
               onClick={() => removeIngredientRow(i)}

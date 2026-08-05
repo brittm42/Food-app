@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 import { categorizeItem } from "@/lib/categorize";
-import { isFreshCategory } from "@/lib/categories";
 
 export async function addShoppingItem(
   label: string,
@@ -76,11 +75,10 @@ export async function removeShoppingItem(id: string) {
 
   const supabase = await createClient();
 
-  // If this row came from a flagged Fresh Kitchen item, checking it off
-  // means "you bought it" — flip it back to in-stock automatically, same
-  // loop the Restock/Pantry flow already uses. Pantry-category-sourced rows
-  // (from the "+" deficit push) aren't touched here; on-hand for those is
-  // corrected via Kitchen's own edit sheet, same as before this change.
+  // If this row came from a flagged/restocked Home Stock item, checking it
+  // off means "you bought it" — flip it back to in-stock automatically,
+  // same loop the Kitchen restock flow already uses. Every item (Fresh,
+  // Pantry, or Household) is binary now, so this applies uniformly.
   const { data: row } = await supabase
     .from("shopping_items")
     .select("source_pantry_item_id")
@@ -89,15 +87,8 @@ export async function removeShoppingItem(id: string) {
     .maybeSingle();
 
   if (row?.source_pantry_item_id) {
-    const { data: sourceItem } = await supabase
-      .from("pantry_items")
-      .select("category")
-      .eq("id", row.source_pantry_item_id)
-      .maybeSingle();
-    if (sourceItem && isFreshCategory(sourceItem.category as string)) {
-      await supabase.from("pantry_items").update({ in_stock: true }).eq("id", row.source_pantry_item_id);
-      revalidatePath("/kitchen");
-    }
+    await supabase.from("pantry_items").update({ in_stock: true }).eq("id", row.source_pantry_item_id);
+    revalidatePath("/kitchen");
   }
 
   await supabase

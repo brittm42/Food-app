@@ -50,7 +50,6 @@ const TOOL = {
               type: "string",
               description: "Must exactly match one of the existing ingredient names provided in the prompt. Do not rename.",
             },
-            core: { type: "boolean", description: "Echo back the existing core value unchanged." },
             quantity: {
               type: "string",
               description:
@@ -61,7 +60,7 @@ const TOOL = {
               description: 'Unit of measure, e.g. "cup", "tbsp", "clove", "can", "whole". Omit if quantity has no unit.',
             },
           },
-          required: ["name", "core"],
+          required: ["name"],
         },
         description:
           "Same ingredients as provided, in the same order, each annotated with quantity/unit extracted from the prose.",
@@ -73,15 +72,13 @@ const TOOL = {
 
 const SYSTEM_PROMPT = `You are backfilling structured content onto existing recipes in a household recipe library called WeeklyNom. You are NOT drafting a new recipe — you are extracting structure from prose that already describes a real recipe. Rules:
 - Split the existing prose instructions into an ordered list of discrete steps (one action per step), preserving the original wording and any <strong> emphasis as closely as reasonable rather than rewriting the recipe's voice.
-- For each existing ingredient (name/core given), find its quantity as stated or clearly implied in the prose (e.g. "1 cup frozen wild blueberries" -> quantity "1", unit "cup" for the "Frozen wild blueberries" ingredient) and attach it. Do not invent a quantity that isn't in the prose; omit quantity/unit if the prose doesn't specify one for that ingredient.
-- Never rename an ingredient or change its core/fresh flag — echo them back exactly as given, only adding quantity/unit.
+- For each existing ingredient (name given), find its quantity as stated or clearly implied in the prose (e.g. "1 cup frozen wild blueberries" -> quantity "1", unit "cup" for the "Frozen wild blueberries" ingredient) and attach it. Do not invent a quantity that isn't in the prose; omit quantity/unit if the prose doesn't specify one for that ingredient.
+- Never rename an ingredient — echo the name back exactly as given, only adding quantity/unit.
 - Estimate prep_time_minutes only when the steps/ingredients give a reasonable basis (e.g. a blender recipe with 5 ingredients is quick; a soup with multiple cooking steps takes longer). Omit rather than guess wildly.
 Always call the backfill_recipe_content tool with your answer.`;
 
 function buildPrompt(recipe) {
-  const ingredientList = (recipe.ingredients ?? [])
-    .map((i) => `- ${i.name} (core: ${i.core})`)
-    .join("\n");
+  const ingredientList = (recipe.ingredients ?? []).map((i) => `- ${i.name}`).join("\n");
   return `Recipe name: ${recipe.name}
 Hint: ${recipe.hint ?? ""}
 Existing prose instructions: ${recipe.recipe ?? "(none)"}

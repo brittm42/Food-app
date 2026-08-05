@@ -127,12 +127,11 @@ export async function removeFavoriteProduct(ingredientName: string) {
   return {};
 }
 
-// "Mark order picked up" — the groceries have actually arrived, so this is
-// where reconciliation actually runs (sending ≠ having; see
-// kroger_cart_integration memory for why that split exists). Mirrors
-// toggleCoreItemChecked's on-hand-increment math (app/actions/pantry-on-hand.ts)
-// for rows materialized from a Core checklist item; Fresh-originated and
-// one-off rows have nothing to reconcile, they just complete.
+// "Mark order picked up" — the groceries have actually arrived. Any sent
+// row that came from a flagged/restocked Home Stock item flips that item
+// back to in-stock, same as checking it off manually would (see
+// removeShoppingItem in app/actions/shopping.ts) — Kroger-sent rows skip
+// that path since they're deleted here in bulk, not one at a time.
 export async function markOrderPickedUp() {
   const household = await getCurrentHousehold();
   if (!household) return { error: "Not signed in." };
@@ -141,45 +140,16 @@ export async function markOrderPickedUp() {
 
   const { data: sentRows, error } = await supabase
     .from("shopping_items")
-    .select("id, label, quantity_value, quantity_unit, source_checklist_key")
+    .select("id, source_pantry_item_id")
     .eq("household_id", household.householdId)
     .not("sent_at", "is", null);
   if (error) return { error: error.message };
 
-  for (const row of sentRows ?? []) {
-    const key = row.source_checklist_key as string | null;
-    const neededValue = row.quantity_value as number | null;
-    const neededUnit = row.quantity_unit as string | null;
-
-    if (key?.startsWith("shopping:core:") && neededValue != null && neededUnit != null) {
-      const normalizedName = normalizeIngredientName(row.label as string);
-      const { data: onHand } = await supabase
-        .from("pantry_on_hand")
-        .select("quantity_value, quantity_unit")
-        .eq("household_id", household.householdId)
-        .eq("ingredient_name", normalizedName)
-        .maybeSingle();
-
-      if (!onHand?.quantity_unit || onHand.quantity_unit === neededUnit) {
-        const nextValue = Math.max(0, (onHand?.quantity_value ?? 0) + neededValue);
-        await supabase.from("pantry_on_hand").upsert(
-          {
-            household_id: household.householdId,
-            ingredient_name: normalizedName,
-            quantity_value: nextValue,
-            quantity_unit: neededUnit,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "household_id,ingredient_name" }
-        );
-
-        await supabase
-          .from("pantry_items")
-          .update({ on_hand_qty: nextValue, on_hand_unit: neededUnit })
-          .eq("household_id", household.householdId)
-          .ilike("name", (row.label as string).trim());
-      }
-    }
+  const sourcePantryItemIds = [
+    ...new Set((sentRows ?? []).map((r) => r.source_pantry_item_id as string | null).filter((id): id is string => !!id)),
+  ];
+  if (sourcePantryItemIds.length > 0) {
+    await supabase.from("pantry_items").update({ in_stock: true }).in("id", sourcePantryItemIds);
   }
 
   await supabase

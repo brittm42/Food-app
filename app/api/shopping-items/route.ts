@@ -48,5 +48,6 @@ export async function POST(request: NextRequest) {
   }
 
   revalidatePath("/shopping");
+  revalidatePath("/kitchen");
   return NextResponse.json(result);
 }

@@ -10,7 +10,7 @@ import { importRecipe } from "@/app/actions/recipes";
 import { toggleThisWeek } from "@/app/actions/week-queue";
 import { getHouseholdCookingProfile } from "@/app/actions/household";
 import { flagAllergensInRecipe } from "@/lib/allergens";
-import { prepopulateCoreIngredients } from "@/lib/kitchen-prepopulate";
+import { prepopulatePantryFromStarterRecipes } from "@/lib/kitchen-prepopulate";
 import { mealTypeForCategory, MEAL_TYPES } from "@/lib/types";
 import type { Recipe, MealType, Allergy } from "@/lib/types";
 
@@ -187,7 +187,7 @@ export async function finishOnboarding(): Promise<{ error?: string }> {
   if (!household) return { error: "Not signed in." };
 
   const supabase = await createClient();
-  await prepopulateCoreIngredients(supabase, household.householdId, { assumeStocked: true });
+  await prepopulatePantryFromStarterRecipes(supabase, household.householdId);
 
   const { error } = await supabase
     .from("profiles")

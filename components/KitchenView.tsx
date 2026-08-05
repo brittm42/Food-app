@@ -1,16 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import {
-  deletePantryItem,
-  createPantryItem,
-  addPantryItemToShoppingList,
-  removePantryItemFromShoppingList,
-  flagPantryItemNeeded,
-  markPantryItemInStock,
-} from "@/app/actions/pantry";
+import { deletePantryItem, createPantryItem, flagPantryItemNeeded, markPantryItemInStock } from "@/app/actions/pantry";
 import { UNIT_OPTIONS } from "@/lib/units";
-import { CATEGORIES, isFreshCategory } from "@/lib/categories";
+import { CATEGORIES, sectionForCategory, type Section } from "@/lib/categories";
 import Collapsible from "@/components/Collapsible";
 import QuickAddModal from "@/components/QuickAddModal";
 import SwipeableRow from "@/components/SwipeableRow";
@@ -20,27 +13,40 @@ type PantryItem = {
   id: string;
   name: string;
   category: string;
-  on_hand_qty: number | null;
-  on_hand_unit: string | null;
   target_qty: number | null;
   target_unit: string | null;
   note: string | null;
   in_stock: boolean;
 };
 
-function stockLine(item: PantryItem, fresh: boolean): string | null {
+type Need = { value: number | null; unit: string | null };
+
+const TABS: { id: Section; label: string; subtitle: string }[] = [
+  { id: "fresh", label: "Fresh", subtitle: "Perishables — just in stock or not. Flag it when you need more." },
+  { id: "pantry", label: "Pantry", subtitle: "Shelf-stable — just in stock or not. Flag it when you need more." },
+  { id: "household", label: "Household", subtitle: "Cleaning, paper goods, and everything else non-food." },
+];
+
+function stockLine(item: PantryItem): string | null {
   const parts: string[] = [];
-  if (fresh) {
-    if (item.target_qty != null) parts.push(`usually ${item.target_qty}${item.target_unit ? ` ${item.target_unit}` : ""}`);
-  } else if (item.on_hand_qty != null && item.target_qty != null) {
-    parts.push(`${item.on_hand_qty} of ${item.target_qty}${item.target_unit ? ` ${item.target_unit}` : ""}`);
-  } else if (item.on_hand_qty != null) {
-    parts.push(`have ${item.on_hand_qty}${item.on_hand_unit ? ` ${item.on_hand_unit}` : ""}`);
-  } else if (item.target_qty != null) {
-    parts.push(`target ${item.target_qty}${item.target_unit ? ` ${item.target_unit}` : ""}`);
-  }
+  if (item.target_qty != null) parts.push(`usually ${item.target_qty}${item.target_unit ? ` ${item.target_unit}` : ""}`);
   if (item.note) parts.push(item.note);
   return parts.length ? parts.join(" — ") : null;
+}
+
+// Whichever is bigger — the usual amount to buy, or this week's computed
+// recipe need (Britt's call: better to over-buy slightly than come up
+// short on a recipe). Only comparable when the units actually match;
+// otherwise the recipe-computed figure wins since it's the more specific,
+// time-sensitive number.
+function defaultRestockQty(item: PantryItem, needed: Need | undefined): { value: number | null; unit: string | null } {
+  if (needed?.value != null) {
+    if (item.target_qty != null && item.target_unit === needed.unit && item.target_qty >= needed.value) {
+      return { value: item.target_qty, unit: item.target_unit };
+    }
+    return { value: needed.value, unit: needed.unit };
+  }
+  return { value: item.target_qty, unit: item.target_unit };
 }
 
 function groupByCategory(items: PantryItem[]) {
@@ -55,57 +61,11 @@ function groupByCategory(items: PantryItem[]) {
   }));
 }
 
-function PantryItemRow({ item, isPending, onList }: { item: PantryItem; isPending: boolean; onList: boolean }) {
-  const [editing, setEditing] = useState(false);
-  const [rowPending, startTransition] = useTransition();
-  const line = stockLine(item, false);
-  const disabled = isPending || rowPending;
-
-  return (
-    <>
-      <SwipeableRow disabled={disabled} deleteLabel={`Delete ${item.name}`} onDelete={() => deletePantryItem(item.id)}>
-        <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2">
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="flex-1 text-left text-sm min-w-0 cursor-pointer"
-          >
-            {item.name}
-            {line && <span className="text-ink-light text-xs"> — {line}</span>}
-          </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() =>
-              startTransition(() => {
-                if (onList) {
-                  removePantryItemFromShoppingList(item.id);
-                } else {
-                  addPantryItemToShoppingList(item.id);
-                }
-              })
-            }
-            aria-label={onList ? `Remove ${item.name} from shopping list` : `Add ${item.name} to shopping list`}
-            className={`w-6 h-6 rounded-full text-sm leading-none flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 disabled:opacity-50 ${
-              onList
-                ? "bg-gold text-white"
-                : "border border-border text-ink-light hover:border-gold hover:bg-gold-light"
-            }`}
-          >
-            {onList ? "✓" : "+"}
-          </button>
-        </div>
-      </SwipeableRow>
-      {editing && <PantryItemSheet item={item} fresh={false} onClose={() => setEditing(false)} />}
-    </>
-  );
-}
-
-function FreshItemRow({ item, isPending }: { item: PantryItem; isPending: boolean }) {
+function HomeStockItemRow({ item, needed, isPending }: { item: PantryItem; needed: Need | undefined; isPending: boolean }) {
   const [editing, setEditing] = useState(false);
   const [flagging, setFlagging] = useState(false);
   const [rowPending, startTransition] = useTransition();
-  const line = stockLine(item, true);
+  const line = stockLine(item);
   const disabled = isPending || rowPending;
 
   return (
@@ -119,6 +79,12 @@ function FreshItemRow({ item, isPending }: { item: PantryItem; isPending: boolea
           >
             {item.name}
             {line && <span className="text-ink-light text-xs"> — {line}</span>}
+            {needed?.value != null && (
+              <span className="block text-teal text-xs">
+                Need ~{needed.value}
+                {needed.unit ? ` ${needed.unit}` : ""} this week
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -142,18 +108,19 @@ function FreshItemRow({ item, isPending }: { item: PantryItem; isPending: boolea
           </button>
         </div>
       </SwipeableRow>
-      {editing && <PantryItemSheet item={item} fresh onClose={() => setEditing(false)} />}
-      {flagging && <FlagNeededSheet item={item} onClose={() => setFlagging(false)} />}
+      {editing && <PantryItemSheet item={item} onClose={() => setEditing(false)} />}
+      {flagging && <FlagNeededSheet item={item} needed={needed} onClose={() => setFlagging(false)} />}
     </>
   );
 }
 
-// Small prompt shown when flipping a Fresh item from "in stock" to "need to
-// buy" — the quantity is specified right then (defaulting to the item's
-// usual amount, overridable), rather than reusing whatever was last stored.
-function FlagNeededSheet({ item, onClose }: { item: PantryItem; onClose: () => void }) {
-  const [value, setValue] = useState(item.target_qty != null ? String(item.target_qty) : "");
-  const [unit, setUnit] = useState(item.target_unit ?? "");
+// Small prompt shown when flagging an item as needed — the quantity is
+// specified right then, defaulting to whichever is bigger: the usual
+// amount or this week's computed recipe need (see defaultRestockQty).
+function FlagNeededSheet({ item, needed, onClose }: { item: PantryItem; needed: Need | undefined; onClose: () => void }) {
+  const suggested = defaultRestockQty(item, needed);
+  const [value, setValue] = useState(suggested.value != null ? String(suggested.value) : "");
+  const [unit, setUnit] = useState(suggested.unit ?? "");
   const [isPending, startTransition] = useTransition();
 
   function submit() {
@@ -235,7 +202,7 @@ function AddKitchenItemButton() {
 
   return (
     <QuickAddModal
-      triggerAriaLabel="Add an item to My Kitchen"
+      triggerAriaLabel="Add an item to Home Stock"
       headerLabel="Add an item"
       submitDisabled={isPending}
       onSubmit={submit}
@@ -254,7 +221,7 @@ function AddKitchenItemButton() {
           step="any"
           value={qty}
           onChange={(e) => setQty(e.target.value)}
-          placeholder="Quantity (optional)"
+          placeholder="Usual amount to buy (optional)"
           className="flex-1 border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
         />
         <select
@@ -277,62 +244,61 @@ function AddKitchenItemButton() {
         placeholder="Note (brand, store, dietary…) — optional"
         className="border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
       />
-      <p className="text-[11px] text-ink-light">It&apos;ll be sorted into Fresh or Pantry automatically.</p>
+      <p className="text-[11px] text-ink-light">It&apos;ll be sorted into Fresh, Pantry, or Household automatically.</p>
     </QuickAddModal>
   );
 }
 
-export default function KitchenView({
-  items,
-  onShoppingListIds,
-}: {
-  items: PantryItem[];
-  onShoppingListIds: string[];
-}) {
+export default function KitchenView({ items, needed }: { items: PantryItem[]; needed: Record<string, Need> }) {
   const [isPending] = useTransition();
-  const onListSet = new Set(onShoppingListIds);
+  const [tab, setTab] = useState<Section>("fresh");
 
-  const freshItems = items.filter((i) => isFreshCategory(i.category));
-  const pantryItems = items.filter((i) => !isFreshCategory(i.category));
-  const freshByCategory = groupByCategory(freshItems);
-  const pantryByCategory = groupByCategory(pantryItems);
+  const itemsBySection: Record<Section, PantryItem[]> = { fresh: [], pantry: [], household: [] };
+  for (const item of items) itemsBySection[sectionForCategory(item.category)].push(item);
+
+  const activeTab = TABS.find((t) => t.id === tab)!;
+  const activeItems = itemsBySection[tab];
+  const groups = groupByCategory(activeItems);
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-xl font-light">My Kitchen</h1>
+        <h1 className="font-display text-xl font-light">Home Stock</h1>
         <AddKitchenItemButton />
       </div>
 
-      <Collapsible level="section" title="Fresh" subtitle="Perishables — just in stock or not. Flag it when you need more.">
-        <div className="flex flex-col gap-5">
-          {freshByCategory.map((group) => (
-            <Collapsible key={group.category} title={group.category}>
-              <div className="flex flex-col gap-1.5">
-                {group.items.map((item) => (
-                  <FreshItemRow key={item.id} item={item} isPending={isPending} />
-                ))}
-              </div>
-            </Collapsible>
-          ))}
-          {freshItems.length === 0 && <p className="text-xs text-ink-light">No Fresh items yet.</p>}
-        </div>
-      </Collapsible>
+      <div className="flex gap-1 border-b border-border">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors ${
+              tab === t.id ? "text-teal border-teal" : "text-ink-light border-transparent hover:text-ink-mid"
+            }`}
+          >
+            {t.label}
+            {itemsBySection[t.id].length > 0 && (
+              <span className="ml-1 text-ink-light">{itemsBySection[t.id].length}</span>
+            )}
+          </button>
+        ))}
+      </div>
 
-      <Collapsible level="section" title="Pantry" subtitle="Shelf-stable — tracked on-hand vs. target.">
-        <div className="flex flex-col gap-5">
-          {pantryByCategory.map((group) => (
-            <Collapsible key={group.category} title={group.category}>
-              <div className="flex flex-col gap-1.5">
-                {group.items.map((item) => (
-                  <PantryItemRow key={item.id} item={item} isPending={isPending} onList={onListSet.has(item.id)} />
-                ))}
-              </div>
-            </Collapsible>
-          ))}
-          {pantryItems.length === 0 && <p className="text-xs text-ink-light">No Pantry items yet.</p>}
-        </div>
-      </Collapsible>
+      <p className="text-xs text-ink-light -mt-3">{activeTab.subtitle}</p>
+
+      <div className="flex flex-col gap-5">
+        {groups.map((group) => (
+          <Collapsible key={group.category} title={group.category}>
+            <div className="flex flex-col gap-1.5">
+              {group.items.map((item) => (
+                <HomeStockItemRow key={item.id} item={item} needed={needed[item.id]} isPending={isPending} />
+              ))}
+            </div>
+          </Collapsible>
+        ))}
+        {activeItems.length === 0 && <p className="text-xs text-ink-light">No {activeTab.label} items yet.</p>}
+      </div>
     </div>
   );
 }

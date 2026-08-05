@@ -111,11 +111,6 @@ export function buildDraftRecipeTool(
                     ? `Reuse one of these existing names whenever it's the same ingredient, so it matches across recipes on the Shopping List: ${knownIngredientNames.join(", ")}.`
                     : ""),
               },
-              core: {
-                type: "boolean",
-                description:
-                  "true if this is a shelf-stable Core Pantry item, false if it's a Fresh/weekly-buy item.",
-              },
               category: {
                 type: "string",
                 enum: CATEGORIES as unknown as string[],
@@ -132,7 +127,7 @@ export function buildDraftRecipeTool(
                   'Unit of measure, e.g. "cup", "tbsp", "clove", "can", "whole". Omit only if quantity has no unit (e.g. "to taste", "3 eggs" with quantity "3" and no unit).',
               },
             },
-            required: ["name", "core", "category", "quantity"],
+            required: ["name", "category", "quantity"],
           },
         },
       },

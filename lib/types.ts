@@ -1,6 +1,5 @@
 export type Ingredient = {
   name: string;
-  core: boolean;
   quantity: string | null; // free text, e.g. "1", "1/2", "2-3", "handful", "to taste" — not numeric
   unit: string | null; // e.g. "cup", "tbsp", "clove", "can", "whole" — null if quantity has no unit
   quantity_value?: number | null; // canonical numeric amount, derived from `quantity`; null if not cleanly parseable ("to taste", ranges, etc.)

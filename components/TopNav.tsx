@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { href: "/discover", label: "🔎 Discover" },
   { href: "/this-week", label: "This Week" },
   { href: "/shopping", label: "Shopping" },
-  { href: "/kitchen", label: "My Kitchen" },
+  { href: "/kitchen", label: "Home Stock" },
   { href: "/add", label: "+ Add Recipe" },
 ];
 

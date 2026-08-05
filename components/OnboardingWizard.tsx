@@ -835,7 +835,7 @@ function FinishingStep({ onDone }: { onDone: () => void }) {
   }, []);
 
   if (status === "working") {
-    return <p className="text-sm text-ink-light">Stocking your Kitchen from your recipes…</p>;
+    return <p className="text-sm text-ink-light">Stocking your Home Stock from your recipes…</p>;
   }
 
   if (status === "error") {
@@ -852,7 +852,7 @@ function FinishingStep({ onDone }: { onDone: () => void }) {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-ink-light">
-        Your Kitchen is stocked with the pantry basics your recipes need, and everything else is ready on your
+        Your Home Stock is stocked with the pantry basics your recipes need, and everything else is ready on your
         Shopping List.
       </p>
       <button type="button" onClick={onDone} className={BUTTON_PRIMARY}>

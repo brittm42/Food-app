@@ -102,7 +102,6 @@
       "cal": 380,
       "ingredients": [
         {
-          "core": true,
           "name": "Frozen wild blueberries",
           "unit": "cup",
           "category": "Frozen",
@@ -111,14 +110,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Almond butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -127,14 +124,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Oat milk",
           "unit": "cup",
           "category": "Dairy & Eggs",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
           "category": "Grains & Dried",
@@ -143,7 +138,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Frozen spinach",
           "unit": null,
           "category": "Frozen",
@@ -182,14 +176,12 @@
       "cal": 400,
       "ingredients": [
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -198,7 +190,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Cocoa powder",
           "unit": "tbsp",
           "category": "Grains & Dried",
@@ -207,14 +198,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Oat milk",
           "unit": "cup",
           "category": "Dairy & Eggs",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Chocolate protein powder",
           "unit": "scoop",
           "category": "Grains & Dried",
@@ -251,7 +240,6 @@
       "cal": 360,
       "ingredients": [
         {
-          "core": true,
           "name": "Frozen strawberries",
           "unit": "cups",
           "category": "Frozen",
@@ -260,14 +248,12 @@
           "quantity_value": 1.5
         },
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": true,
           "name": "Coconut milk",
           "unit": "cup",
           "category": "Canned Goods",
@@ -276,7 +262,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Granola",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -285,7 +270,6 @@
           "quantity_value": 0.25
         },
         {
-          "core": false,
           "name": "Fresh strawberries",
           "unit": "cup",
           "category": "Produce",
@@ -321,7 +305,6 @@
       "cal": 390,
       "ingredients": [
         {
-          "core": true,
           "name": "Frozen mango",
           "unit": "cup",
           "category": "Frozen",
@@ -330,14 +313,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Frozen spinach",
           "unit": "big handfuls",
           "category": "Frozen",
@@ -346,7 +327,6 @@
           "quantity_value": null
         },
         {
-          "core": true,
           "name": "Coconut milk",
           "unit": "cup",
           "category": "Canned Goods",
@@ -355,7 +335,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
           "category": "Grains & Dried",
@@ -393,14 +372,12 @@
       "cal": 350,
       "ingredients": [
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -409,7 +386,6 @@
           "quantity_value": 2
         },
         {
-          "core": false,
           "name": "Oat milk",
           "unit": "cup",
           "category": "Dairy & Eggs",
@@ -447,28 +423,24 @@
       "cal": 380,
       "ingredients": [
         {
-          "core": false,
           "name": "Eggs",
           "unit": null,
           "category": "Dairy & Eggs",
           "quantity": "3"
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": null,
           "category": "Produce",
           "quantity": "handful"
         },
         {
-          "core": false,
           "name": "Feta cheese",
           "unit": "tbsp",
           "category": "Dairy & Eggs",
           "quantity": "2"
         },
         {
-          "core": true,
           "name": "Sun-dried tomatoes",
           "unit": null,
           "category": "Canned Goods",
@@ -477,7 +449,6 @@
           "quantity_value": 3
         },
         {
-          "core": false,
           "name": "Whole grain bread",
           "unit": "slice",
           "category": "Bakery",
@@ -515,7 +486,6 @@
       "cal": 380,
       "ingredients": [
         {
-          "core": true,
           "name": "Salsa",
           "unit": "cup",
           "category": "Sauces & Condiments",
@@ -524,7 +494,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Black beans",
           "unit": "cup",
           "category": "Canned Goods",
@@ -533,21 +502,18 @@
           "quantity_value": 0.5
         },
         {
-          "core": false,
           "name": "Eggs",
           "unit": null,
           "category": "Dairy & Eggs",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": true,
           "name": "Tortillas",
           "unit": "small",
           "category": "Bakery",
@@ -589,21 +555,18 @@
       "ingredients": [
         {
           "name": "Whole grain bread",
-          "core": false,
           "quantity": "1",
           "unit": "slice",
           "category": "Bakery"
         },
         {
           "name": "Avocados",
-          "core": false,
           "quantity": "1/2",
           "unit": null,
           "category": "Produce"
         },
         {
           "name": "Lemons",
-          "core": false,
           "quantity": "1/4",
           "unit": "whole",
           "category": "Produce"
@@ -639,14 +602,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Bananas",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Nut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -655,7 +616,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
           "category": "Grains & Dried",
@@ -697,21 +657,18 @@
       "ingredients": [
         {
           "name": "Bacon",
-          "core": false,
           "quantity": "2-3",
           "unit": "strips",
           "category": "Meat & Seafood"
         },
         {
           "name": "Eggs",
-          "core": false,
           "quantity": "2",
           "unit": "whole",
           "category": "Dairy & Eggs"
         },
         {
           "name": "Avocados",
-          "core": false,
           "quantity": "1/2",
           "unit": "whole",
           "category": "Produce"
@@ -747,21 +704,18 @@
       "ingredients": [
         {
           "name": "Waffle mix",
-          "core": false,
           "quantity": "1",
           "unit": "cup",
           "category": "Grains & Dried"
         },
         {
           "name": "Vanilla protein powder",
-          "core": false,
           "quantity": "1",
           "unit": "scoop",
           "category": "Other"
         },
         {
           "name": "Fresh berries",
-          "core": false,
           "quantity": "1/2",
           "unit": "cup",
           "category": "Produce"
@@ -818,7 +772,6 @@
       "cal": 480,
       "ingredients": [
         {
-          "core": true,
           "name": "Farro or brown rice",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -827,7 +780,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Chickpeas",
           "unit": "can",
           "category": "Canned Goods",
@@ -836,21 +788,18 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Sweet potato or zucchini",
           "unit": "medium",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cup",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": true,
           "name": "Tahini",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -859,28 +808,24 @@
           "quantity_value": 3
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Kalamata olives",
           "unit": "cup",
           "category": "Canned Goods",
           "quantity": "1/4"
         },
         {
-          "core": false,
           "name": "Cucumber",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Feta cheese",
           "unit": "cup",
           "category": "Dairy & Eggs",
@@ -920,7 +865,6 @@
       "cal": 460,
       "ingredients": [
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -929,7 +873,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Black beans",
           "unit": "cup",
           "category": "Canned Goods",
@@ -938,7 +881,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Frozen corn",
           "unit": "cup",
           "category": "Frozen",
@@ -947,14 +889,12 @@
           "quantity_value": 0.5
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": true,
           "name": "Salsa",
           "unit": "cup",
           "category": "Sauces & Condiments",
@@ -963,14 +903,12 @@
           "quantity_value": 0.25
         },
         {
-          "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
           "category": "Dairy & Eggs",
           "quantity": "1/4"
         },
         {
-          "core": false,
           "name": "Cilantro",
           "unit": "tbsp",
           "category": "Produce",
@@ -1010,7 +948,6 @@
       "cal": 480,
       "ingredients": [
         {
-          "core": true,
           "name": "Soba noodles",
           "unit": "oz",
           "category": "Grains & Dried",
@@ -1019,7 +956,6 @@
           "quantity_value": 4
         },
         {
-          "core": true,
           "name": "Edamame",
           "unit": "cup",
           "category": "Frozen",
@@ -1028,7 +964,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1037,7 +972,6 @@
           "quantity_value": 2
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1046,7 +980,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -1055,14 +988,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Purple cabbage",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Cucumber",
           "unit": "whole",
           "category": "Produce",
@@ -1100,7 +1031,6 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": true,
           "name": "Red lentils",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -1109,7 +1039,6 @@
           "quantity_value": 0.3333333333333333
         },
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -1118,7 +1047,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Diced tomatoes",
           "unit": "cup",
           "category": "Canned Goods",
@@ -1127,7 +1055,6 @@
           "quantity_value": 0.25
         },
         {
-          "core": true,
           "name": "Veggie broth",
           "unit": "cup",
           "category": "Canned Goods",
@@ -1136,14 +1063,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Cucumber",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1/4"
         },
         {
-          "core": false,
           "name": "Cilantro",
           "unit": "tbsp",
           "category": "Produce",
@@ -1183,7 +1108,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Chickpeas",
           "unit": "can",
           "category": "Canned Goods",
@@ -1192,7 +1116,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Large tortillas",
           "unit": "whole",
           "category": "Bakery",
@@ -1201,28 +1124,24 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Cucumber",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Cherry tomatoes",
           "unit": "whole",
           "category": "Produce",
           "quantity": "5-6"
         },
         {
-          "core": false,
           "name": "Feta cheese",
           "unit": "tbsp",
           "category": "Dairy & Eggs",
@@ -1259,21 +1178,18 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Leftover salmon",
           "unit": "cup",
           "category": "Meat & Seafood",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Butter lettuce",
           "unit": "leaf",
           "category": "Produce",
           "quantity": "8"
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1282,7 +1198,6 @@
           "quantity_value": 2
         },
         {
-          "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -1291,14 +1206,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Purple cabbage",
           "unit": null,
           "category": "Produce",
           "quantity": "shredded"
         },
         {
-          "core": false,
           "name": "Green onions",
           "unit": "stalk",
           "category": "Produce",
@@ -1335,7 +1248,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Black beans",
           "unit": "cup",
           "category": "Canned Goods",
@@ -1344,7 +1256,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Large tortillas",
           "unit": null,
           "category": "Bakery",
@@ -1353,21 +1264,18 @@
           "quantity_value": null
         },
         {
-          "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
           "category": "Dairy & Eggs",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": true,
           "name": "Salsa",
           "unit": null,
           "category": "Sauces & Condiments",
@@ -1407,7 +1315,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Red lentils",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -1416,7 +1323,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Diced tomatoes",
           "unit": "can",
           "category": "Canned Goods",
@@ -1425,7 +1331,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Veggie broth",
           "unit": "cups",
           "category": "Canned Goods",
@@ -1434,21 +1339,18 @@
           "quantity_value": 4
         },
         {
-          "core": false,
           "name": "Onion",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "squeeze",
           "category": "Produce",
@@ -1487,7 +1389,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "White miso",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1496,28 +1397,24 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Rice noodles or ramen",
           "unit": "oz",
           "category": "Grains & Dried",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Mushrooms",
           "unit": null,
           "category": "Produce",
           "quantity": "sliced"
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -1526,7 +1423,6 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Green onions",
           "unit": "stalk",
           "category": "Produce",
@@ -1563,14 +1459,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Hummus",
           "unit": "cup",
           "category": "Other",
           "quantity": "1/2"
         },
         {
-          "core": true,
           "name": "Crackers",
           "unit": "whole",
           "category": "Snacks",
@@ -1579,21 +1473,18 @@
           "quantity_value": null
         },
         {
-          "core": false,
           "name": "Cucumber",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1/2"
         },
         {
-          "core": false,
           "name": "Cherry tomatoes",
           "unit": "whole",
           "category": "Produce",
           "quantity": "8-10"
         },
         {
-          "core": true,
           "name": "Mixed nuts",
           "unit": null,
           "category": "Snacks",
@@ -1631,14 +1522,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Leftover salmon",
           "unit": "oz",
           "category": "Meat & Seafood",
           "quantity": "4"
         },
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -1647,14 +1536,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1692,7 +1579,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Edamame",
           "unit": "cup",
           "category": "Frozen",
@@ -1733,7 +1619,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Nut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -1742,7 +1627,6 @@
           "quantity_value": 2
         },
         {
-          "core": false,
           "name": "Apples or bananas",
           "unit": "whole",
           "category": "Produce",
@@ -1779,35 +1663,30 @@
       "ingredients": [
         {
           "name": "Carrots",
-          "core": false,
           "quantity": "3",
           "unit": "medium",
           "category": "Produce"
         },
         {
           "name": "Celery",
-          "core": false,
           "quantity": "3",
           "unit": "stalk",
           "category": "Produce"
         },
         {
           "name": "Cucumber",
-          "core": false,
           "quantity": "1",
           "unit": "medium",
           "category": "Produce"
         },
         {
           "name": "Bell pepper",
-          "core": false,
           "quantity": "1",
           "unit": "whole",
           "category": "Produce"
         },
         {
           "name": "Hummus",
-          "core": false,
           "quantity": "1",
           "unit": "cup",
           "category": "Other"
@@ -1844,14 +1723,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Cheese",
           "unit": "block",
           "category": "Dairy & Eggs",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Crackers",
           "unit": "whole",
           "category": "Snacks",
@@ -1860,7 +1737,6 @@
           "quantity_value": 8
         },
         {
-          "core": false,
           "name": "Fruit",
           "unit": null,
           "category": "Produce",
@@ -1893,7 +1769,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Seaweed snack packs",
           "unit": "pack",
           "category": "Snacks",
@@ -1902,7 +1777,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Mixed nuts",
           "unit": null,
           "category": "Snacks",
@@ -1940,28 +1814,24 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": false,
           "name": "Chicken thighs",
           "unit": "whole",
           "category": "Meat & Seafood",
           "quantity": "8"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "whole",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "clove",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": true,
           "name": "Dried oregano",
           "unit": "tbsp",
           "category": "Spices",
@@ -1999,14 +1869,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Ground beef",
           "unit": "lb",
           "category": "Meat & Seafood",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Tortillas",
           "unit": "whole",
           "category": "Bakery",
@@ -2015,7 +1883,6 @@
           "quantity_value": 8
         },
         {
-          "core": true,
           "name": "Black beans",
           "unit": "can",
           "category": "Canned Goods",
@@ -2024,14 +1891,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": null,
           "category": "Produce",
           "quantity": "extra"
         },
         {
-          "core": true,
           "name": "Salsa",
           "unit": "cup",
           "category": "Sauces & Condiments",
@@ -2040,7 +1905,6 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Shredded cheese",
           "unit": "cup",
           "category": "Dairy & Eggs",
@@ -2073,14 +1937,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Chicken thighs or breast",
           "unit": "lb",
           "category": "Meat & Seafood",
           "quantity": "1 to 1.5"
         },
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -2089,7 +1951,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2098,14 +1959,12 @@
           "quantity_value": 3
         },
         {
-          "core": false,
           "name": "Honey",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Sesame oil",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -2114,7 +1973,6 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Broccoli",
           "unit": "cup",
           "category": "Produce",
@@ -2151,21 +2009,18 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Chicken (for family)",
           "unit": "lb",
           "category": "Other",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Tikka masala sauce (jar)",
           "unit": "jar",
           "category": "Sauces & Condiments",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Chickpeas",
           "unit": "can",
           "category": "Canned Goods",
@@ -2174,7 +2029,6 @@
           "quantity_value": 2
         },
         {
-          "core": true,
           "name": "Coconut milk",
           "unit": "can",
           "category": "Canned Goods",
@@ -2209,7 +2063,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Pasta",
           "unit": "oz",
           "category": "Grains & Dried",
@@ -2218,7 +2071,6 @@
           "quantity_value": 12
         },
         {
-          "core": true,
           "name": "Cannellini beans",
           "unit": "can",
           "category": "Canned Goods",
@@ -2227,7 +2079,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Diced tomatoes",
           "unit": "can",
           "category": "Canned Goods",
@@ -2236,14 +2087,12 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": null,
           "category": "Produce",
           "quantity": "handful"
         },
         {
-          "core": false,
           "name": "Parmesan",
           "unit": "cup",
           "category": "Dairy & Eggs",
@@ -2282,28 +2131,24 @@
       "ingredients": [
         {
           "name": "Arugula",
-          "core": false,
           "quantity": "handful",
           "unit": null,
           "category": "Produce"
         },
         {
           "name": "Cherry tomatoes",
-          "core": false,
           "quantity": "1/2",
           "unit": "cup",
           "category": "Produce"
         },
         {
           "name": "Parmesan",
-          "core": false,
           "quantity": "2",
           "unit": "tbsp",
           "category": "Dairy & Eggs"
         },
         {
           "name": "Lemons",
-          "core": false,
           "quantity": "1/2",
           "unit": "whole",
           "category": "Produce"
@@ -2338,7 +2183,6 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": true,
           "name": "Black beans",
           "unit": "can",
           "category": "Canned Goods",
@@ -2347,7 +2191,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Cumin",
           "unit": "tsp",
           "category": "Spices",
@@ -2356,7 +2199,6 @@
           "quantity_value": 0.5
         },
         {
-          "core": true,
           "name": "Garlic powder",
           "unit": "tsp",
           "category": "Spices",
@@ -2395,14 +2237,12 @@
       "cal": 0,
       "ingredients": [
         {
-          "core": false,
           "name": "Broccoli",
           "unit": "large head",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Garlic powder",
           "unit": "tsp",
           "category": "Spices",
@@ -2440,21 +2280,18 @@
       "cal": 360,
       "ingredients": [
         {
-          "core": false,
           "name": "Salmon fillet",
           "unit": "fillet (6 oz)",
           "category": "Meat & Seafood",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Dried oregano",
           "unit": "tsp",
           "category": "Spices",
@@ -2463,14 +2300,12 @@
           "quantity_value": 0.5
         },
         {
-          "core": false,
           "name": "Kalamata olives",
           "unit": "sliced",
           "category": "Canned Goods",
           "quantity": "a few"
         },
         {
-          "core": false,
           "name": "Cherry tomatoes",
           "unit": "cup",
           "category": "Produce",
@@ -2506,14 +2341,12 @@
       "cal": 370,
       "ingredients": [
         {
-          "core": false,
           "name": "Salmon fillet",
           "unit": "fillet (about 6 oz)",
           "category": "Meat & Seafood",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "White miso",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2522,7 +2355,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2531,7 +2363,6 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Honey",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -2568,21 +2399,18 @@
       "cal": 350,
       "ingredients": [
         {
-          "core": false,
           "name": "Salmon fillet",
           "unit": "lb",
           "category": "Meat & Seafood",
           "quantity": "1.5"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "whole",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Chili powder",
           "unit": null,
           "category": "Spices",
@@ -2591,7 +2419,6 @@
           "quantity_value": null
         },
         {
-          "core": true,
           "name": "Cumin",
           "unit": null,
           "category": "Spices",
@@ -2600,14 +2427,12 @@
           "quantity_value": null
         },
         {
-          "core": false,
           "name": "Avocados",
           "unit": "whole",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": true,
           "name": "Black beans",
           "unit": "can (15 oz)",
           "category": "Canned Goods",
@@ -2645,21 +2470,18 @@
       "cal": 340,
       "ingredients": [
         {
-          "core": false,
           "name": "Salmon fillet",
           "unit": "whole",
           "category": "Meat & Seafood",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": null,
           "category": "Produce",
           "quantity": "slices"
         },
         {
-          "core": true,
           "name": "Dried dill",
           "unit": "tsp",
           "category": "Spices",
@@ -2697,28 +2519,24 @@
       "ingredients": [
         {
           "name": "Salmon fillet",
-          "core": false,
           "quantity": "1",
           "unit": "whole (about 6 oz)",
           "category": "Meat & Seafood"
         },
         {
           "name": "Butter",
-          "core": false,
           "quantity": "2",
           "unit": "tbsp",
           "category": "Dairy & Eggs"
         },
         {
           "name": "Garlic",
-          "core": false,
           "quantity": "2",
           "unit": "clove",
           "category": "Produce"
         },
         {
           "name": "Fresh parsley",
-          "core": false,
           "quantity": "1",
           "unit": "tbsp",
           "category": "Produce"
@@ -2754,7 +2572,6 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": true,
           "name": "Red lentils",
           "unit": "cup",
           "category": "Grains & Dried",
@@ -2763,7 +2580,6 @@
           "quantity_value": 1.5
         },
         {
-          "core": true,
           "name": "Coconut milk",
           "unit": "can (13.5 oz)",
           "category": "Canned Goods",
@@ -2772,7 +2588,6 @@
           "quantity_value": null
         },
         {
-          "core": true,
           "name": "Diced tomatoes",
           "unit": "can (14 oz)",
           "category": "Canned Goods",
@@ -2781,7 +2596,6 @@
           "quantity_value": null
         },
         {
-          "core": true,
           "name": "Veggie broth",
           "unit": "cup",
           "category": "Canned Goods",
@@ -2790,35 +2604,30 @@
           "quantity_value": 1.5
         },
         {
-          "core": false,
           "name": "Onion",
           "unit": "medium",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "4"
         },
         {
-          "core": false,
           "name": "Carrots",
           "unit": "medium",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cup",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": true,
           "name": "Cumin",
           "unit": "tsp",
           "category": "Spices",
@@ -2827,7 +2636,6 @@
           "quantity_value": 1.5
         },
         {
-          "core": true,
           "name": "Chili powder",
           "unit": "tsp",
           "category": "Spices",
@@ -2836,20 +2644,17 @@
           "quantity_value": 1
         },
         {
-          "core": false,
           "name": "Cilantro",
           "unit": "cup",
           "category": "Produce",
           "quantity": "¼"
         },
         {
-          "core": false,
           "name": "Lemons",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup (dry)",
           "category": "Grains & Dried",
@@ -2892,49 +2697,42 @@
       "cal": 480,
       "ingredients": [
         {
-          "core": false,
           "name": "Soba noodles",
           "unit": "oz",
           "category": "Grains & Dried",
           "quantity": "12"
         },
         {
-          "core": false,
           "name": "Edamame",
           "unit": "cups",
           "category": "Frozen",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Purple cabbage",
           "unit": "cups",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Carrots",
           "unit": "medium",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Green onions",
           "unit": "stalks",
           "category": "Produce",
           "quantity": "4"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": true,
           "name": "Soy sauce",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2943,7 +2741,6 @@
           "quantity_value": 3
         },
         {
-          "core": true,
           "name": "Sesame oil",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2952,7 +2749,6 @@
           "quantity_value": 2
         },
         {
-          "core": true,
           "name": "Tahini",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2961,7 +2757,6 @@
           "quantity_value": 3
         },
         {
-          "core": true,
           "name": "Maple syrup",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2970,7 +2765,6 @@
           "quantity_value": 1
         },
         {
-          "core": true,
           "name": "Gochujang",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -2979,14 +2773,12 @@
           "quantity_value": 2
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": true,
           "name": "Hemp seeds",
           "unit": "tbsp",
           "category": "Snacks",
@@ -3028,14 +2820,12 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": false,
           "name": "Carrots",
           "unit": "",
           "category": "Produce",
           "quantity": "4 medium"
         },
         {
-          "core": true,
           "name": "Chickpeas",
           "unit": "cans (15 oz each)",
           "category": "Canned Goods",
@@ -3044,7 +2834,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Farro or brown rice",
           "unit": "cup dry",
           "category": "Grains & Dried",
@@ -3053,27 +2842,23 @@
           "quantity_unit": null
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cups",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": false,
           "name": "Lemons",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": true,
           "name": "Tahini",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3082,7 +2867,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Cumin",
           "unit": "tsp",
           "category": "Spices",
@@ -3091,7 +2875,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Chili powder",
           "unit": "tsp",
           "category": "Spices",
@@ -3100,7 +2883,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Dried oregano",
           "unit": "tsp",
           "category": "Spices",
@@ -3109,7 +2891,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Maple syrup",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -3118,7 +2899,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Olive oil",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3127,7 +2907,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Salt",
           "category": "Spices",
           "quantity": "to taste",
@@ -3135,7 +2914,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Black pepper",
           "category": "Spices",
           "quantity": "to taste",
@@ -3143,7 +2921,6 @@
           "quantity_unit": null
         },
         {
-          "core": false,
           "name": "Fresh parsley",
           "unit": "cup chopped",
           "category": "Produce",
@@ -3183,49 +2960,42 @@
       "cal": 520,
       "ingredients": [
         {
-          "core": false,
           "name": "Rice noodles",
           "unit": "oz",
           "category": "Grains & Dried",
           "quantity": "6"
         },
         {
-          "core": false,
           "name": "Edamame",
           "unit": "cup",
           "category": "Frozen",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Purple cabbage",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Carrots",
           "unit": "medium",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Green onions",
           "unit": "stalks",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": false,
           "name": "Cilantro",
           "unit": "cup",
           "category": "Produce",
           "quantity": "¼"
         },
         {
-          "core": true,
           "name": "Peanut butter",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3234,7 +3004,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Tamari",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3243,7 +3012,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Sesame oil",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3252,7 +3020,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Honey",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3261,21 +3028,18 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "lime",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": true,
           "name": "Gochujang",
           "unit": "tsp",
           "category": "Sauces & Condiments",
@@ -3284,7 +3048,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Mixed nuts",
           "unit": "cup",
           "category": "Snacks",
@@ -3327,13 +3090,11 @@
       "cal": 430,
       "ingredients": [
         {
-          "core": false,
           "name": "Sweet potato or zucchini",
           "category": "Produce",
           "quantity": "2 medium sweet potatoes, peeled and diced into ½-inch cubes"
         },
         {
-          "core": true,
           "name": "Black beans",
           "category": "Canned Goods",
           "quantity": "1 can (15 oz), drained and rinsed",
@@ -3341,7 +3102,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Tortillas",
           "category": "Bakery",
           "quantity": "8 small corn tortillas",
@@ -3349,13 +3109,11 @@
           "quantity_unit": null
         },
         {
-          "core": false,
           "name": "Avocados",
           "category": "Produce",
           "quantity": "2, sliced"
         },
         {
-          "core": true,
           "name": "Salsa",
           "category": "Sauces & Condiments",
           "quantity": "½ cup",
@@ -3363,25 +3121,21 @@
           "quantity_unit": null
         },
         {
-          "core": false,
           "name": "Cilantro",
           "category": "Produce",
           "quantity": "¼ cup, roughly chopped"
         },
         {
-          "core": false,
           "name": "Onion",
           "category": "Produce",
           "quantity": "½ medium red onion, finely diced"
         },
         {
-          "core": false,
           "name": "Lemons",
           "category": "Produce",
           "quantity": "1 lime (or lemon), juiced"
         },
         {
-          "core": true,
           "name": "Cumin",
           "category": "Spices",
           "quantity": "1 tsp",
@@ -3389,7 +3143,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Chili powder",
           "category": "Spices",
           "quantity": "1 tsp",
@@ -3397,7 +3150,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Garlic powder",
           "category": "Spices",
           "quantity": "½ tsp",
@@ -3405,7 +3157,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Olive oil",
           "category": "Sauces & Condiments",
           "quantity": "2 tbsp",
@@ -3413,7 +3164,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Salt",
           "category": "Spices",
           "quantity": "½ tsp, plus more to taste",
@@ -3421,7 +3171,6 @@
           "quantity_unit": null
         },
         {
-          "core": false,
           "name": "Purple cabbage",
           "category": "Produce",
           "quantity": "1 cup, thinly sliced"
@@ -3461,14 +3210,12 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": false,
           "name": "Red lentils",
           "unit": "cup",
           "category": "Grains & Dried",
           "quantity": "1.5"
         },
         {
-          "core": true,
           "name": "Coconut milk",
           "unit": "can (13.5 oz)",
           "category": "Canned Goods",
@@ -3477,7 +3224,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Diced tomatoes",
           "unit": "can (14 oz)",
           "category": "Canned Goods",
@@ -3486,7 +3232,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Veggie broth",
           "unit": "cup",
           "category": "Canned Goods",
@@ -3495,49 +3240,42 @@
           "quantity_unit": "cup"
         },
         {
-          "core": false,
           "name": "Onion",
           "unit": "",
           "category": "Produce",
           "quantity": "1 medium"
         },
         {
-          "core": false,
           "name": "Garlic",
           "unit": "cloves",
           "category": "Produce",
           "quantity": "4"
         },
         {
-          "core": false,
           "name": "Carrots",
           "unit": "",
           "category": "Produce",
           "quantity": "2 medium"
         },
         {
-          "core": false,
           "name": "Baby spinach",
           "unit": "cup",
           "category": "Produce",
           "quantity": "3"
         },
         {
-          "core": false,
           "name": "Lemons",
           "unit": "",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Fresh parsley",
           "unit": "cup",
           "category": "Produce",
           "quantity": "¼"
         },
         {
-          "core": true,
           "name": "Cumin",
           "unit": "tsp",
           "category": "Spices",
@@ -3546,7 +3284,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Chili powder",
           "unit": "tsp",
           "category": "Spices",
@@ -3555,7 +3292,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Garlic powder",
           "unit": "tsp",
           "category": "Spices",
@@ -3564,7 +3300,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Olive oil",
           "unit": "tbsp",
           "category": "Sauces & Condiments",
@@ -3573,7 +3308,6 @@
           "quantity_unit": "tbsp"
         },
         {
-          "core": true,
           "name": "Salt",
           "unit": "tsp",
           "category": "Spices",
@@ -3582,7 +3316,6 @@
           "quantity_unit": "tsp"
         },
         {
-          "core": true,
           "name": "Black pepper",
           "unit": "tsp",
           "category": "Spices",
@@ -3591,7 +3324,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Brown rice",
           "unit": "cup (dry)",
           "category": "Grains & Dried",
@@ -3634,56 +3366,47 @@
       "cal": 420,
       "ingredients": [
         {
-          "core": false,
           "name": "Chicken thighs",
           "category": "Meat & Seafood",
           "quantity": "8 bone-in, skin-on"
         },
         {
-          "core": false,
           "name": "Lemons",
           "category": "Produce",
           "quantity": "2"
         },
         {
-          "core": false,
           "name": "Bell pepper",
           "category": "Produce",
           "quantity": "2 large"
         },
         {
-          "core": false,
           "name": "Cherry tomatoes",
           "unit": "cup",
           "category": "Produce",
           "quantity": "1"
         },
         {
-          "core": false,
           "name": "Onion",
           "category": "Produce",
           "quantity": "1 large"
         },
         {
-          "core": false,
           "name": "Sweet potato or zucchini",
           "category": "Produce",
           "quantity": "2 medium sweet potatoes"
         },
         {
-          "core": false,
           "name": "Garlic",
           "category": "Produce",
           "quantity": "5 cloves"
         },
         {
-          "core": false,
           "name": "Fresh parsley",
           "category": "Produce",
           "quantity": "¼ cup, chopped"
         },
         {
-          "core": true,
           "name": "Kalamata olives",
           "category": "Canned Goods",
           "quantity": "½ cup, pitted",
@@ -3691,7 +3414,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Dried oregano",
           "category": "Spices",
           "quantity": "2 tsp",
@@ -3699,7 +3421,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Olive oil",
           "category": "Sauces & Condiments",
           "quantity": "3 tbsp",
@@ -3707,7 +3428,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Salt",
           "category": "Spices",
           "quantity": "1½ tsp",
@@ -3715,7 +3435,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Black pepper",
           "category": "Spices",
           "quantity": "½ tsp",
@@ -3723,7 +3442,6 @@
           "quantity_unit": null
         },
         {
-          "core": true,
           "name": "Chili powder",
           "category": "Spices",
           "quantity": "½ tsp",

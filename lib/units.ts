@@ -103,9 +103,9 @@ export function canonicalizeUnit(raw: string | null | undefined): string | null 
 }
 
 // Turns a free-text quantity/unit pair into a canonical {value, unit}, or
-// null if it can't be confidently parsed. Used both to populate
-// Ingredient.quantity_value/quantity_unit and to interpret pantry_on_hand
-// rows entered through the UI.
+// null if it can't be confidently parsed. Used to populate
+// Ingredient.quantity_value/quantity_unit (AI generation, manual entry,
+// import).
 export function parseNumericQuantity(
   quantity: string | null | undefined,
   unit: string | null | undefined
@@ -122,33 +122,4 @@ export function parseNumericQuantity(
   if (value == null) return null;
 
   return { value, unit: canonicalUnit };
-}
-
-export type ReconcileResult = "have-enough" | "need-more" | "unknown";
-
-// Compares what's needed against what's on hand. Fails open ("unknown") on
-// anything ambiguous — missing data, incompatible units, mismatched
-// dimensions — so the caller always defaults to still listing the item
-// rather than silently hiding something that might actually be needed.
-export function reconcile(
-  neededValue: number | null,
-  neededUnit: string | null,
-  onHandValue: number | null,
-  onHandUnit: string | null
-): ReconcileResult {
-  if (neededValue == null || neededUnit == null) return "unknown";
-
-  const neededDef = UNIT_DEFS[neededUnit];
-  if (!neededDef) return "unknown";
-
-  if (onHandValue == null || onHandUnit == null) return "need-more";
-
-  const onHandDef = UNIT_DEFS[onHandUnit];
-  if (!onHandDef || onHandDef.dimension !== neededDef.dimension) return "unknown";
-
-  if (neededDef.dimension === "count" && neededUnit !== onHandUnit) return "unknown";
-
-  const neededBase = neededValue * neededDef.toBase;
-  const onHandBase = onHandValue * onHandDef.toBase;
-  return onHandBase >= neededBase ? "have-enough" : "need-more";
 }

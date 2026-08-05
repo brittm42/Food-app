@@ -3,20 +3,13 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { toggleChecked } from "@/app/actions/pantry";
-import { toggleCoreItemChecked } from "@/app/actions/pantry-on-hand";
 import { addShoppingItem, removeShoppingItem, updateShoppingItem } from "@/app/actions/shopping";
 import { markOrderPickedUp } from "@/app/actions/kroger-send";
 import { UNIT_OPTIONS } from "@/lib/units";
 import Collapsible from "@/components/Collapsible";
 import QuickAddModal from "@/components/QuickAddModal";
 
-type ChecklistItem = {
-  key: string;
-  label: string;
-  checked: boolean;
-  neededValue?: number | null;
-  neededUnit?: string | null;
-};
+type ChecklistItem = { key: string; label: string; checked: boolean };
 type ShoppingItem = {
   id: string;
   label: string;
@@ -24,6 +17,7 @@ type ShoppingItem = {
   quantityValue: number | null;
   quantityUnit: string | null;
   note: string | null;
+  recipeDriven: boolean;
   sentAt: string | null;
   krogerProductDescription: string | null;
   krogerQuantity: number | null;
@@ -62,16 +56,6 @@ export default function ShoppingListView({
   function toggle(item: ChecklistItem) {
     startTransition(() => {
       toggleChecked(item.key);
-    });
-  }
-
-  // Pantry-section checklist entries have a computed needed quantity (this
-  // week's queued recipes) — checking one on/off also adjusts on-hand by
-  // that amount. Fresh checklist entries have no such concept, so they use
-  // the plain toggle above.
-  function toggleCore(item: ChecklistItem) {
-    startTransition(() => {
-      toggleCoreItemChecked(item.key, item.label, item.neededValue ?? null, item.neededUnit ?? null);
     });
   }
 
@@ -178,7 +162,6 @@ export default function ShoppingListView({
           {pantry.map((group) => (
             <Collapsible key={group.category} title={group.category}>
               <div className="flex flex-col gap-1.5">
-                <ChecklistSection items={group.checklist} onToggle={toggleCore} disabled={isPending} />
                 {group.shoppingItems.map((item) => (
                   <ShoppingItemRow
                     key={item.id}
@@ -193,7 +176,7 @@ export default function ShoppingListView({
           ))}
           {!hasPantry && (
             <p className="text-xs text-ink-light">
-              Nothing on your list — use the + button above to add something, or tap &ldquo;Need to buy&rdquo; on a My Kitchen item to restock it.
+              Nothing on your list — use the + button above to add something, or tap &ldquo;Need to buy&rdquo; on a Home Stock item to restock it.
             </p>
           )}
         </div>
@@ -250,6 +233,11 @@ function ShoppingItemRow({
           disabled={checked}
           className={`flex-1 text-left text-sm min-w-0 ${checked ? "text-ink-light line-through" : "cursor-pointer"}`}
         >
+          {item.recipeDriven && !checked && (
+            <span className="font-mono text-[9px] uppercase tracking-wide text-teal border border-teal rounded-full px-1.5 py-0.5 mr-1.5 align-middle">
+              This week
+            </span>
+          )}
           {item.label}
           {item.quantityValue != null && (
             <span className="text-ink-light text-xs">

@@ -2,48 +2,37 @@
 
 import { useState, useTransition } from "react";
 import { UNIT_OPTIONS } from "@/lib/units";
-import { updatePantryOnHand, updatePantryTarget, updatePantryNote, updatePantryItemName } from "@/app/actions/pantry";
+import { updatePantryTarget, updatePantryNote, updatePantryItemName } from "@/app/actions/pantry";
 
-// Tap-to-edit bottom sheet for a Kitchen item: a Pantry-category item's
-// on-hand + target quantities, or a Fresh-category item's single "usual
-// amount to buy" target — plus a freeform note (brand/store preference,
-// dietary note) either way. Replaces the old cramped inline number input +
-// unit <select> pair (OnHandControl) that lived directly in the list row.
+// Tap-to-edit bottom sheet for a Home Stock item: name, its "usual amount
+// to buy" (the default quantity used whenever it's flagged as needed), and
+// a freeform note (brand/store preference, dietary note). Every item —
+// Fresh, Pantry, or Household — uses the same binary in-stock model now, so
+// there's no separate on-hand quantity to edit here.
 export default function PantryItemSheet({
   item,
-  fresh,
   onClose,
 }: {
   item: {
     id: string;
     name: string;
-    on_hand_qty: number | null;
-    on_hand_unit: string | null;
     target_qty: number | null;
     target_unit: string | null;
     note: string | null;
   };
-  fresh: boolean;
   onClose: () => void;
 }) {
   const [name, setName] = useState(item.name);
-  const [onHandValue, setOnHandValue] = useState(item.on_hand_qty != null ? String(item.on_hand_qty) : "");
-  const [onHandUnit, setOnHandUnit] = useState(item.on_hand_unit ?? "");
   const [targetValue, setTargetValue] = useState(item.target_qty != null ? String(item.target_qty) : "");
   const [targetUnit, setTargetUnit] = useState(item.target_unit ?? "");
   const [note, setNote] = useState(item.note ?? "");
   const [isPending, startTransition] = useTransition();
 
-  const showOnHand = !fresh;
-  const targetLabel = fresh ? "Usual amount to buy" : "Target (restock to)";
-
   function save() {
-    const nextOnHandValue = onHandValue.trim() ? Number(onHandValue) : null;
     const nextTargetValue = targetValue.trim() ? Number(targetValue) : null;
     const trimmedName = name.trim();
     startTransition(async () => {
       if (trimmedName && trimmedName !== item.name) await updatePantryItemName(item.id, trimmedName);
-      if (showOnHand) await updatePantryOnHand(item.id, nextOnHandValue, onHandUnit || null);
       await updatePantryTarget(item.id, nextTargetValue, targetUnit || null);
       if (note !== (item.note ?? "")) await updatePantryNote(item.id, note || null);
       onClose();
@@ -66,37 +55,8 @@ export default function PantryItemSheet({
           />
         </div>
 
-        {showOnHand && (
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-ink-light">On hand</label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                min="0"
-                step="any"
-                value={onHandValue}
-                onChange={(e) => setOnHandValue(e.target.value)}
-                placeholder="qty"
-                className="flex-1 border border-border rounded-lg px-3 py-2 text-base bg-surface focus:outline-none focus:border-teal"
-              />
-              <select
-                value={onHandUnit}
-                onChange={(e) => setOnHandUnit(e.target.value)}
-                className="border border-border rounded-lg px-2 py-2 text-base bg-surface focus:outline-none focus:border-teal"
-              >
-                <option value="">unit</option>
-                {UNIT_OPTIONS.map((u) => (
-                  <option key={u.value} value={u.value}>
-                    {u.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-ink-light">{targetLabel}</label>
+          <label className="text-xs text-ink-light">Usual amount to buy</label>
           <div className="flex gap-2">
             <input
               type="number"

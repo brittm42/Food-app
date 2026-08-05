@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { categorizeItem } from "@/lib/categorize";
 import { CATEGORIES, isFreshCategory } from "@/lib/categories";
 import type { Recipe } from "@/lib/types";
-import { reconcile } from "@/lib/units";
 
 // Shared by both voice entry points (Shortcuts' /api/shopping-items and
 // Alexa's /api/alexa/shopping) — neither has a Supabase session, so both
@@ -12,41 +11,74 @@ export async function addShoppingItemForHousehold(
   admin: SupabaseClient,
   householdId: string,
   rawLabel: string
-): Promise<{ ok: true; label: string; duplicate?: boolean } | { ok: false; error: string }> {
+): Promise<{ ok: true; label: string; duplicate?: boolean; linkedToPantryItem?: boolean } | { ok: false; error: string }> {
   const label = rawLabel.trim();
   if (!label) {
     return { ok: false, error: "Enter an item name." };
   }
 
   // A voice add should behave like a real list: saying an item that's
-  // already sitting there unchecked is a no-op, not a second row. Escape
-  // ilike's own wildcard characters so a literal label like "2% milk" or
-  // "family_size chips" doesn't get treated as a pattern.
-  const escapedLabel = label.replace(/[%_]/g, (char) => `\\${char}`);
-
-  const { data: existing } = await admin
-    .from("shopping_items")
-    .select("id")
-    .eq("household_id", householdId)
-    .ilike("label", escapedLabel)
-    .maybeSingle();
+  // already sitting there unchecked is a no-op, not a second row. Fuzzy —
+  // catches near-duplicates like "Spaghetti Os" vs. "SpaghettiOs" — not
+  // just an exact/case-insensitive match.
+  const { data: existingItems } = await admin.from("shopping_items").select("id, label").eq("household_id", householdId);
+  const existing = (existingItems ?? []).find((row) => isFuzzyDuplicate(row.label as string, label));
 
   if (existing) {
     return { ok: true, label, duplicate: true };
   }
 
-  const category = await categorizeItem(label);
+  // Match against the household's own Home Stock catalog — if this is
+  // something already tracked there, link the new row to it (same loop the
+  // Kitchen restock button uses: checking it off flips the catalog item
+  // back to in-stock) and default to its usual purchase quantity instead of
+  // adding a bare, unquantified item.
+  const { data: catalogItems } = await admin
+    .from("pantry_items")
+    .select("id, name, category, target_qty, target_unit")
+    .eq("household_id", householdId);
+  const catalogMatch = (catalogItems ?? []).find((row) => isFuzzyDuplicate(row.name as string, label));
+
+  const category = catalogMatch ? (catalogMatch.category as string) : await categorizeItem(label);
   const { error } = await admin.from("shopping_items").insert({
     household_id: householdId,
-    label,
+    label: catalogMatch ? (catalogMatch.name as string) : label,
     category,
+    quantity_value: catalogMatch?.target_qty ?? null,
+    quantity_unit: catalogMatch?.target_qty != null ? catalogMatch.target_unit : null,
+    source_pantry_item_id: catalogMatch?.id ?? null,
   });
 
   if (error) {
     return { ok: false, error: error.message };
   }
 
-  return { ok: true, label };
+  // Same "need it" semantics as tapping "Need to buy" on the Home Stock
+  // item directly — keeps its in-stock status consistent with it now being
+  // on the Shopping List.
+  if (catalogMatch) {
+    await admin.from("pantry_items").update({ in_stock: false }).eq("id", catalogMatch.id);
+  }
+
+  return { ok: true, label, linkedToPantryItem: !!catalogMatch };
+}
+
+// Loose near-duplicate check for voice-add dedup/catalog-matching: case-
+// insensitive, ignoring whitespace and punctuation (so "Spaghetti Os" and
+// "SpaghettiOs" match, and "2% milk" doesn't choke on the %). Deliberately
+// not a full fuzzy-distance algorithm — this app's items are short grocery
+// nouns, where "strip non-letters and compare" catches the realistic near-
+// duplicates (spacing, punctuation, capitalization) without the false-
+// positive risk of edit-distance matching two genuinely different short
+// words.
+function normalizeForFuzzyMatch(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function isFuzzyDuplicate(a: string, b: string): boolean {
+  const normalizedA = normalizeForFuzzyMatch(a);
+  const normalizedB = normalizeForFuzzyMatch(b);
+  return !!normalizedA && normalizedA === normalizedB;
 }
 
 type QueueRow = {
@@ -54,16 +86,13 @@ type QueueRow = {
   recipe: Pick<Recipe, "ingredients" | "servings"> | null;
 };
 
-export type CoreNeed = { value: number; unit: string } | { unreconcilable: true };
+export type IngredientNeed = { value: number; unit: string } | { unreconcilable: true };
 
-// Total scaled quantity each core ingredient needs across every queued
-// recipe (summing, servings-ratio-scaled, per exact lowercased name) —
-// shared by getShoppingListData below and the onboarding wizard's kitchen
-// pre-population (lib/kitchen-prepopulate.ts), which needs the same "how
-// much does this household actually need" figure to mark common pantry
-// basics as already on hand.
-export function computeCoreNeeds(queue: QueueRow[]): Map<string, CoreNeed> {
-  const coreNeeds = new Map<string, CoreNeed>();
+// Total scaled quantity each ingredient needs across every queued recipe
+// (summing, servings-ratio-scaled, per exact lowercased name) — shared by
+// getShoppingListData/computeWeeklyPantryNeeds below.
+export function computeIngredientNeeds(queue: QueueRow[]): Map<string, IngredientNeed> {
+  const needs = new Map<string, IngredientNeed>();
 
   for (const row of queue) {
     const baseServings = row.recipe?.servings ?? 1;
@@ -71,35 +100,191 @@ export function computeCoreNeeds(queue: QueueRow[]): Map<string, CoreNeed> {
     const ratio = servings / baseServings;
 
     for (const ing of row.recipe?.ingredients ?? []) {
-      if (!ing.core) continue;
-
       const key = ing.name.trim().toLowerCase();
-      const existing = coreNeeds.get(key);
+      const existing = needs.get(key);
       if (existing && "unreconcilable" in existing) continue;
 
       if (ing.quantity_value == null || ing.quantity_unit == null) {
-        coreNeeds.set(key, { unreconcilable: true });
+        needs.set(key, { unreconcilable: true });
         continue;
       }
       const scaledValue = ing.quantity_value * ratio;
       if (existing && existing.unit !== ing.quantity_unit) {
-        coreNeeds.set(key, { unreconcilable: true });
+        needs.set(key, { unreconcilable: true });
         continue;
       }
-      coreNeeds.set(key, { value: (existing?.value ?? 0) + scaledValue, unit: ing.quantity_unit });
+      needs.set(key, { value: (existing?.value ?? 0) + scaledValue, unit: ing.quantity_unit });
     }
   }
 
-  return coreNeeds;
+  return needs;
 }
 
-export type ChecklistItem = {
-  key: string;
-  label: string;
-  checked: boolean;
-  neededValue?: number | null;
-  neededUnit?: string | null;
+export type CatalogItemInfo = {
+  name: string;
+  category: string;
+  inStock: boolean;
+  targetQty: number | null;
+  targetUnit: string | null;
 };
+
+export type WeeklyPantryNeeds = {
+  // This week's computed need for a matched (already-in-catalog) Pantry
+  // item, keyed by pantry_items.id — for Home Stock's "need ~X this week"
+  // badge.
+  neededByCatalogId: Map<string, { value: number | null; unit: string | null }>;
+  // Shelf-stable recipe ingredients that don't match anything in the
+  // household's Home Stock catalog — "not typically stocked."
+  unmatched: { name: string; category: string; value: number | null; unit: string | null }[];
+  catalogById: Map<string, CatalogItemInfo>;
+};
+
+// Matches this week's queued recipes' shelf-stable ingredients against the
+// household's own Home Stock catalog by name — the catalog (not a recipe-
+// authored "core" flag) is the source of truth for what's routine. Fresh-
+// category ingredients are never matched here; they're always on the
+// unconditional "Buy Fresh" checklist regardless of catalog state.
+export async function computeWeeklyPantryNeeds(supabase: SupabaseClient, householdId: string): Promise<WeeklyPantryNeeds> {
+  const [{ data: queue }, { data: catalogItems }] = await Promise.all([
+    supabase
+      .from("week_queue")
+      .select("servings_override, recipe:recipes(ingredients, servings)")
+      .eq("household_id", householdId),
+    supabase.from("pantry_items").select("id, name, category, in_stock, target_qty, target_unit").eq("household_id", householdId),
+  ]);
+
+  const queueRows = (queue ?? []) as unknown as QueueRow[];
+  const needs = computeIngredientNeeds(queueRows);
+
+  const shelfStable = new Map<string, { displayName: string; category: string }>();
+  for (const row of queueRows) {
+    for (const ing of row.recipe?.ingredients ?? []) {
+      const category = ing.category ?? "Other";
+      if (isFreshCategory(category)) continue;
+      const key = ing.name.trim().toLowerCase();
+      if (!shelfStable.has(key)) shelfStable.set(key, { displayName: ing.name, category });
+    }
+  }
+
+  const catalogById = new Map<string, CatalogItemInfo>();
+  const catalogIdByName = new Map<string, string>();
+  for (const row of catalogItems ?? []) {
+    const id = row.id as string;
+    catalogById.set(id, {
+      name: row.name as string,
+      category: row.category as string,
+      inStock: row.in_stock as boolean,
+      targetQty: row.target_qty as number | null,
+      targetUnit: row.target_unit as string | null,
+    });
+    catalogIdByName.set((row.name as string).trim().toLowerCase(), id);
+  }
+
+  const neededByCatalogId = new Map<string, { value: number | null; unit: string | null }>();
+  const unmatched: WeeklyPantryNeeds["unmatched"] = [];
+
+  for (const [key, { displayName, category }] of shelfStable) {
+    const need = needs.get(key);
+    const value = need && !("unreconcilable" in need) ? need.value : null;
+    const unit = need && !("unreconcilable" in need) ? need.unit : null;
+
+    const catalogId = catalogIdByName.get(key);
+    if (catalogId) {
+      neededByCatalogId.set(catalogId, { value, unit });
+    } else {
+      unmatched.push({ name: displayName, category, value, unit });
+    }
+  }
+
+  return { neededByCatalogId, unmatched, catalogById };
+}
+
+// Ensures the Shopping List reflects what this week's queued recipes
+// actually require, beyond what's already flagged manually: a shelf-stable
+// ingredient with no Home Stock match at all goes straight onto the list
+// (flagged recipe_driven, distinct from a regular add); one that matches a
+// catalog item already flagged "need to buy" gets a row too, in case it
+// somehow doesn't have one yet, sized to whichever is bigger — the usual
+// amount or this week's need. Matched-and-in-stock items are left alone
+// entirely (Home Stock shows the need as an FYI badge instead — see
+// computeWeeklyPantryNeeds). Also cleans up recipe_driven rows for
+// ingredients that are no longer needed (e.g. the recipe was dropped from
+// This Week), as long as they haven't already been sent to Kroger.
+export async function syncWeeklyNeedsToShoppingList(supabase: SupabaseClient, householdId: string): Promise<void> {
+  const { neededByCatalogId, unmatched, catalogById } = await computeWeeklyPantryNeeds(supabase, householdId);
+
+  const { data: existingRows } = await supabase
+    .from("shopping_items")
+    .select("id, source_pantry_item_id, source_checklist_key, recipe_driven, sent_at")
+    .eq("household_id", householdId);
+
+  const existingByPantryId = new Set(
+    (existingRows ?? []).filter((r) => r.source_pantry_item_id).map((r) => r.source_pantry_item_id as string)
+  );
+  const existingChecklistKeys = new Set(
+    (existingRows ?? []).filter((r) => r.source_checklist_key).map((r) => r.source_checklist_key as string)
+  );
+
+  const toInsert: Record<string, unknown>[] = [];
+
+  for (const [catalogId, need] of neededByCatalogId) {
+    const catalogItem = catalogById.get(catalogId);
+    if (!catalogItem || catalogItem.inStock) continue;
+    if (existingByPantryId.has(catalogId)) continue;
+
+    const preferNeeded =
+      need.value != null && (catalogItem.targetQty == null || need.unit !== catalogItem.targetUnit || need.value > catalogItem.targetQty);
+    const quantityValue = preferNeeded ? need.value : catalogItem.targetQty;
+    const quantityUnit = preferNeeded ? need.unit : catalogItem.targetUnit;
+
+    toInsert.push({
+      household_id: householdId,
+      label: catalogItem.name,
+      category: catalogItem.category,
+      quantity_value: quantityValue,
+      quantity_unit: quantityValue != null ? quantityUnit : null,
+      source_pantry_item_id: catalogId,
+    });
+  }
+
+  const currentUnmatchedKeys = new Set<string>();
+  for (const item of unmatched) {
+    const key = `weekneed:${item.name.trim().toLowerCase()}`;
+    currentUnmatchedKeys.add(key);
+    if (existingChecklistKeys.has(key)) continue;
+
+    toInsert.push({
+      household_id: householdId,
+      label: item.name,
+      category: item.category,
+      quantity_value: item.value,
+      quantity_unit: item.value != null ? item.unit : null,
+      source_checklist_key: key,
+      recipe_driven: true,
+    });
+  }
+
+  if (toInsert.length > 0) {
+    await supabase.from("shopping_items").insert(toInsert);
+  }
+
+  const staleRowIds = (existingRows ?? [])
+    .filter(
+      (r) =>
+        r.recipe_driven &&
+        !r.sent_at &&
+        typeof r.source_checklist_key === "string" &&
+        (r.source_checklist_key as string).startsWith("weekneed:") &&
+        !currentUnmatchedKeys.has(r.source_checklist_key as string)
+    )
+    .map((r) => r.id as string);
+
+  if (staleRowIds.length > 0) {
+    await supabase.from("shopping_items").delete().in("id", staleRowIds);
+  }
+}
+
+export type ChecklistItem = { key: string; label: string; checked: boolean };
 export type ShoppingRow = {
   id: string;
   label: string;
@@ -107,6 +292,7 @@ export type ShoppingRow = {
   quantityValue: number | null;
   quantityUnit: string | null;
   note: string | null;
+  recipeDriven: boolean;
   sentAt: string | null;
   krogerUpc: string | null;
   krogerProductDescription: string | null;
@@ -117,38 +303,23 @@ export type ShoppingListData =
   | { error: string }
   | { fresh: CategoryGroup[]; pantry: CategoryGroup[]; hasQueue: boolean };
 
-// The full Shopping List computation: recipe-driven Fresh/Core checklist
-// entries (from this week's queue, reconciled against on-hand for Core) plus
-// one-off/restock shopping_items rows, both split into Fresh/Pantry sections.
-// Shared by app/shopping/page.tsx (renders everything, checked or sent alike)
-// and app/shopping/send-to-kroger/page.tsx (filters this down to what's
-// still eligible to send).
-export async function getShoppingListData(
-  supabase: SupabaseClient,
-  householdId: string
-): Promise<ShoppingListData> {
-  const [
-    { data: queue, error },
-    { data: checkedRows },
-    { data: kitchenItems },
-    { data: shoppingRows },
-    { data: onHandRows },
-  ] = await Promise.all([
+// The full Shopping List computation: the recipe-driven "Buy Fresh"
+// checklist (unconditional — perishables are always bought weekly
+// regardless of Home Stock state) plus every shopping_items row (one-off
+// adds, Kitchen restock/flag pushes, and the auto-synced recipe-driven
+// rows from syncWeeklyNeedsToShoppingList), split into Fresh/Pantry
+// sections by category. Shared by app/shopping/page.tsx (renders
+// everything, checked or sent alike) and app/shopping/send-to-kroger/page.tsx
+// (filters this down to what's still eligible to send).
+export async function getShoppingListData(supabase: SupabaseClient, householdId: string): Promise<ShoppingListData> {
+  const [{ data: queue, error }, { data: checkedRows }, { data: kitchenItems }, { data: shoppingRows }] = await Promise.all([
     supabase
       .from("week_queue")
       .select("servings_override, recipe:recipes(ingredients, servings)")
       .eq("household_id", householdId),
     supabase.from("pantry_state").select("item_key").eq("household_id", householdId),
     supabase.from("pantry_items").select("name, category").eq("household_id", householdId),
-    supabase
-      .from("shopping_items")
-      .select("*")
-      .eq("household_id", householdId)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("pantry_on_hand")
-      .select("ingredient_name, quantity_value, quantity_unit")
-      .eq("household_id", householdId),
+    supabase.from("shopping_items").select("*").eq("household_id", householdId).order("created_at", { ascending: true }),
   ]);
 
   if (error) return { error: error.message };
@@ -158,51 +329,28 @@ export async function getShoppingListData(
   // Once a checklist item has been sent to Kroger, it's materialized into
   // its own shopping_items row (source_checklist_key set) — that row is now
   // the source of truth for it, so the computed checklist entry must stop
-  // reappearing too, or the same ingredient would show up twice (once as an
-  // unchecked checklist row, once as the "sent" shopping_items row). The row
-  // only exists here while sent-and-not-yet-picked-up; "mark order picked
-  // up" deletes it, at which point the checklist entry naturally
-  // reappears if it's genuinely still needed.
+  // reappearing too. The row only exists here while sent-and-not-yet-picked-
+  // up; "mark order picked up" deletes it, at which point the checklist
+  // entry naturally reappears if it's genuinely still needed.
   const materializedChecklistKeys = new Set(
     (shoppingRows ?? []).map((r) => r.source_checklist_key as string | null).filter((k): k is string => !!k)
   );
 
-  const onHandByName = new Map(
-    (onHandRows ?? []).map((r) => [
-      r.ingredient_name as string,
-      r as { quantity_value: number | null; quantity_unit: string | null },
-    ])
-  );
-
-  // Every Kitchen item (any provenance) supplies a name -> aisle-category
-  // lookup for recipe-driven ingredients that happen to match a catalog
-  // item, whether or not that ingredient is core.
   const categoryByKitchenName = new Map<string, string>();
   for (const row of kitchenItems ?? []) {
     categoryByKitchenName.set((row.name as string).trim().toLowerCase(), row.category as string);
   }
 
   const freshEntries = new Map<string, { category: string }>();
-  const coreNames = new Set<string>();
-
-  for (const row of queue ?? []) {
-    const recipe = row.recipe as unknown as Pick<Recipe, "ingredients" | "servings"> | null;
-    for (const ing of recipe?.ingredients ?? []) {
-      if (!ing.core) {
-        freshEntries.set(ing.name, {
-          category: ing.category ?? categoryByKitchenName.get(ing.name.trim().toLowerCase()) ?? "Other",
-        });
-      } else {
-        coreNames.add(ing.name);
+  for (const row of (queue ?? []) as unknown as QueueRow[]) {
+    for (const ing of row.recipe?.ingredients ?? []) {
+      const category = ing.category ?? categoryByKitchenName.get(ing.name.trim().toLowerCase()) ?? "Other";
+      if (isFreshCategory(category)) {
+        freshEntries.set(ing.name, { category });
       }
     }
   }
 
-  const coreNeeds = computeCoreNeeds(
-    (queue ?? []) as unknown as QueueRow[]
-  );
-
-  // Recipe-driven Fresh checklist entries, grouped by aisle category.
   const freshGroups = new Map<string, ChecklistItem[]>();
   for (const [name, { category }] of freshEntries) {
     const key = `shopping:fresh:${name}`;
@@ -211,33 +359,9 @@ export async function getShoppingListData(
     freshGroups.get(category)!.push({ key, label: name, checked: checkedKeys.has(key) });
   }
 
-  // Recipe-driven Core reconciliation entries, grouped by aisle category.
-  // Pantry reconciliation: drop a core item entirely once on-hand covers
-  // what this week's queued recipes need — Shopping List only answers
-  // "what do I need to buy," Kitchen answers "what do I have."
-  const coreGroups = new Map<string, ChecklistItem[]>();
-  for (const name of coreNames) {
-    const need = coreNeeds.get(name.trim().toLowerCase());
-    const reconcilable = need && !("unreconcilable" in need);
-    const neededValue = reconcilable ? (need as { value: number; unit: string }).value : null;
-    const neededUnit = reconcilable ? (need as { value: number; unit: string }).unit : null;
-
-    if (neededValue != null && neededUnit != null) {
-      const onHand = onHandByName.get(name.trim().toLowerCase());
-      const result = reconcile(neededValue, neededUnit, onHand?.quantity_value ?? null, onHand?.quantity_unit ?? null);
-      if (result === "have-enough") continue;
-    }
-
-    const category = categoryByKitchenName.get(name.trim().toLowerCase()) ?? "Other";
-    const key = `shopping:core:${name}`;
-    if (materializedChecklistKeys.has(key)) continue;
-    if (!coreGroups.has(category)) coreGroups.set(category, []);
-    coreGroups.get(category)!.push({ key, label: name, checked: checkedKeys.has(key), neededValue, neededUnit });
-  }
-
-  // shopping_items rows (one-off adds, Kitchen restock/flag pushes, and now
-  // Kroger-sent materialized checklist items) split into Fresh vs. Pantry
-  // by their own category, same split as Kitchen.
+  // shopping_items rows (one-off adds, Kitchen restock/flag pushes, recipe-
+  // driven auto-adds, and Kroger-sent materialized items) split into Fresh
+  // vs. Pantry by their own category, same split as Home Stock.
   const freshShoppingItems = new Map<string, ShoppingRow[]>();
   const pantryShoppingItems = new Map<string, ShoppingRow[]>();
   for (const row of shoppingRows ?? []) {
@@ -251,6 +375,7 @@ export async function getShoppingListData(
       quantityValue: row.quantity_value as number | null,
       quantityUnit: row.quantity_unit as string | null,
       note: row.note as string | null,
+      recipeDriven: (row.recipe_driven as boolean) ?? false,
       sentAt: row.sent_at as string | null,
       krogerUpc: row.kroger_upc as string | null,
       krogerProductDescription: row.kroger_product_description as string | null,
@@ -272,7 +397,7 @@ export async function getShoppingListData(
 
   return {
     fresh: buildSection(freshGroups, freshShoppingItems),
-    pantry: buildSection(coreGroups, pantryShoppingItems),
+    pantry: buildSection(new Map(), pantryShoppingItems),
     hasQueue: (queue?.length ?? 0) > 0,
   };
 }

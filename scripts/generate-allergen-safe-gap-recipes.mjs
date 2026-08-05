@@ -114,12 +114,11 @@ function buildTool(tagNames, knownIngredientNames) {
                 description:
                   `Bare ingredient name only — no quantity/brand. Reuse one of these existing names whenever it's the same ingredient: ${knownIngredientNames.join(", ")}.`,
               },
-              core: { type: "boolean", description: "true if shelf-stable Core Pantry item, false if Fresh/weekly-buy." },
               category: { type: "string", enum: CATEGORIES, description: "The single best-fit grocery-aisle category." },
               quantity: { type: "string", description: "Amount as it would appear in a recipe. Free text, always a real value." },
               unit: { type: "string", description: 'Unit of measure, e.g. "cup", "tbsp". Omit only if quantity has no unit.' },
             },
-            required: ["name", "core", "category", "quantity"],
+            required: ["name", "category", "quantity"],
           },
         },
       },
