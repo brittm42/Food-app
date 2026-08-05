@@ -34,7 +34,17 @@ const EXTRACTION_SYSTEM_PROMPT = `You are extracting a real recipe from web cont
 If the given content does not actually contain a real recipe (no real ingredients and instructions to extract — e.g. it's an unrelated article, navigation/boilerplate text, or a page that failed to load meaningfully), do NOT call the draft_recipe tool. Instead, reply in plain text briefly explaining that no recipe was found.
 Otherwise, always call the draft_recipe tool with your answer. Never include a change_summary — this isn't a revision of a prior draft.`;
 
+const PHOTO_EXTRACTION_ADDENDUM = `
+You're extracting from one or more photos of a recipe (a cookbook page, index card, handwritten note, printout, or similar) rather than a web page.
+- If there are multiple photos, treat them as pages or sides of the same recipe, in the order given — e.g. one photo may hold the ingredients and another the instructions, or they may be sequential pages of a longer recipe. Combine them into a single recipe; don't treat them as unrelated.
+- Handwriting can be ambiguous — use context (typical recipe quantities, surrounding words) to resolve an unclear character, but if a specific word or number is genuinely illegible, don't fabricate a specific value for it.
+- If a photo is blurry, cropped, poorly lit, or otherwise doesn't contain a legible recipe, or shows something that isn't a recipe at all, do NOT call the draft_recipe tool — reply in plain text briefly explaining what's wrong, same as an unusable web page.`;
+
 export type ImportResult = { recipe?: RecipeInput; error?: string; needsManualText?: boolean };
+
+export type PhotoInput = { mediaType: "image/jpeg" | "image/png" | "image/webp"; data: string };
+
+const MAX_PHOTOS = 5;
 
 export async function importRecipeFromUrl(url: string): Promise<ImportResult> {
   let parsed: URL;
@@ -84,8 +94,14 @@ export async function importRecipeFromText(text: string, source?: string): Promi
   return runExtraction({ rawText: text }, source ?? null);
 }
 
+export async function importRecipeFromPhotos(images: PhotoInput[]): Promise<ImportResult> {
+  if (images.length === 0) return { error: "Add at least one photo first." };
+  if (images.length > MAX_PHOTOS) return { error: `Up to ${MAX_PHOTOS} photos at a time.` };
+  return runExtraction({ images }, null);
+}
+
 async function runExtraction(
-  input: { structured: ExtractedRecipe } | { rawText: string },
+  input: { structured: ExtractedRecipe } | { rawText: string } | { images: PhotoInput[] },
   source: string | null
 ): Promise<ImportResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -111,16 +127,29 @@ async function runExtraction(
     ]),
   ].sort();
 
-  const userContent =
+  const userContent: string | Anthropic.ContentBlockParam[] =
     "structured" in input
       ? `Structured recipe data extracted from a web page's schema.org markup:\n${JSON.stringify(
           input.structured,
           null,
           2
         )}${source ? `\n\nSource URL: ${source}` : ""}`
-      : `Raw page text (may include unrelated site content — find the actual recipe within it):\n${input.rawText}${
-          source ? `\n\nSource URL: ${source}` : ""
-        }`;
+      : "rawText" in input
+        ? `Raw page text (may include unrelated site content — find the actual recipe within it):\n${input.rawText}${
+            source ? `\n\nSource URL: ${source}` : ""
+          }`
+        : [
+            ...input.images.map(
+              (img): Anthropic.ContentBlockParam => ({
+                type: "image",
+                source: { type: "base64", media_type: img.mediaType, data: img.data },
+              })
+            ),
+            {
+              type: "text",
+              text: `${input.images.length > 1 ? `These ${input.images.length} photos are` : "This photo is"} of a recipe. Extract it.`,
+            },
+          ];
 
   const client = new Anthropic({ apiKey });
 
@@ -128,7 +157,7 @@ async function runExtraction(
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
-      system: EXTRACTION_SYSTEM_PROMPT,
+      system: "images" in input ? EXTRACTION_SYSTEM_PROMPT + PHOTO_EXTRACTION_ADDENDUM : EXTRACTION_SYSTEM_PROMPT,
       tools: [buildDraftRecipeTool(tagNames, knownIngredientNames, knownCuisineNames)],
       // Deliberately not forced (unlike generate-recipe.ts's mood-based
       // drafting) — a forced tool call has no way to say "there's no recipe
@@ -160,7 +189,7 @@ async function runExtraction(
       return { ...ing, quantity_value: parsed?.value ?? null, quantity_unit: parsed?.unit ?? null };
     });
     recipe.source = source ?? recipe.source ?? null;
-    recipe.imported_via = "link";
+    recipe.imported_via = "images" in input ? "photo" : "link";
     recipe.is_ai_generated = false;
 
     // Normalize casing against the known vocabulary first ("italian" ->

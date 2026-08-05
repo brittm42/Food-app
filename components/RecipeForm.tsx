@@ -19,8 +19,13 @@ import {
   type RecipeInput,
 } from "@/app/actions/recipes";
 import { generateRecipeDraft, type ChatTurn } from "@/app/actions/generate-recipe";
-import { importRecipeFromUrl, importRecipeFromText } from "@/app/actions/import-recipe";
+import {
+  importRecipeFromUrl,
+  importRecipeFromText,
+  importRecipeFromPhotos,
+} from "@/app/actions/import-recipe";
 import { parseNumericQuantity } from "@/lib/units";
+import { resizeImageFile, type ResizedImage } from "@/lib/image-resize";
 
 type ChatMessage = { role: "user" | "assistant"; text: string };
 
@@ -35,6 +40,8 @@ const INPUT_CLASS = `${INPUT_BASE} w-full`;
 const LABEL_CLASS = "block font-mono text-[10px] uppercase tracking-wide text-ink-light mb-1";
 const SECTION_CLASS = "bg-surface border border-border rounded-xl p-4 flex flex-col gap-4";
 const SECTION_TITLE_CLASS = "font-mono text-[11px] uppercase tracking-wide text-ink-light";
+
+const MAX_PHOTOS = 5;
 
 type FormIngredient = { name: string; core: boolean; quantity: string; unit: string };
 
@@ -159,11 +166,14 @@ export default function RecipeForm({
   const [newTagColor, setNewTagColor] = useState<string>(TAG_COLOR_OPTIONS[0]);
   const [newCuisineName, setNewCuisineName] = useState("");
   const [newCuisineColor, setNewCuisineColor] = useState<string>(TAG_COLOR_OPTIONS[0]);
-  const [sourceMode, setSourceMode] = useState<"ai" | "import">("ai");
+  const [sourceMode, setSourceMode] = useState<"ai" | "import" | "photo">("ai");
   const [importUrl, setImportUrl] = useState("");
   const [importError, setImportError] = useState<string | null>(null);
   const [needsManualText, setNeedsManualText] = useState(false);
   const [manualText, setManualText] = useState("");
+  const [photos, setPhotos] = useState<ResizedImage[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [isResizingPhotos, setIsResizingPhotos] = useState(false);
   const [isGenerating, startGenerating] = useTransition();
   const [isImporting, startImporting] = useTransition();
   const [isSaving, startSaving] = useTransition();
@@ -346,6 +356,51 @@ export default function RecipeForm({
     });
   }
 
+  async function handlePhotosSelected(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setPhotoError(null);
+    const room = MAX_PHOTOS - photos.length;
+    const incoming = Array.from(files).slice(0, room);
+    if (files.length > room) {
+      setPhotoError(`Up to ${MAX_PHOTOS} photos at a time — only added the first ${room}.`);
+    }
+    setIsResizingPhotos(true);
+    try {
+      const resized = await Promise.all(incoming.map(resizeImageFile));
+      setPhotos((cur) => [...cur, ...resized]);
+    } catch {
+      setPhotoError("Couldn't process one of those photos — try again.");
+    } finally {
+      setIsResizingPhotos(false);
+    }
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((cur) => cur.filter((_, i) => i !== index));
+  }
+
+  function handleImportPhotos() {
+    if (photos.length === 0) return;
+    setImportError(null);
+    setNeedsManualText(false);
+    startImporting(async () => {
+      const result = await importRecipeFromPhotos(
+        photos.map((p) => ({ mediaType: p.mediaType, data: p.data }))
+      );
+      if (result.error) {
+        setImportError(result.error);
+        setNeedsManualText(Boolean(result.needsManualText));
+        return;
+      }
+      if (result.recipe) {
+        const canonicalCuisines = reconcileCuisines(result.recipe.cuisines ?? []);
+        setForm(formFromRecipe({ ...result.recipe, cuisines: canonicalCuisines }));
+        setIsAiGenerated(false);
+        setImportedVia("photo");
+      }
+    });
+  }
+
   function handleSave() {
     setSaveError(null);
     if (!form.name.trim() || !form.steps.some((s) => s.trim()) || !form.category) {
@@ -378,7 +433,7 @@ export default function RecipeForm({
             sourceMode === "ai" ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
           }`}
         >
-          ✨ Generate with AI
+          ✨ AI
         </button>
         <button
           type="button"
@@ -387,7 +442,16 @@ export default function RecipeForm({
             sourceMode === "import" ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
           }`}
         >
-          🔗 Import from URL
+          🔗 URL
+        </button>
+        <button
+          type="button"
+          onClick={() => setSourceMode("photo")}
+          className={`flex-1 rounded-lg py-2 text-sm font-medium cursor-pointer transition-colors ${
+            sourceMode === "photo" ? "bg-ink text-white" : "bg-surface-warm text-ink-light"
+          }`}
+        >
+          📷 Photo
         </button>
       </div>
 
@@ -449,7 +513,7 @@ export default function RecipeForm({
           </button>
           {aiError && <p className="text-sm text-red">{aiError}</p>}
         </section>
-      ) : (
+      ) : sourceMode === "import" ? (
         <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
           <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
             Import from URL
@@ -470,6 +534,90 @@ export default function RecipeForm({
               {isImporting ? "Importing…" : "Import"}
             </button>
           </div>
+          {importError && <p className="text-sm text-red">{importError}</p>}
+          {needsManualText && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs text-ink-light">
+                Paste the recipe&apos;s text below instead and we&apos;ll extract it from that.
+              </p>
+              <textarea
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                placeholder="Paste the recipe's ingredients and steps here..."
+                rows={6}
+                className={INPUT_CLASS}
+              />
+              <button
+                type="button"
+                disabled={isImporting || !manualText.trim()}
+                onClick={handleImportManualText}
+                className="bg-plum text-white rounded-lg py-2 text-sm font-medium cursor-pointer disabled:opacity-50 self-start px-4"
+              >
+                {isImporting ? "Importing…" : "Use this text instead"}
+              </button>
+            </div>
+          )}
+        </section>
+      ) : (
+        <section className="bg-surface-warm rounded-xl p-4 flex flex-col gap-3">
+          <div className="font-mono text-[10px] uppercase tracking-wide text-ink-light">
+            Import from Photo
+          </div>
+          <p className="text-xs text-ink-light">
+            A cookbook page, index card, handwritten note, or printout — up to {MAX_PHOTOS} photos
+            for a multi-page recipe.
+          </p>
+          {photos.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {photos.map((photo, i) => (
+                <div key={i} className="relative w-16 h-16 flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.previewUrl}
+                    alt={`Recipe photo ${i + 1}`}
+                    className="w-16 h-16 object-cover rounded-lg border border-border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(i)}
+                    aria-label="Remove photo"
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-ink text-white flex items-center justify-center text-[10px] cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <label
+              className={`flex-1 border border-dashed border-border rounded-lg py-2 text-sm font-medium text-center cursor-pointer hover:bg-surface transition-colors ${
+                photos.length >= MAX_PHOTOS || isResizingPhotos ? "opacity-50 pointer-events-none" : ""
+              }`}
+            >
+              {isResizingPhotos ? "Processing…" : "+ Add photo(s)"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={photos.length >= MAX_PHOTOS || isResizingPhotos}
+                onChange={(e) => {
+                  handlePhotosSelected(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              disabled={isImporting || photos.length === 0}
+              onClick={handleImportPhotos}
+              className="bg-plum text-white rounded-lg py-2 px-4 text-sm font-medium cursor-pointer disabled:opacity-50 flex-shrink-0"
+            >
+              {isImporting ? "Importing…" : "Import"}
+            </button>
+          </div>
+          {photoError && <p className="text-sm text-red">{photoError}</p>}
           {importError && <p className="text-sm text-red">{importError}</p>}
           {needsManualText && (
             <div className="flex flex-col gap-2">
