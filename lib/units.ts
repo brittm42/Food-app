@@ -10,29 +10,54 @@ import { parseQuantity } from "./scale-quantity";
 
 type Dimension = "weight" | "volume" | "count";
 
-type UnitDef = { dimension: Dimension; toBase: number };
+type UnitDef = {
+  dimension: Dimension;
+  toBase: number;
+  // Whether this belongs in the purchase-quantity dropdown (Home Stock's
+  // "usual amount to buy," Shopping List quantities). Recipe ingredient
+  // units are always free-text (typed, not picked from this list) and get
+  // canonicalized against the full vocabulary regardless of this flag — a
+  // handful of units (tsp, tbsp, cup, clove, ml) are real recipe
+  // measurements that are never how someone thinks of "how much I buy," so
+  // they're excluded here to keep that dropdown to units Britt actually
+  // shops in.
+  purchaseUnit: boolean;
+  // Dropdown sort order for purchase units, most-likely-to-least-likely
+  // (Britt's ask: "sorted by probability of use," not alphabetical or
+  // insertion order). Irrelevant for non-purchase units.
+  priority: number;
+};
 
 // Weight base unit: grams. Volume base unit: milliliters. Count units have
 // no real conversion factor — each one only reconciles against the exact
 // same unit string (a "can" is never compared to a "clove").
 const UNIT_DEFS: Record<string, UnitDef> = {
-  g: { dimension: "weight", toBase: 1 },
-  kg: { dimension: "weight", toBase: 1000 },
-  oz: { dimension: "weight", toBase: 28.3495 },
-  lb: { dimension: "weight", toBase: 453.592 },
+  bag: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 1 },
+  box: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 2 },
+  can: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 3 },
+  jar: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 4 },
+  bottle: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 5 },
+  carton: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 6 },
+  package: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 7 },
+  count: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 8 },
+  whole: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 9 },
+  dozen: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 10 },
+  lb: { dimension: "weight", toBase: 453.592, purchaseUnit: true, priority: 11 },
+  oz: { dimension: "weight", toBase: 28.3495, purchaseUnit: true, priority: 12 },
+  bunch: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 13 },
+  roll: { dimension: "count", toBase: 1, purchaseUnit: true, priority: 14 },
+  l: { dimension: "volume", toBase: 1000, purchaseUnit: true, priority: 15 },
+  kg: { dimension: "weight", toBase: 1000, purchaseUnit: true, priority: 16 },
+  g: { dimension: "weight", toBase: 1, purchaseUnit: true, priority: 17 },
 
-  ml: { dimension: "volume", toBase: 1 },
-  l: { dimension: "volume", toBase: 1000 },
-  tsp: { dimension: "volume", toBase: 4.92892 },
-  tbsp: { dimension: "volume", toBase: 14.7868 },
-  cup: { dimension: "volume", toBase: 236.588 },
-
-  can: { dimension: "count", toBase: 1 },
-  clove: { dimension: "count", toBase: 1 },
-  whole: { dimension: "count", toBase: 1 },
-  package: { dimension: "count", toBase: 1 },
-  bunch: { dimension: "count", toBase: 1 },
-  count: { dimension: "count", toBase: 1 },
+  // Recipe-measurement units only — never shown in the purchase-quantity
+  // dropdown, but still recognized when parsing a recipe ingredient's
+  // free-text unit.
+  ml: { dimension: "volume", toBase: 1, purchaseUnit: false, priority: 0 },
+  tsp: { dimension: "volume", toBase: 4.92892, purchaseUnit: false, priority: 0 },
+  tbsp: { dimension: "volume", toBase: 14.7868, purchaseUnit: false, priority: 0 },
+  cup: { dimension: "volume", toBase: 236.588, purchaseUnit: false, priority: 0 },
+  clove: { dimension: "count", toBase: 1, purchaseUnit: false, priority: 0 },
 };
 
 // Explicit synonym/plural lookup — not generic pluralization rules, since
@@ -72,6 +97,13 @@ const UNIT_SYNONYMS: Record<string, string> = {
   packs: "package",
   bunches: "bunch",
   counts: "count",
+  bags: "bag",
+  boxes: "box",
+  jars: "jar",
+  bottles: "bottle",
+  cartons: "carton",
+  rolls: "roll",
+  dozens: "dozen",
 };
 
 // Vague-but-physically-estimable quantities get a small fixed
@@ -88,11 +120,14 @@ const VAGUE_QUANTITY_APPROXIMATIONS: Record<string, { value: number; unit: strin
   few: { value: 3, unit: "whole" },
 };
 
-// For a unit <select> in the Pantry on-hand UI — a fixed, small vocabulary
-// makes a dropdown viable in a way free text never could be.
-export const UNIT_OPTIONS: { value: string; dimension: Dimension }[] = Object.entries(UNIT_DEFS).map(
-  ([value, def]) => ({ value, dimension: def.dimension })
-);
+// For the purchase-quantity <select> (Home Stock's "usual amount to buy,"
+// Shopping List quantities) — a fixed, small vocabulary makes a dropdown
+// viable in a way free text never could be. Recipe-only measurement units
+// are excluded; sorted most- to least-likely to be how something's bought.
+export const UNIT_OPTIONS: { value: string; dimension: Dimension }[] = Object.entries(UNIT_DEFS)
+  .filter(([, def]) => def.purchaseUnit)
+  .sort((a, b) => a[1].priority - b[1].priority)
+  .map(([value, def]) => ({ value, dimension: def.dimension }));
 
 export function canonicalizeUnit(raw: string | null | undefined): string | null {
   if (!raw) return null;
