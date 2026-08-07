@@ -130,8 +130,11 @@ export default function ShoppingListView({
 
       {!hasQueue && (
         <p className="text-sm text-ink-light text-center py-4">
-          Nothing queued in This Week yet — add meals there and their
-          ingredients will show up here.
+          Pro tip: add recipes to{" "}
+          <Link href="/this-week" className="text-teal underline">
+            This Week
+          </Link>{" "}
+          to auto-populate your shopping list with ingredients you don&apos;t typically stock.
         </p>
       )}
 
