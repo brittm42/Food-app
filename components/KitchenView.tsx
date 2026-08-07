@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { deletePantryItem, createPantryItem, flagPantryItemNeeded, markPantryItemInStock } from "@/app/actions/pantry";
+import { deletePantryItem, createPantryItem, flagPantryItemNeeded, markPantryItemInStock, updatePantryTarget } from "@/app/actions/pantry";
 import { UNIT_OPTIONS } from "@/lib/units";
 import { CATEGORIES, sectionForCategory, type Section } from "@/lib/categories";
 import Collapsible from "@/components/Collapsible";
@@ -91,7 +91,14 @@ function HomeStockItemRow({ item, needed, isPending }: { item: PantryItem; neede
             disabled={disabled}
             onClick={() => {
               if (item.in_stock) {
-                setFlagging(true);
+                if (item.target_qty != null) {
+                  const restock = defaultRestockQty(item, needed);
+                  startTransition(() => {
+                    flagPantryItemNeeded(item.id, restock.value, restock.unit);
+                  });
+                } else {
+                  setFlagging(true);
+                }
               } else {
                 startTransition(() => {
                   markPantryItemInStock(item.id);
@@ -114,9 +121,10 @@ function HomeStockItemRow({ item, needed, isPending }: { item: PantryItem; neede
   );
 }
 
-// Small prompt shown when flagging an item as needed — the quantity is
-// specified right then, defaulting to whichever is bigger: the usual
-// amount or this week's computed recipe need (see defaultRestockQty).
+// Only shown the first time an item is flagged as needed, before it has a
+// stored "usual amount to buy". Whatever quantity is entered here is saved
+// back onto the item as its target_qty/target_unit, so future "Need to buy"
+// taps skip this prompt and go straight to the shopping list.
 function FlagNeededSheet({ item, needed, onClose }: { item: PantryItem; needed: Need | undefined; onClose: () => void }) {
   const suggested = defaultRestockQty(item, needed);
   const [value, setValue] = useState(suggested.value != null ? String(suggested.value) : "");
@@ -127,6 +135,9 @@ function FlagNeededSheet({ item, needed, onClose }: { item: PantryItem; needed: 
     const qtyValue = value.trim() ? Number(value) : null;
     startTransition(async () => {
       await flagPantryItemNeeded(item.id, qtyValue, unit || null);
+      if (qtyValue != null) {
+        await updatePantryTarget(item.id, qtyValue, unit || null);
+      }
       onClose();
     });
   }
