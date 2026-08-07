@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import type { Recipe } from "@/lib/types";
 import { MEAL_TYPES, mealTypeForCategory } from "@/lib/types";
 import { removeFromThisWeek, clearThisWeek, setServingsOverride } from "@/app/actions/week-queue";
@@ -52,7 +53,11 @@ export default function ThisWeekView({ items }: { items: Item[] }) {
 
       {items.length === 0 ? (
         <div className="text-center text-ink-light text-sm py-10">
-          Nothing queued yet — tap 📅 on a recipe to add it here.
+          Nothing queued yet — tap 📅 on a{" "}
+          <Link href="/" className="text-teal underline">
+            recipe
+          </Link>{" "}
+          to add it here.
         </div>
       ) : (
         MEAL_TYPES.map((meal) => {
