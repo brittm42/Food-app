@@ -6,10 +6,12 @@ export const CATEGORIES = [
   "Produce",
   "Dairy & Eggs",
   "Meat & Seafood",
+  "Deli",
   "Frozen",
   "Bakery",
   "Canned Goods",
   "Grains & Dried",
+  "Baking",
   "Sauces & Condiments",
   "Spices",
   "Beverages",
@@ -34,7 +36,7 @@ export function isCategory(value: string): value is Category {
 // the only place that distinction is defined — Home Stock, Shopping List,
 // and the pantry_items in-stock tracking behavior all derive from this
 // rather than each keeping their own notion of "fresh."
-export const FRESH_CATEGORIES: readonly Category[] = ["Produce", "Dairy & Eggs", "Meat & Seafood", "Bakery"];
+export const FRESH_CATEGORIES: readonly Category[] = ["Produce", "Dairy & Eggs", "Meat & Seafood", "Deli", "Bakery"];
 
 export function isFreshCategory(category: string): boolean {
   return (FRESH_CATEGORIES as readonly string[]).includes(category);

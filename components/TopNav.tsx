@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
+  { href: "/kitchen", label: "Home Stock" },
+  { href: "/shopping", label: "Shopping" },
+  { href: "/this-week", label: "This Week" },
   { href: "/", label: "Recipes" },
   { href: "/discover", label: "🔎 Discover" },
-  { href: "/this-week", label: "This Week" },
-  { href: "/shopping", label: "Shopping" },
-  { href: "/kitchen", label: "Home Stock" },
   { href: "/add", label: "+ Add Recipe" },
 ];
 
