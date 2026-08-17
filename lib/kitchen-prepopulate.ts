@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { categorizeItem } from "@/lib/categorize";
 import { isFreshCategory } from "@/lib/categories";
+import { isFuzzyDuplicate } from "@/lib/shopping";
+import { STARTER_STAPLES } from "@/lib/starter-staples";
 import type { Recipe } from "@/lib/types";
 
 // Onboarding-only: gives a brand-new household a starter Home Stock catalog
@@ -48,4 +50,34 @@ export async function prepopulatePantryFromStarterRecipes(supabase: SupabaseClie
   );
 
   await supabase.from("pantry_items").insert(newRows);
+}
+
+// Universal common-staples list (lib/starter-staples.ts) — same list for
+// every household, no per-diet/allergy tailoring. Silent auto-add,
+// in_stock: true default, same behavior as the starter-recipe-driven
+// seeding above. Called both at onboarding time (every new household) and
+// as a one-time retroactive backfill for existing households
+// (applyCommonPantryStaples in app/actions/pantry.ts) — deduped against
+// whatever the household already has so it only adds what's missing.
+export async function applyStarterStaples(supabase: SupabaseClient, householdId: string): Promise<number> {
+  const { data: items } = await supabase.from("pantry_items").select("name").eq("household_id", householdId);
+  const existingNames = (items ?? []).map((i) => i.name as string);
+
+  const missing = STARTER_STAPLES.filter(
+    (staple) => !existingNames.some((existing) => isFuzzyDuplicate(existing, staple.name))
+  );
+
+  if (missing.length === 0) return 0;
+
+  await supabase.from("pantry_items").insert(
+    missing.map((staple) => ({
+      household_id: householdId,
+      name: staple.name,
+      category: staple.category,
+      item_type: "core" as const,
+      in_stock: true,
+    }))
+  );
+
+  return missing.length;
 }

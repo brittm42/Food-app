@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 import { categorizeItem } from "@/lib/categorize";
+import { applyStarterStaples } from "@/lib/kitchen-prepopulate";
 
 export async function toggleChecked(itemKey: string) {
   const household = await getCurrentHousehold();
@@ -218,4 +219,19 @@ export async function markPantryItemInStock(id: string) {
   revalidatePath("/");
   revalidatePath("/shopping");
   return {};
+}
+
+// One-time retroactive action (existing households only — new ones already
+// get this at onboarding, see finishOnboarding) so a household that
+// predates the common-staples list can catch up. Dedup'd against what's
+// already there, same as the onboarding-time seeding.
+export async function backfillCommonStaples(): Promise<{ added: number } | { error: string }> {
+  const household = await getCurrentHousehold();
+  if (!household) return { error: "Not signed in." };
+
+  const supabase = await createClient();
+  const added = await applyStarterStaples(supabase, household.householdId);
+
+  revalidatePath("/");
+  return { added };
 }

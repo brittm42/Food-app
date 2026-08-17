@@ -10,7 +10,7 @@ import { importRecipe } from "@/app/actions/recipes";
 import { toggleThisWeek } from "@/app/actions/week-queue";
 import { getHouseholdCookingProfile } from "@/app/actions/household";
 import { flagAllergensInRecipe } from "@/lib/allergens";
-import { prepopulatePantryFromStarterRecipes } from "@/lib/kitchen-prepopulate";
+import { prepopulatePantryFromStarterRecipes, applyStarterStaples } from "@/lib/kitchen-prepopulate";
 import { mealTypeForCategory, MEAL_TYPES } from "@/lib/types";
 import type { Recipe, MealType, Allergy } from "@/lib/types";
 
@@ -188,6 +188,7 @@ export async function finishOnboarding(): Promise<{ error?: string }> {
 
   const supabase = await createClient();
   await prepopulatePantryFromStarterRecipes(supabase, household.householdId);
+  await applyStarterStaples(supabase, household.householdId);
 
   const { error } = await supabase
     .from("profiles")

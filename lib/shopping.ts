@@ -97,7 +97,7 @@ function normalizeForFuzzyMatch(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function isFuzzyDuplicate(a: string, b: string): boolean {
+export function isFuzzyDuplicate(a: string, b: string): boolean {
   const normalizedA = normalizeForFuzzyMatch(a);
   const normalizedB = normalizeForFuzzyMatch(b);
   return !!normalizedA && normalizedA === normalizedB;

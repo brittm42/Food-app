@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { deletePantryItem, createPantryItem, flagPantryItemNeeded, markPantryItemInStock, updatePantryTarget } from "@/app/actions/pantry";
+import {
+  deletePantryItem,
+  createPantryItem,
+  flagPantryItemNeeded,
+  markPantryItemInStock,
+  updatePantryTarget,
+  backfillCommonStaples,
+} from "@/app/actions/pantry";
 import { UNIT_OPTIONS } from "@/lib/units";
 import { CATEGORIES, sectionForCategory, type Section } from "@/lib/categories";
 import Collapsible from "@/components/Collapsible";
@@ -191,6 +198,43 @@ function FlagNeededSheet({ item, needed, onClose }: { item: PantryItem; needed: 
   );
 }
 
+// One-time-ish utility (harmless to click again — dedup'd server-side) so
+// a household that predates the common-staples list can catch up. Not
+// hidden after use since re-checking for anything newly missing is cheap
+// and never wrong.
+function BackfillStaplesButton() {
+  const [isPending, startTransition] = useTransition();
+  const [result, setResult] = useState<string | null>(null);
+
+  function run() {
+    setResult(null);
+    startTransition(async () => {
+      const res = await backfillCommonStaples();
+      if ("error" in res) {
+        setResult(res.error);
+      } else if (res.added === 0) {
+        setResult("You already have them all.");
+      } else {
+        setResult(`Added ${res.added} item${res.added === 1 ? "" : "s"}.`);
+      }
+    });
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={run}
+        disabled={isPending}
+        className="text-xs text-ink-light hover:text-teal cursor-pointer disabled:opacity-50"
+      >
+        {isPending ? "Checking…" : "Add common staples"}
+      </button>
+      {result && <span className="text-xs text-teal">{result}</span>}
+    </div>
+  );
+}
+
 function AddKitchenItemButton() {
   const [name, setName] = useState("");
   const [qty, setQty] = useState("");
@@ -277,6 +321,8 @@ export default function KitchenView({ items, needed }: { items: PantryItem[]; ne
         <h1 className="font-display text-xl font-light">Home Stock</h1>
         <AddKitchenItemButton />
       </div>
+
+      <BackfillStaplesButton />
 
       <div className="flex gap-1 border-b border-border">
         {TABS.map((t) => (
