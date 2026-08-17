@@ -57,6 +57,11 @@ export default async function AccountPage() {
           subtitle={preferencesSubtitle(prefs)}
         />
         <AccountSectionRow
+          href="/account/voice"
+          title="Add by Voice"
+          subtitle="Set up Siri/Shortcuts quick-add"
+        />
+        <AccountSectionRow
           href="/account/feedback"
           title="Feedback"
           subtitle="Bugs, ideas, anything else"
