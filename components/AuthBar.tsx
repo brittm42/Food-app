@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 import { signOut } from "@/lib/actions/auth";
 
 export default async function AuthBar() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
+  const claims = await getAuthClaims();
 
-  if (!data.user) return null;
+  if (!claims) return null;
 
   return (
     <div className="flex items-center justify-end gap-3 px-4 py-1.5 bg-surface-warm border-b border-border text-[11px] text-ink-light">

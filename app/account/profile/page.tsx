@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 import { getDisplayName } from "@/app/actions/profile";
 import AccountBackLink from "@/components/AccountBackLink";
 import AvatarInitials from "@/components/AvatarInitials";
@@ -17,14 +17,13 @@ function joinWithAnd(items: string[]) {
 }
 
 export default async function ProfileSectionPage() {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
+  const claims = await getAuthClaims();
+  if (!claims) return null;
 
   const displayName = await getDisplayName();
 
-  const providers = userData.user.app_metadata?.providers as string[] | undefined;
-  const signInMethods = (providers ?? [userData.user.app_metadata?.provider])
+  const providers = claims.appMetadata.providers as string[] | undefined;
+  const signInMethods = (providers ?? [claims.appMetadata.provider])
     .filter((p): p is string => Boolean(p))
     .map((p) => PROVIDER_LABELS[p] ?? p);
 
@@ -34,8 +33,8 @@ export default async function ProfileSectionPage() {
       <h1 className="font-display text-xl font-light mb-6">Profile</h1>
 
       <div className="flex items-center gap-3 mb-6">
-        <AvatarInitials name={displayName} email={userData.user.email} size={56} />
-        <p className="text-sm text-ink-light">{userData.user.email}</p>
+        <AvatarInitials name={displayName} email={claims.email} size={56} />
+        <p className="text-sm text-ink-light">{claims.email}</p>
       </div>
 
       <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">

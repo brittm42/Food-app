@@ -4,7 +4,7 @@ import "./globals.css";
 import TopNav from "@/components/TopNav";
 import AuthBar from "@/components/AuthBar";
 import BrandMark from "@/components/BrandMark";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -44,9 +44,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const isSignedIn = data.user != null;
+  const claims = await getAuthClaims();
+  const isSignedIn = claims != null;
 
   return (
     <html

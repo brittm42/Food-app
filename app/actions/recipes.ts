@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Recipe } from "@/lib/types";
 import { categorizeItem } from "@/lib/categorize";
 import { getCurrentHousehold } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 
 export type RecipeInput = Omit<
   Recipe,
@@ -31,10 +32,10 @@ async function withIngredientCategories(input: RecipeInput): Promise<RecipeInput
 }
 
 export async function createRecipe(input: RecipeInput) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
+  const user = claims;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
-  if (!user) return { error: "Not signed in." };
 
   const household = await getCurrentHousehold();
   if (!household) return { error: "You need a household before adding recipes." };
@@ -57,9 +58,9 @@ export async function createRecipe(input: RecipeInput) {
 }
 
 export async function updateRecipe(id: string, input: RecipeInput) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
 
   // Recipes are household-owned — the recipes_update RLS policy only
   // permits updating rows in household_id in current_household_ids(), so
@@ -73,9 +74,9 @@ export async function updateRecipe(id: string, input: RecipeInput) {
 }
 
 export async function deleteRecipe(id: string) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
 
   // recipes_delete RLS confines this to the caller's own household's rows;
   // ratings and week_queue both cascade on recipe_id, so no orphan cleanup
@@ -89,10 +90,10 @@ export async function deleteRecipe(id: string) {
 }
 
 export async function importRecipe(sourceId: string) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
+  const user = claims;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
-  if (!user) return { error: "Not signed in." };
 
   const household = await getCurrentHousehold();
   if (!household) return { error: "You need a household before importing recipes." };
@@ -147,9 +148,9 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
 }
 
 export async function createTagColor(name: string, color: string) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
 
   const { error } = await supabase
     .from("tag_colors")
@@ -162,9 +163,9 @@ export async function createTagColor(name: string, color: string) {
 }
 
 export async function createCuisineColor(name: string, color: string) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
 
   const { error } = await supabase
     .from("cuisine_colors")

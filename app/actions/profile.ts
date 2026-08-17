@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold, isPrivileged } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 import type { Allergy } from "@/lib/types";
 
 export type Preferences = {
@@ -16,14 +17,14 @@ export type Preferences = {
 export type OnboardingStatus = "pending" | "completed";
 
 export async function getDisplayName(): Promise<string | null> {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
+  const claims = await getAuthClaims();
+  if (!claims) return null;
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
     .select("display_name")
-    .eq("user_id", userData.user.id)
+    .eq("user_id", claims.id)
     .maybeSingle();
 
   return data?.display_name ?? null;
@@ -32,14 +33,14 @@ export async function getDisplayName(): Promise<string | null> {
 export async function updateDisplayName(name: string) {
   const trimmed = name.trim();
 
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("profiles")
     .upsert(
-      { user_id: userData.user.id, display_name: trimmed || null },
+      { user_id: claims.id, display_name: trimmed || null },
       { onConflict: "user_id" }
     )
     .select("user_id")
@@ -56,14 +57,14 @@ export async function updateDisplayName(name: string) {
 export async function getMyPreferences(): Promise<
   (Preferences & { onboardingStatus: OnboardingStatus }) | null
 > {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
+  const claims = await getAuthClaims();
+  if (!claims) return null;
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
     .select("allergies, avoid_foods, cuisine_preferences, dietary_style, health_goals, onboarding_status")
-    .eq("user_id", userData.user.id)
+    .eq("user_id", claims.id)
     .maybeSingle();
 
   return {
@@ -83,12 +84,12 @@ export async function getMyPreferences(): Promise<
 // onboarding_status shouldn't flip to "completed" until finishOnboarding()
 // (app/actions/onboarding.ts) runs at the very end.
 export async function updateMyPreferences(prefs: Preferences, markComplete = true) {
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
 
   const update: Record<string, unknown> = {
-    user_id: userData.user.id,
+    user_id: claims.id,
     allergies: prefs.allergies,
     avoid_foods: prefs.avoidFoods,
     cuisine_preferences: prefs.cuisinePreferences,

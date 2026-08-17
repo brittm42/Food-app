@@ -1,17 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 import DiscoverBrowser from "@/components/DiscoverBrowser";
 import LandingPage from "@/components/LandingPage";
 import type { Recipe, TagColor } from "@/lib/types";
 
 export default async function DiscoverPage() {
-  const supabase = await createClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) {
+  const claims = await getAuthClaims();
+  if (!claims) {
     return <LandingPage />;
   }
 
+  const supabase = await createClient();
   const household = await getCurrentHousehold();
   if (!household) {
     return (

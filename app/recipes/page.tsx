@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 import RecipesBrowser from "@/components/RecipesBrowser";
 import type { Recipe, RecipeWithRating, RatingValue, TagColor, Allergy } from "@/lib/types";
 
 export default async function RecipesPage() {
+  const claims = await getAuthClaims();
+  if (!claims) return null;
+
   const supabase = await createClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
-
   const household = await getCurrentHousehold();
 
   const [{ data: recipes, error }, { data: tagColors }, { data: cuisineColors }] = await Promise.all([
@@ -31,7 +31,7 @@ export default async function RecipesPage() {
     supabase
       .from("ratings")
       .select("recipe_id, rating")
-      .eq("user_id", userData.user.id),
+      .eq("user_id", claims.id),
     household
       ? supabase
           .from("week_queue")
@@ -41,7 +41,7 @@ export default async function RecipesPage() {
     supabase
       .from("oat_picks")
       .select("flavor_id")
-      .eq("user_id", userData.user.id)
+      .eq("user_id", claims.id)
       .order("picked_at", { ascending: true }),
     // No explicit household filter — profiles_select's RLS already scopes
     // this to every profile in the caller's household (self + dependents).

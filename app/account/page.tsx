@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 import { getDisplayName, getMyPreferences } from "@/app/actions/profile";
 import { listHouseholdMembers } from "@/app/actions/household";
 import AccountSectionRow from "@/components/AccountSectionRow";
@@ -16,9 +16,8 @@ function preferencesSubtitle(prefs: Awaited<ReturnType<typeof getMyPreferences>>
 }
 
 export default async function AccountPage() {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
+  const claims = await getAuthClaims();
+  if (!claims) return null;
 
   const [displayName, { householdName }, prefs] = await Promise.all([
     getDisplayName(),
@@ -29,13 +28,13 @@ export default async function AccountPage() {
   return (
     <div className="max-w-md mx-auto py-8 px-4">
       <div className="flex items-center gap-3 mb-8">
-        <AvatarInitials name={displayName} email={userData.user.email} />
+        <AvatarInitials name={displayName} email={claims.email} />
         <div className="min-w-0">
           <h1 className="font-display text-xl font-light truncate">
-            {displayName || userData.user.email}
+            {displayName || claims.email}
           </h1>
           {displayName && (
-            <p className="text-xs text-ink-light truncate">{userData.user.email}</p>
+            <p className="text-xs text-ink-light truncate">{claims.email}</p>
           )}
         </div>
       </div>

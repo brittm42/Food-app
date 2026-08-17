@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 import type { RatingValue } from "@/lib/types";
 
 export async function setRating(recipeId: string, rating: RatingValue) {
+  const claims = await getAuthClaims();
+  if (!claims) return;
+  const user = claims;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
-  if (!user) return;
 
   const { data: existing } = await supabase
     .from("ratings")

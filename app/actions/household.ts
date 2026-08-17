@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentHousehold, isPrivileged, type HouseholdRole } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 import { sendInviteEmail } from "@/lib/email";
 import type { MealType, SkillLevel } from "@/lib/types";
 
@@ -410,9 +411,8 @@ export async function resolveInvite(token: string) {
 }
 
 export async function acceptInvite(token: string) {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return { error: "Not signed in." };
+  const claims = await getAuthClaims();
+  if (!claims) return { error: "Not signed in." };
 
   const admin = createAdminClient();
   const { data: invite } = await admin
@@ -425,14 +425,14 @@ export async function acceptInvite(token: string) {
     return { error: "This invite is no longer valid." };
   }
 
-  if (invite.invited_email.toLowerCase() !== userData.user.email?.toLowerCase()) {
+  if (invite.invited_email.toLowerCase() !== claims.email?.toLowerCase()) {
     return { error: "This invite was sent to a different email address." };
   }
 
   const { data: existingMembership } = await admin
     .from("household_members")
     .select("household_id")
-    .eq("user_id", userData.user.id)
+    .eq("user_id", claims.id)
     .maybeSingle();
 
   if (existingMembership) {
@@ -441,7 +441,7 @@ export async function acceptInvite(token: string) {
 
   const { error: insertError } = await admin.from("household_members").insert({
     household_id: invite.household_id,
-    user_id: userData.user.id,
+    user_id: claims.id,
     role: "member",
   });
   if (insertError) return { error: insertError.message };
@@ -451,7 +451,7 @@ export async function acceptInvite(token: string) {
     .update({
       status: "accepted",
       accepted_at: new Date().toISOString(),
-      accepted_by: userData.user.id,
+      accepted_by: claims.id,
     })
     .eq("id", invite.id);
 

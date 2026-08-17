@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 
 export type HouseholdRole = "owner" | "manager" | "member" | "dependent";
 
@@ -13,20 +14,20 @@ export function isPrivileged(role: HouseholdRole | null | undefined): boolean {
 }
 
 export async function getCurrentHousehold(): Promise<CurrentHousehold | null> {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
+  const claims = await getAuthClaims();
+  if (!claims) return null;
 
+  const supabase = await createClient();
   const { data: membership } = await supabase
     .from("household_members")
     .select("household_id, role")
-    .eq("user_id", userData.user.id)
+    .eq("user_id", claims.id)
     .single();
 
   if (!membership) return null;
 
   return {
-    userId: userData.user.id,
+    userId: claims.id,
     householdId: membership.household_id,
     role: membership.role as HouseholdRole,
   };

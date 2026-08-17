@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 import { resolveInvite } from "@/app/actions/household";
 import AcceptInviteButton from "@/components/AcceptInviteButton";
 
@@ -34,10 +34,9 @@ export default async function AcceptInvitePage({
     );
   }
 
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
+  const claims = await getAuthClaims();
 
-  if (!userData.user) {
+  if (!claims) {
     const next = encodeURIComponent(`/invite/accept?token=${token}`);
     return (
       <div className="max-w-sm mx-auto py-12 px-4">
@@ -57,7 +56,7 @@ export default async function AcceptInvitePage({
     );
   }
 
-  if (userData.user.email?.toLowerCase() !== invite.invitedEmail.toLowerCase()) {
+  if (claims.email?.toLowerCase() !== invite.invitedEmail.toLowerCase()) {
     return (
       <div className="max-w-sm mx-auto py-12 px-4">
         <h1 className="font-display text-xl font-light mb-2">
@@ -65,7 +64,7 @@ export default async function AcceptInvitePage({
         </h1>
         <p className="text-sm text-ink-light leading-relaxed">
           This invite was sent to <strong>{invite.invitedEmail}</strong>, but
-          you&apos;re signed in as {userData.user.email}. Sign out and sign
+          you&apos;re signed in as {claims.email}. Sign out and sign
           back in with the invited email to continue.
         </p>
       </div>

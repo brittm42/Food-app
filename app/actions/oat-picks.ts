@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/auth";
 
 export async function toggleOatPick(flavorId: string) {
+  const claims = await getAuthClaims();
+  if (!claims) return;
+  const user = claims;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
-  if (!user) return;
 
   const { data: existing } = await supabase
     .from("oat_picks")

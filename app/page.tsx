@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
+import { getAuthClaims } from "@/lib/auth";
 import { computeWeeklyPantryNeeds } from "@/lib/shopping";
 import LandingPage from "@/components/LandingPage";
 import KitchenView from "@/components/KitchenView";
@@ -8,13 +9,12 @@ import KitchenView from "@/components/KitchenView";
 // currently Home Stock. Also doubles as the signed-out marketing landing
 // page, same as when Recipes lived here.
 export default async function HomePage() {
-  const supabase = await createClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) {
+  const claims = await getAuthClaims();
+  if (!claims) {
     return <LandingPage />;
   }
 
+  const supabase = await createClient();
   const household = await getCurrentHousehold();
   if (!household) return null;
 
