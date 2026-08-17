@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { categorizeItem } from "@/lib/categorize";
 import { CATEGORIES, isFreshCategory } from "@/lib/categories";
+import { parseVoiceItemQuantity } from "@/lib/parse-voice-quantity";
 import type { Recipe } from "@/lib/types";
 
 // Shared by both voice entry points (Shortcuts' /api/shopping-items and
@@ -12,7 +13,15 @@ export async function addShoppingItemForHousehold(
   householdId: string,
   rawLabel: string
 ): Promise<{ ok: true; label: string; duplicate?: boolean; linkedToPantryItem?: boolean } | { ok: false; error: string }> {
-  const label = rawLabel.trim();
+  if (!rawLabel.trim()) {
+    return { ok: false, error: "Enter an item name." };
+  }
+
+  // Strip any spoken quantity/unit ("2 bags of Tostitos bites") before
+  // dedup/catalog matching runs, so the fuzzy-match logic below compares
+  // against the clean item name, not the raw phrase.
+  const spoken = await parseVoiceItemQuantity(rawLabel);
+  const label = spoken.label;
   if (!label) {
     return { ok: false, error: "Enter an item name." };
   }
@@ -39,13 +48,26 @@ export async function addShoppingItemForHousehold(
     .eq("household_id", householdId);
   const catalogMatch = (catalogItems ?? []).find((row) => isFuzzyDuplicate(row.name as string, label));
 
+  // An explicit spoken quantity ("2 bags of...") takes priority over the
+  // catalog's usual purchase amount; only fall back to the catalog default
+  // when nothing was said.
+  let quantityValue: number | null;
+  let quantityUnit: string | null;
+  if (spoken.quantityValue != null) {
+    quantityValue = spoken.quantityValue;
+    quantityUnit = spoken.quantityUnit;
+  } else {
+    quantityValue = catalogMatch?.target_qty ?? null;
+    quantityUnit = quantityValue != null ? (catalogMatch?.target_unit ?? null) : null;
+  }
+
   const category = catalogMatch ? (catalogMatch.category as string) : await categorizeItem(label);
   const { error } = await admin.from("shopping_items").insert({
     household_id: householdId,
     label: catalogMatch ? (catalogMatch.name as string) : label,
     category,
-    quantity_value: catalogMatch?.target_qty ?? null,
-    quantity_unit: catalogMatch?.target_qty != null ? catalogMatch.target_unit : null,
+    quantity_value: quantityValue,
+    quantity_unit: quantityUnit,
     source_pantry_item_id: catalogMatch?.id ?? null,
   });
 
