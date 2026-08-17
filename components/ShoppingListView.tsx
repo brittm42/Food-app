@@ -105,11 +105,11 @@ export default function ShoppingListView({
         <AddOneOffButton />
       </div>
 
-      {(hasEligibleItems || hasSentItems) && (
+      {((krogerConnected && hasEligibleItems) || hasSentItems) && (
         <div className="flex gap-2">
-          {hasEligibleItems && (
+          {krogerConnected && hasEligibleItems && (
             <Link
-              href={krogerConnected ? "/shopping/send-to-kroger" : "/api/kroger/connect?returnTo=/shopping/send-to-kroger"}
+              href="/shopping/send-to-kroger"
               className="flex-1 sm:flex-none sm:w-64 flex items-center justify-center gap-1.5 text-center bg-ink text-white rounded-lg px-3 py-2 text-sm font-medium"
             >
               <span aria-hidden="true">🛒</span> Add to my cart

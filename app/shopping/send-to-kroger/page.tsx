@@ -16,14 +16,8 @@ export default async function SendToKrogerPage() {
       <div className="max-w-md mx-auto py-8 px-4">
         <AccountBackLink href="/shopping" label="Shopping List" />
         <p className="text-sm text-ink-light">
-          Connect your household&apos;s Kroger account first.
+          Kroger cart connection is coming soon.
         </p>
-        <Link
-          href="/api/kroger/connect?returnTo=/shopping/send-to-kroger"
-          className="inline-block mt-3 bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium"
-        >
-          Connect Kroger
-        </Link>
       </div>
     );
   }

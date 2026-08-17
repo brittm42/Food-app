@@ -93,20 +93,20 @@ export default function KrogerConnectionPanel({
       ) : isPrivileged ? (
         <>
           <p className="text-sm text-ink-light mb-2">
-            Connect your household&apos;s Kroger/King Soopers account to send
-            the Shopping List straight to your real cart.
+            Send your Shopping List straight to a real Kroger/King Soopers
+            cart. Coming soon — still smoothing out the connection flow.
           </p>
-          <a
-            href="/api/kroger/connect?returnTo=/account/household"
-            className="inline-block bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium"
+          <button
+            type="button"
+            disabled
+            className="inline-block bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium opacity-50 cursor-not-allowed"
           >
             Connect Kroger
-          </a>
+          </button>
         </>
       ) : (
         <p className="text-sm text-ink-light">
-          Not connected. Ask an owner or manager to connect your household&apos;s
-          Kroger account.
+          Kroger cart connection is coming soon.
         </p>
       )}
     </section>
