@@ -2,6 +2,8 @@ import AccountBackLink from "@/components/AccountBackLink";
 import VoiceTokenPanel from "@/components/VoiceTokenPanel";
 import { getMyVoiceToken } from "@/app/actions/voice-token";
 
+const SHORTCUT_URL = "https://www.icloud.com/shortcuts/a50b0c73a9a24ffdb45baf9331d904aa";
+
 export default async function VoicePage() {
   const token = await getMyVoiceToken();
 
@@ -19,7 +21,12 @@ export default async function VoicePage() {
           <h2 className="font-mono text-[10px] uppercase tracking-wide text-ink-light mb-2">
             1. Get the Shortcut
           </h2>
-          <p className="text-sm text-ink-light">Shortcut link coming soon.</p>
+          <a
+            href={SHORTCUT_URL}
+            className="inline-block bg-ink text-white rounded-lg px-4 py-2 text-sm font-medium"
+          >
+            Get the Shortcut
+          </a>
         </div>
 
         <div>
