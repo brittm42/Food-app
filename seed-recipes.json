@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "description": "Seed data for Britt's Food System web app. Import into Supabase. Recipe categories: smoothie, hot, quick, guilty (breakfast); bowls, wraps, soups, lquick (lunch); snacks; family, sides (dinner); solo (Just for Me — salmon recipes are the example, not the rule). Cuisines: med, mex, asi, ind. Tags are free-form chips.",
+    "description": "Seed data for Britt's Food System web app. Import into Supabase. Recipe categories: smoothie, hot, quick (breakfast); bowls, wraps, soups, lquick (lunch); snacks; family, sides (dinner); solo (Just for Me — salmon recipes are the example, not the rule). Cuisines: med, mex, asi, ind. Tags are free-form chips.",
     "cuisines": {
       "med": "Mediterranean",
       "mex": "Mexican",
@@ -12,8 +12,7 @@
         "oats",
         "smoothie",
         "hot",
-        "quick",
-        "guilty"
+        "quick"
       ],
       "lunch": [
         "bowls",
@@ -641,7 +640,7 @@
     },
     {
       "id": "g1",
-      "cat": "guilty",
+      "cat": "hot",
       "emoji": "🥓",
       "name": "Bacon + Egg + Avocado Plate",
       "hint": "The complete version · Britt only",
@@ -689,7 +688,7 @@
     },
     {
       "id": "g2",
-      "cat": "guilty",
+      "cat": "hot",
       "emoji": "🧇",
       "name": "Protein Waffles",
       "hint": "Same ritual, better macros · family-friendly",
@@ -735,7 +734,7 @@
     },
     {
       "id": "g3",
-      "cat": "guilty",
+      "cat": "hot",
       "emoji": "🍥",
       "name": "Cinnamon Rolls",
       "hint": "Just enjoy them · Saturday ritual",

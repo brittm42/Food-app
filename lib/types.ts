@@ -79,7 +79,6 @@ export const SUB_CATEGORIES: Record<MealType, { id: string; label: string }[]> =
     { id: "smoothie", label: "Smoothies" },
     { id: "hot", label: "Hot Breakfasts" },
     { id: "quick", label: "Quick Grabs" },
-    { id: "guilty", label: "Guilty Pleasures" },
   ],
   lunch: [
     { id: "bowls", label: "Bowls" },

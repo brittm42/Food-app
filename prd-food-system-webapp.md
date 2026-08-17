@@ -72,7 +72,7 @@ My Polymarket app uses React + Vite + Node/Express + SQLite because it has a ser
 **Description**: A browsable library of recipes, organized by meal type and sub-category, with cuisine tags.
 **Structure**:
 - Top-level meal types: Breakfast, Lunch, Snacks, Dinner, Just for Me
-- Breakfast sub-categories: Overnight Oats, Smoothies, Hot Breakfasts, Quick Grabs, Guilty Pleasures
+- Breakfast sub-categories: Overnight Oats, Smoothies, Hot Breakfasts, Quick Grabs
 - Lunch sub-categories: Bowls, Wraps, Soups, Quick Plates
 - Dinner sub-categories: Family Mains, Better Sides
 - Cuisine tags: Mediterranean, Mexican, Asian, Indian (a recipe may have one or none)
@@ -165,7 +165,7 @@ The library. Seed recipes are shared global rows (`user_id` null); user-added/AI
 - `id`: uuid (pk)
 - `user_id`: uuid (fk) nullable — owner; null for shared seed recipes
 - `name`: text
-- `category`: text — enum-like: smoothie, hot, quick, guilty, bowls, wraps, soups, lquick, snacks, family, sides, solo, oats
+- `category`: text — enum-like: smoothie, hot, quick, bowls, wraps, soups, lquick, snacks, family, sides, solo, oats
 - `cuisines`: text[] — zero or more of: med, mex, asi, ind
 - `emoji`: text nullable
 - `hint`: text nullable — short description line
