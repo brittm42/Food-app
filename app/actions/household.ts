@@ -456,5 +456,6 @@ export async function acceptInvite(token: string) {
     .eq("id", invite.id);
 
   revalidatePath("/");
+  revalidatePath("/recipes");
   return {};
 }

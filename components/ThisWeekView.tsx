@@ -54,7 +54,7 @@ export default function ThisWeekView({ items }: { items: Item[] }) {
       {items.length === 0 ? (
         <div className="text-center text-ink-light text-sm py-10">
           Nothing queued yet — tap 📅 on a{" "}
-          <Link href="/" className="text-teal underline">
+          <Link href="/recipes" className="text-teal underline">
             recipe
           </Link>{" "}
           to add it here.

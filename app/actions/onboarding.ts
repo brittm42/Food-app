@@ -177,7 +177,7 @@ export async function applyStarterRecipeSelections(recipeIds: string[]): Promise
     }
   }
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   revalidatePath("/this-week");
   return {};
 }
@@ -195,7 +195,6 @@ export async function finishOnboarding(): Promise<{ error?: string }> {
   if (error) return { error: error.message };
 
   revalidatePath("/");
-  revalidatePath("/kitchen");
   revalidatePath("/shopping");
   revalidatePath("/this-week");
   revalidatePath("/onboarding");

@@ -28,7 +28,7 @@ export async function toggleChecked(itemKey: string) {
     });
   }
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
 }
 
@@ -64,7 +64,7 @@ export async function createPantryItem(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }
@@ -77,7 +77,7 @@ export async function deletePantryItem(id: string) {
 
   await supabase.from("pantry_items").delete().eq("id", id).eq("household_id", household.householdId);
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
 }
 
@@ -96,7 +96,7 @@ export async function updatePantryTarget(id: string, qtyValue: number | null, qt
     .eq("household_id", household.householdId);
   if (error) return { error: error.message };
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   return {};
 }
 
@@ -117,7 +117,7 @@ export async function updatePantryItemName(id: string, name: string) {
     .eq("household_id", household.householdId);
   if (error) return { error: error.message };
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }
@@ -136,7 +136,7 @@ export async function updatePantryNote(id: string, note: string | null) {
     .eq("household_id", household.householdId);
   if (error) return { error: error.message };
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }
@@ -187,7 +187,7 @@ export async function flagPantryItemNeeded(id: string, qtyValue: number | null, 
     if (error) return { error: error.message };
   }
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }
@@ -215,7 +215,7 @@ export async function markPantryItemInStock(id: string) {
     .eq("household_id", household.householdId)
     .eq("source_pantry_item_id", id);
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }

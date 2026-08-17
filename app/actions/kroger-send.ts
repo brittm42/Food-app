@@ -158,7 +158,7 @@ export async function markOrderPickedUp() {
     .eq("household_id", household.householdId)
     .not("sent_at", "is", null);
 
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   revalidatePath("/shopping");
   return {};
 }

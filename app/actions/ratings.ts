@@ -35,5 +35,5 @@ export async function setRating(recipeId: string, rating: RatingValue) {
     );
   }
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
 }

@@ -48,6 +48,6 @@ export async function POST(request: NextRequest) {
   }
 
   revalidatePath("/shopping");
-  revalidatePath("/kitchen");
+  revalidatePath("/");
   return NextResponse.json(result);
 }

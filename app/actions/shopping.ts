@@ -88,7 +88,7 @@ export async function removeShoppingItem(id: string) {
 
   if (row?.source_pantry_item_id) {
     await supabase.from("pantry_items").update({ in_stock: true }).eq("id", row.source_pantry_item_id);
-    revalidatePath("/kitchen");
+    revalidatePath("/");
   }
 
   await supabase

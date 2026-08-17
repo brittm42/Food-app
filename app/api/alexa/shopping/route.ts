@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     revalidatePath("/shopping");
-    revalidatePath("/kitchen");
+    revalidatePath("/");
 
     if (added.length === 0 && duplicates.length === 0) {
       return speech("Sorry, I didn't catch what to add. Try saying, add milk.");

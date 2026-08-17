@@ -52,7 +52,7 @@ export async function createRecipe(input: RecipeInput) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   return { id: data.id as string };
 }
 
@@ -68,7 +68,7 @@ export async function updateRecipe(id: string, input: RecipeInput) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   return {};
 }
 
@@ -84,7 +84,7 @@ export async function deleteRecipe(id: string) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   return {};
 }
 
@@ -135,7 +135,7 @@ export async function importRecipe(sourceId: string) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   revalidatePath("/discover");
   return { id: data.id as string };
 }
@@ -157,7 +157,7 @@ export async function createTagColor(name: string, color: string) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   return {};
 }
 
@@ -172,6 +172,6 @@ export async function createCuisineColor(name: string, color: string) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
   return {};
 }

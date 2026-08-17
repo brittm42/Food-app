@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentHousehold } from "@/lib/household";
 
 function revalidateAffectedPaths() {
-  revalidatePath("/");
+  revalidatePath("/recipes");
   revalidatePath("/this-week");
   revalidatePath("/shopping");
 }

@@ -413,7 +413,7 @@ export default function RecipeForm({
         setSaveError(result.error);
         return;
       }
-      router.push("/");
+      router.push("/recipes");
     });
   }
 

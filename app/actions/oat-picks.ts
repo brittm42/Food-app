@@ -41,5 +41,5 @@ export async function toggleOatPick(flavorId: string) {
     await supabase.from("oat_picks").insert({ user_id: user.id, flavor_id: flavorId });
   }
 
-  revalidatePath("/");
+  revalidatePath("/recipes");
 }
